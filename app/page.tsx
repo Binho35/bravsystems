@@ -494,10 +494,11 @@ export default function Home() {
                 className="aspect-video w-full rounded-2xl bg-[#0b2947] object-cover"
                 controls
                 preload="metadata"
+                playsInline
                 poster="/bravsystems-logo.png"
               >
                 <source
-                  src="/bravos-institucional.mp4"
+                  src="/bravsystems-video-institucional.mp4"
                   type="video/mp4"
                 />
                 Seu navegador não suporta a reprodução deste vídeo.
