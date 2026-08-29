@@ -145,6 +145,70 @@ export async function POST(request: Request) {
       );
     }
 
+    const welcomeResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: contactFromEmail,
+        to: [email],
+        subject: "Obrigado pelo contato | BravSystems",
+        html: `
+          <div style="margin:0;padding:32px 16px;background:#eaf3fb;font-family:Arial,sans-serif;color:#334155;line-height:1.7;">
+            <div style="max-width:620px;margin:0 auto;overflow:hidden;border:1px solid #d7e3ec;border-radius:20px;background:#ffffff;">
+              <div style="padding:24px 32px;background:#0b2947;color:#ffffff;">
+                <div style="font-size:20px;font-weight:700;">BravSystems</div>
+                <div style="margin-top:4px;font-size:13px;color:#b8cee0;">Tecnologia e Gestão</div>
+              </div>
+              <div style="padding:32px;">
+                <p style="margin:0 0 20px;color:#0f172a;font-size:17px;">Olá, ${safe.name}.</p>
+                <p style="margin:0 0 18px;">Obrigado por entrar em contato com a BravSystems.</p>
+                <p style="margin:0 0 18px;">Recebi sua mensagem e fico muito feliz pelo seu interesse em conhecer melhor o nosso trabalho.</p>
+                <p style="margin:0 0 18px;">A BravSystems nasceu da experiência prática com gestão e da vontade de transformar problemas reais das empresas em soluções mais simples, organizadas e eficientes.</p>
+                <p style="margin:0 0 18px;">Hoje desenvolvemos soluções para diferentes áreas da gestão, com BravOs, BravHas e BravHos, além dos nossos serviços de gestão.</p>
+                <p style="margin:0 0 18px;">Vou analisar as informações que você compartilhou para entendermos como a BravSystems pode contribuir com a sua empresa.</p>
+                <p style="margin:0 0 26px;">Em breve continuamos essa conversa.</p>
+                <p style="margin:0 0 24px;">Um abraço,</p>
+                <div style="border-top:1px solid #e2e8f0;padding-top:20px;">
+                  <div style="font-size:16px;font-weight:700;color:#0b2947;">Robson Fernandes</div>
+                  <div style="margin-top:2px;font-size:13px;color:#64748b;">Fundador e CEO</div>
+                  <div style="margin-top:2px;font-size:13px;font-weight:700;color:#154b7a;">BravSystems • Tecnologia e Gestão</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+        text: [
+          `Olá, ${name}.`,
+          "",
+          "Obrigado por entrar em contato com a BravSystems.",
+          "",
+          "Recebi sua mensagem e fico muito feliz pelo seu interesse em conhecer melhor o nosso trabalho.",
+          "",
+          "A BravSystems nasceu da experiência prática com gestão e da vontade de transformar problemas reais das empresas em soluções mais simples, organizadas e eficientes.",
+          "",
+          "Hoje desenvolvemos soluções para diferentes áreas da gestão, com BravOs, BravHas e BravHos, além dos nossos serviços de gestão.",
+          "",
+          "Vou analisar as informações que você compartilhou para entendermos como a BravSystems pode contribuir com a sua empresa.",
+          "",
+          "Em breve continuamos essa conversa.",
+          "",
+          "Um abraço,",
+          "",
+          "Robson Fernandes",
+          "Fundador e CEO",
+          "BravSystems • Tecnologia e Gestão",
+        ].join("\n"),
+      }),
+    });
+
+    if (!welcomeResponse.ok) {
+      const welcomeErrorBody = await welcomeResponse.text();
+      console.error("Erro Resend no e-mail de boas-vindas:", welcomeErrorBody);
+    }
+
     return NextResponse.json(
       {
         message:
