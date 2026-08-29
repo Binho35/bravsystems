@@ -6,10 +6,10 @@ import { useState } from "react";
 const products = [
   {
     name: "BravOs",
-    category: "Gestão operacional",
-    headline: "Controle a operação sem depender de controles espalhados.",
+    category: "Operação e gestão para restaurantes",
+    headline: "Conecte a operação do restaurante em uma única plataforma.",
     description:
-      "Uma plataforma para conectar vendas, estoque, produção, financeiro e indicadores em uma visão operacional mais clara.",
+      "Do PDV ao estoque, das fichas técnicas ao financeiro: o BravOs organiza a rotina operacional para dar mais controle, produtividade e visão do negócio.",
     features: [
       "PDV e vendas",
       "Estoque e fichas técnicas",
@@ -19,23 +19,23 @@ const products = [
   },
   {
     name: "BravHas",
-    category: "Gestão administrativa",
-    headline: "Organize a administração para decidir com mais segurança.",
+    category: "Gestão administrativa e financeira",
+    headline: "Centralize a administração e ganhe previsibilidade financeira.",
     description:
-      "Centralize rotinas financeiras, RH, Departamento Pessoal e obrigações para reduzir retrabalho e dar mais previsibilidade à gestão.",
+      "O BravHas organiza contas, obrigações, contratos, fornecedores e controles administrativos para reduzir retrabalho e apoiar decisões com informação confiável.",
     features: [
-      "Financeiro",
-      "Recursos Humanos",
-      "Departamento Pessoal",
-      "Obrigações e controles",
+      "Financeiro e fluxo de caixa",
+      "Contas e obrigações",
+      "Contratos e fornecedores",
+      "Controles administrativos",
     ],
   },
   {
     name: "BravHos",
-    category: "Recursos Humanos e DP",
-    headline: "Centralize a jornada do colaborador, o RH e o Departamento Pessoal.",
+    category: "Recursos Humanos e Departamento Pessoal",
+    headline: "Centralize a jornada do colaborador com segurança e rastreabilidade.",
     description:
-      "Uma plataforma para organizar processos de RH e DP, documentos, solicitações, comunicação e histórico funcional em um ambiente seguro e auditável.",
+      "O BravHos reúne RH e Departamento Pessoal em um ambiente seguro e auditável para organizar documentos, solicitações, comunicação e todo o histórico funcional.",
     features: [
       "Dossiê digital do colaborador",
       "Documentos e assinaturas",
@@ -262,8 +262,8 @@ function LeadForm() {
           <option value="" disabled>
             Selecione uma opção
           </option>
-          <option value="BravOs">BravOs — Gestão operacional</option>
-          <option value="BravHas">BravHas — Gestão administrativa</option>
+          <option value="BravOs">BravOs — Operação para restaurantes</option>
+          <option value="BravHas">BravHas — Gestão administrativa e financeira</option>
           <option value="BravHos">BravHos — Recursos Humanos e DP</option>
           <option value="Serviços administrativos">Serviços administrativos</option>
           <option value="Parceria">Parceria comercial</option>
@@ -552,13 +552,12 @@ export default function Home() {
                 Soluções BravSystems
               </div>
               <h2 className="mt-3 max-w-[760px] text-4xl font-bold tracking-[-0.04em] text-[#0b2947] sm:text-5xl">
-                Uma plataforma para cada frente crítica da gestão.
+                Três plataformas. Três frentes claras de gestão.
               </h2>
             </div>
 
             <p className="max-w-xl text-[17px] leading-8 text-[#64748b]">
-              Nossos produtos foram concebidos para atacar problemas concretos da
-              operação, administração e gestão de pessoas.
+              BravOs organiza a operação, BravHas estrutura a administração e o financeiro, e BravHos centraliza Recursos Humanos e Departamento Pessoal.
             </p>
           </div>
 
