@@ -665,66 +665,89 @@ export default function Home() {
         className="scroll-mt-24 border-b border-[#d9e6ef] bg-[#eef5fa] py-20"
       >
         <div className="mx-auto max-w-[1280px] px-6 lg:px-8">
-          <div className="grid items-center gap-12 lg:grid-cols-[0.85fr_1.15fr]">
+          <div className="grid items-center gap-12 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
-              <div className="text-[12px] font-bold uppercase tracking-[0.18em] text-[#2563eb]">
-                Demonstração
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#bfd8e8] bg-white px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#154b7a] shadow-sm">
+                <span className="h-2 w-2 rounded-full bg-[#16a34a]" />
+                Demonstração BravOs
               </div>
 
-              <h2 className="mt-3 text-4xl font-bold tracking-[-0.04em] text-[#0b2947] sm:text-5xl">
-                Conheça o BravOs em ação.
+              <h2 className="mt-5 text-4xl font-bold tracking-[-0.04em] text-[#0b2947] sm:text-5xl">
+                Veja a tecnologia ganhar vida.
               </h2>
 
               <p className="mt-6 text-[17px] leading-8 text-[#64748b]">
-                Veja a proposta do BravOs e conheça uma plataforma criada para
-                transformar processos operacionais em uma gestão mais integrada,
-                clara e preparada para crescer.
+                Uma visão rápida da proposta do BravOs: operação, informação e
+                gestão conectadas em uma experiência criada para simplificar o
+                dia a dia e apoiar decisões melhores.
               </p>
 
-              <div className="mt-7 rounded-3xl bg-[#0b2947] p-7 text-white shadow-xl shadow-[#0b2947]/10">
-                <div className="text-[12px] font-bold uppercase tracking-[0.16em] text-[#8db8dc]">
-                  BravOs
-                </div>
-
-                <h3 className="mt-3 text-2xl font-bold">
-                  Mais controle da operação. Menos informação espalhada.
-                </h3>
-
-                <p className="mt-3 text-[15px] leading-7 text-[#b8cee0]">
-                  Vendas, estoque, fichas técnicas, financeiro, relatórios e
-                  operação reunidos para apoiar decisões mais rápidas e seguras.
-                </p>
-
-                <a
-                  href="#contato"
-                  className="mt-6 inline-flex h-11 items-center justify-center rounded-lg bg-white px-5 text-[14px] font-bold text-[#154b7a] transition-colors hover:bg-[#eaf3fb]"
-                >
-                  Quero uma apresentação
-                </a>
+              <div className="mt-7 grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+                {["Operação integrada", "Visão gerencial", "Decisão mais rápida"].map(
+                  (item) => (
+                    <div
+                      key={item}
+                      className="rounded-2xl border border-[#cbddea] bg-white px-4 py-4 text-[13px] font-bold text-[#154b7a] shadow-sm"
+                    >
+                      <span className="mr-2 text-[#2563eb]">✓</span>
+                      {item}
+                    </div>
+                  ),
+                )}
               </div>
+
+              <a
+                href="#contato"
+                className="mt-8 inline-flex h-12 items-center justify-center rounded-xl bg-[#154b7a] px-6 text-[14px] font-bold text-white shadow-lg shadow-[#154b7a]/15 transition-all hover:-translate-y-0.5 hover:bg-[#0b2947] hover:shadow-xl"
+              >
+                Quero conhecer o BravOs
+                <span className="ml-2" aria-hidden="true">
+                  →
+                </span>
+              </a>
             </div>
 
-            <div className="overflow-hidden rounded-3xl border border-[#cbddea] bg-white p-3 shadow-xl shadow-[#0b2947]/10">
-              <video
-                className="aspect-video w-full rounded-2xl bg-[#0b2947] object-cover"
-                controls
-                preload="metadata"
-                playsInline
-                poster="/bravsystems-logo.png"
-              >
-                <source
-                  src="/bravsystems-video-institucional.mp4"
-                  type="video/mp4"
-                />
-                Seu navegador não suporta a reprodução deste vídeo.
-              </video>
+            <div className="relative">
+              <div
+                className="absolute -inset-5 rounded-[34px] bg-[#d8ebf8]"
+                aria-hidden="true"
+              />
 
-              <div className="px-3 pb-3 pt-4">
-                <div className="text-[16px] font-bold text-[#0b2947]">
-                  BravOs — apresentação institucional
+              <div className="relative overflow-hidden rounded-[30px] border border-[#bed5e5] bg-white p-3 shadow-2xl shadow-[#0b2947]/15 sm:p-4">
+                <div className="relative overflow-hidden rounded-[24px] bg-[#071f35]">
+                  <video
+                    className="aspect-video w-full object-cover"
+                    controls
+                    preload="metadata"
+                    playsInline
+                    poster="/bravsystems-logo.png"
+                    aria-label="Apresentação institucional do BravOs"
+                  >
+                    <source
+                      src="/bravsystems-video-institucional.mp4"
+                      type="video/mp4"
+                    />
+                    Seu navegador não suporta a reprodução deste vídeo.
+                  </video>
+
+                  <div className="pointer-events-none absolute left-4 top-4 rounded-full border border-white/20 bg-[#0b2947]/85 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white backdrop-blur">
+                    BravSystems • Demo
+                  </div>
                 </div>
-                <div className="mt-1 text-[14px] text-[#64748b]">
-                  Tecnologia construída a partir de necessidades reais de gestão.
+
+                <div className="flex flex-col gap-4 px-2 pb-2 pt-5 sm:flex-row sm:items-center sm:justify-between sm:px-3 sm:pb-3">
+                  <div>
+                    <div className="text-[17px] font-bold text-[#0b2947]">
+                      BravOs — apresentação institucional
+                    </div>
+                    <div className="mt-1 text-[14px] leading-6 text-[#64748b]">
+                      Tecnologia construída a partir de necessidades reais de gestão.
+                    </div>
+                  </div>
+
+                  <div className="shrink-0 rounded-full border border-[#cbddea] bg-[#f7fafc] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#154b7a]">
+                    Vídeo institucional
+                  </div>
                 </div>
               </div>
             </div>
