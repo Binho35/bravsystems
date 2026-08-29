@@ -31,16 +31,16 @@ const products = [
     ],
   },
   {
-    name: "BravCrm",
-    category: "Relacionamento",
-    headline: "Transforme relacionamento em processo e oportunidade.",
+    name: "BravHos",
+    category: "Recursos Humanos e DP",
+    headline: "Centralize a jornada do colaborador, o RH e o Departamento Pessoal.",
     description:
-      "Organize clientes, histórico, oportunidades e informações comerciais em um ambiente único, preparado para acompanhar o crescimento.",
+      "Uma plataforma para organizar processos de RH e DP, documentos, solicitações, comunicação e histórico funcional em um ambiente seguro e auditável.",
     features: [
-      "Gestão de clientes",
-      "Histórico de relacionamento",
-      "Processos comerciais",
-      "Informações centralizadas",
+      "Dossiê digital do colaborador",
+      "Documentos e assinaturas",
+      "Canal RH e solicitações",
+      "Rotinas de RH e Departamento Pessoal",
     ],
   },
 ];
@@ -264,7 +264,7 @@ function LeadForm() {
           </option>
           <option value="BravOs">BravOs — Gestão operacional</option>
           <option value="BravHas">BravHas — Gestão administrativa</option>
-          <option value="BravCrm">BravCrm — Relacionamento</option>
+          <option value="BravHos">BravHos — Recursos Humanos e DP</option>
           <option value="Serviços administrativos">Serviços administrativos</option>
           <option value="Parceria">Parceria comercial</option>
           <option value="Outro">Outro assunto</option>
@@ -558,7 +558,7 @@ export default function Home() {
 
             <p className="max-w-xl text-[17px] leading-8 text-[#64748b]">
               Nossos produtos foram concebidos para atacar problemas concretos da
-              operação, administração e relacionamento com clientes.
+              operação, administração e gestão de pessoas.
             </p>
           </div>
 
