@@ -310,7 +310,7 @@ function LeadForm() {
         disabled={status === "sending"}
         className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-xl bg-[#154b7a] px-6 text-[15px] font-bold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:bg-[#0b2947] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {status === "sending" ? "Enviando..." : "Solicitar contato"}
+        {status === "sending" ? "Enviando..." : "Quero falar com a BravSystems"}
       </button>
 
       {message && (
@@ -435,9 +435,9 @@ export default function Home() {
             </h1>
 
             <p className="mt-7 max-w-[740px] text-[18px] leading-8 text-[#5f7185] sm:text-[19px]">
-              A BravSystems conecta tecnologia e gestão para organizar processos,
-              centralizar informações e construir operações mais eficientes,
-              seguras e preparadas para crescer.
+              A BravSystems transforma desafios reais de operação, administração
+              e gestão de pessoas em soluções práticas, integradas e preparadas
+              para crescer com a sua empresa.
             </p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -445,7 +445,7 @@ export default function Home() {
                 href="#solucoes"
                 className="inline-flex h-13 items-center justify-center rounded-xl bg-[#154b7a] px-7 text-[15px] font-bold text-white shadow-lg shadow-[#154b7a]/20 transition-all hover:-translate-y-0.5 hover:bg-[#0b2947] hover:shadow-xl"
               >
-                Conhecer as soluções
+                Ver nossas soluções
                 <span className="ml-2 text-lg" aria-hidden="true">
                   →
                 </span>
@@ -455,7 +455,7 @@ export default function Home() {
                 href="#contato"
                 className="inline-flex h-13 items-center justify-center rounded-xl border border-[#bdd3e2] bg-white px-7 text-[15px] font-bold text-[#154b7a] transition-all hover:-translate-y-0.5 hover:border-[#154b7a] hover:shadow-md"
               >
-                Solicitar uma apresentação
+                Agendar uma apresentação
               </a>
             </div>
 
@@ -609,7 +609,7 @@ export default function Home() {
                   href="#contato"
                   className="mt-auto pt-7 inline-flex items-center text-[14px] font-bold text-[#154b7a] transition-colors hover:text-[#2563eb]"
                 >
-                  Solicitar apresentação
+                  Conhecer esta solução
                   <span className="ml-2 transition-transform group-hover:translate-x-1">
                     →
                   </span>
@@ -676,9 +676,9 @@ export default function Home() {
               </h2>
 
               <p className="mt-6 text-[17px] leading-8 text-[#64748b]">
-                Uma visão rápida da proposta do BravOs: operação, informação e
-                gestão conectadas em uma experiência criada para simplificar o
-                dia a dia e apoiar decisões melhores.
+                Veja como o BravOs conecta operação, informação e gestão em uma
+                experiência pensada para reduzir retrabalho, ampliar controle e
+                apoiar decisões mais rápidas no restaurante.
               </p>
 
               <div className="mt-7 grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
@@ -766,13 +766,13 @@ export default function Home() {
               </div>
 
               <h2 className="mt-3 text-4xl font-bold tracking-[-0.04em] text-[#0b2947] sm:text-5xl">
-                Gestão administrativa com método, informação e acompanhamento.
+                Gestão administrativa com método, controle e visão para decidir melhor.
               </h2>
 
               <p className="mt-6 max-w-xl text-[17px] leading-8 text-[#64748b]">
-                A BravSystems também atua diretamente na organização
-                administrativa de empresas que precisam estruturar processos,
-                controles e rotinas de gestão.
+                Além das plataformas, a BravSystems apoia empresas que precisam
+                estruturar processos, fortalecer controles e transformar rotinas
+                administrativas em uma gestão mais previsível.
               </p>
 
               <div className="mt-8 rounded-3xl bg-[#0b2947] p-7 text-white shadow-xl shadow-[#0b2947]/10">
@@ -793,7 +793,7 @@ export default function Home() {
                   href="#contato"
                   className="mt-6 inline-flex h-11 items-center justify-center rounded-lg bg-white px-5 text-[14px] font-bold text-[#154b7a] transition-colors hover:bg-[#eaf3fb]"
                 >
-                  Falar sobre minha empresa
+                  Solicitar diagnóstico inicial
                 </a>
               </div>
             </div>
@@ -914,13 +914,13 @@ export default function Home() {
               </div>
 
               <h2 className="mt-3 text-4xl font-bold tracking-[-0.04em] text-[#0b2947] sm:text-5xl">
-                Conte o que sua empresa precisa.
+                Vamos entender o próximo passo da sua empresa.
               </h2>
 
               <p className="mt-6 max-w-xl text-[17px] leading-8 text-[#64748b]">
-                Preencha o formulário para conhecer uma solução, solicitar uma
-                apresentação, falar sobre serviços administrativos ou discutir
-                uma parceria.
+                Conte brevemente o seu cenário. A partir disso, direcionamos a
+                conversa para a plataforma, serviço ou parceria mais adequada à
+                sua necessidade.
               </p>
 
               <div className="mt-8 rounded-2xl border border-[#cbddea] bg-white/80 p-5">
