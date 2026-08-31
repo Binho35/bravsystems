@@ -167,7 +167,7 @@ export async function POST(request: Request) {
                 <p style="margin:0 0 18px;">Obrigado por entrar em contato com a BravSystems.</p>
                 <p style="margin:0 0 18px;">Recebi sua mensagem e fico muito feliz pelo seu interesse em conhecer melhor o nosso trabalho.</p>
                 <p style="margin:0 0 18px;">A BravSystems nasceu da experiência prática com gestão e da vontade de transformar problemas reais das empresas em soluções mais simples, organizadas e eficientes.</p>
-                <p style="margin:0 0 18px;">Hoje desenvolvemos soluções para diferentes áreas da gestão, com BravOs, BravHas e BravHos, além dos nossos serviços de gestão.</p>
+                <p style="margin:0 0 18px;">Hoje desenvolvemos soluções para diferentes áreas da gestão, com BravOs, BravHos, BravHas, BravMsg e BravAcademy, além dos nossos serviços de gestão.</p>
                 <p style="margin:0 0 18px;">Vou analisar as informações que você compartilhou para entendermos como a BravSystems pode contribuir com a sua empresa.</p>
                 <p style="margin:0 0 26px;">Em breve continuamos essa conversa.</p>
                 <p style="margin:0 0 24px;">Um abraço,</p>
@@ -189,7 +189,7 @@ export async function POST(request: Request) {
           "",
           "A BravSystems nasceu da experiência prática com gestão e da vontade de transformar problemas reais das empresas em soluções mais simples, organizadas e eficientes.",
           "",
-          "Hoje desenvolvemos soluções para diferentes áreas da gestão, com BravOs, BravHas e BravHos, além dos nossos serviços de gestão.",
+          "Hoje desenvolvemos soluções para diferentes áreas da gestão, com BravOs, BravHos, BravHas, BravMsg e BravAcademy, além dos nossos serviços de gestão.",
           "",
           "Vou analisar as informações que você compartilhou para entendermos como a BravSystems pode contribuir com a sua empresa.",
           "",
