@@ -43,6 +43,32 @@ const products = [
       "Rotinas de RH e Departamento Pessoal",
     ],
   },
+  {
+    name: "BravMsg",
+    category: "Comunicação e relacionamento por WhatsApp",
+    headline: "Organize campanhas, atendimento e relacionamento em um só ambiente.",
+    description:
+      "O BravMsg centraliza campanhas, Inbox de atendimento, contatos e consentimentos, CRM e analytics para apoiar uma comunicação mais organizada e rastreável.",
+    features: [
+      "Campanhas e Inbox",
+      "Contatos e consentimentos",
+      "CRM e relacionamento",
+      "Analytics de comunicação",
+    ],
+  },
+  {
+    name: "BravAcademy",
+    category: "Universidade Corporativa White Label",
+    headline: "Estruture capacitação e conhecimento em uma universidade corporativa própria.",
+    description:
+      "A BravAcademy oferece uma experiência white label para organizar cursos, trilhas, avaliações, progresso e certificações de acordo com a identidade da empresa.",
+    features: [
+      "Cursos e trilhas",
+      "Avaliações e progresso",
+      "Certificados",
+      "Experiência white label",
+    ],
+  },
 ];
 
 const administrativeServices = [
@@ -265,6 +291,8 @@ function LeadForm() {
           <option value="BravOs">BravOs — Operação para restaurantes</option>
           <option value="BravHas">BravHas — Gestão administrativa e financeira</option>
           <option value="BravHos">BravHos — Recursos Humanos e DP</option>
+          <option value="BravMsg">BravMsg — Comunicação e relacionamento</option>
+          <option value="BravAcademy">BravAcademy — Universidade Corporativa White Label</option>
           <option value="Serviços administrativos">Serviços administrativos</option>
           <option value="Parceria">Parceria comercial</option>
           <option value="Outro">Outro assunto</option>
@@ -552,12 +580,12 @@ export default function Home() {
                 Soluções BravSystems
               </div>
               <h2 className="mt-3 max-w-[760px] text-4xl font-bold tracking-[-0.04em] text-[#0b2947] sm:text-5xl">
-                Três plataformas. Três frentes claras de gestão.
+                Cinco plataformas. Cinco frentes claras para organizar e desenvolver a gestão.
               </h2>
             </div>
 
             <p className="max-w-xl text-[17px] leading-8 text-[#64748b]">
-              BravOs organiza a operação, BravHas estrutura a administração e o financeiro, e BravHos centraliza Recursos Humanos e Departamento Pessoal.
+              BravOs organiza a operação, BravHas estrutura a administração e o financeiro, BravHos centraliza RH e DP, BravMsg apoia comunicação e relacionamento, e BravAcademy estrutura capacitação e conhecimento corporativo.
             </p>
           </div>
 
@@ -675,8 +703,7 @@ export default function Home() {
             </h2>
 
             <p className="mt-6 text-[17px] leading-8 text-[#64748b]">
-              Conheça como BravOs, BravHas e BravHos transformam diferentes áreas
-              da gestão em experiências mais organizadas, integradas e eficientes.
+              Conheça algumas das soluções BravSystems e veja como diferentes áreas da gestão podem se tornar mais organizadas, integradas e eficientes.
             </p>
           </div>
 
