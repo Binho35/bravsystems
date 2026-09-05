@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { products } from "@/lib/products";
 
@@ -10,12 +10,6 @@ export function LeadForm({ defaultInterest = "" }: LeadFormProps) {
   const [interest, setInterest] = useState(defaultInterest);
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    if (defaultInterest) return;
-    const selected = new URLSearchParams(window.location.search).get("interest");
-    if (selected) setInterest(selected);
-  }, [defaultInterest]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
