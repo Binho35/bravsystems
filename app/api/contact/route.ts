@@ -11,7 +11,15 @@ type ContactPayload = {
   consent?: boolean;
 };
 
+type RateLimitEntry = {
+  count: number;
+  resetAt: number;
+};
+
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const RATE_LIMIT_MAX_REQUESTS = 5;
+const rateLimitStore = new Map<string, RateLimitEntry>();
 
 function escapeHtml(value: string) {
   return value
@@ -20,6 +28,34 @@ function escapeHtml(value: string) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function getClientKey(request: Request) {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  const ip = forwardedFor?.split(",")[0]?.trim();
+  return ip || request.headers.get("x-real-ip") || "unknown";
+}
+
+function isRateLimited(request: Request) {
+  const now = Date.now();
+  const key = getClientKey(request);
+  const current = rateLimitStore.get(key);
+
+  if (!current || current.resetAt <= now) {
+    rateLimitStore.set(key, {
+      count: 1,
+      resetAt: now + RATE_LIMIT_WINDOW_MS,
+    });
+    return false;
+  }
+
+  if (current.count >= RATE_LIMIT_MAX_REQUESTS) {
+    return true;
+  }
+
+  current.count += 1;
+  rateLimitStore.set(key, current);
+  return false;
 }
 
 export async function POST(request: Request) {
@@ -38,6 +74,21 @@ export async function POST(request: Request) {
     // Honeypot anti-spam: bots costumam preencher este campo invisível.
     if (website) {
       return NextResponse.json({ message: "Contato recebido." }, { status: 200 });
+    }
+
+    // Limite defensivo simples por instância. Em ambiente serverless, não é um
+    // limite distribuído global e deve ser tratado como camada adicional ao honeypot.
+    if (isRateLimited(request)) {
+      return NextResponse.json(
+        {
+          message:
+            "Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.",
+        },
+        {
+          status: 429,
+          headers: { "Retry-After": "600" },
+        },
+      );
     }
 
     if (!name || !email || !interest || !consent) {
@@ -133,8 +184,7 @@ export async function POST(request: Request) {
     });
 
     if (!resendResponse.ok) {
-      const errorBody = await resendResponse.text();
-      console.error("Erro Resend:", errorBody);
+      console.error("Falha ao enviar lead comercial via Resend.");
 
       return NextResponse.json(
         {
@@ -205,8 +255,7 @@ export async function POST(request: Request) {
     });
 
     if (!welcomeResponse.ok) {
-      const welcomeErrorBody = await welcomeResponse.text();
-      console.error("Erro Resend no e-mail de boas-vindas:", welcomeErrorBody);
+      console.error("Falha ao enviar confirmação de boas-vindas via Resend.");
     }
 
     return NextResponse.json(
@@ -217,7 +266,10 @@ export async function POST(request: Request) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("Erro no formulário de contato:", error);
+    console.error(
+      "Erro no processamento do formulário de contato.",
+      error instanceof Error ? error.name : "UnknownError",
+    );
 
     return NextResponse.json(
       {
