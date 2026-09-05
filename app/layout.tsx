@@ -12,6 +12,28 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://bravsystems.com.br/#organization",
+      name: "BravSystems",
+      url: "https://bravsystems.com.br",
+      logo: "https://bravsystems.com.br/bravsystems-logo.png",
+      email: "contato@bravsystems.com.br",
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://bravsystems.com.br/#website",
+      url: "https://bravsystems.com.br",
+      name: "BravSystems",
+      publisher: { "@id": "https://bravsystems.com.br/#organization" },
+      inLanguage: "pt-BR",
+    },
+  ],
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://bravsystems.com.br"),
 
@@ -93,7 +115,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+        {children}
+      </body>
     </html>
   );
 }
