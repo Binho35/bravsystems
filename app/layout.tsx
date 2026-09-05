@@ -16,25 +16,28 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://bravsystems.com.br"),
 
   title: {
-    default: "BravSystems | Tecnologia e Gestão para Empresas",
+    default: "BravSystems | SaaS e Tecnologia para Gestão Empresarial",
     template: "%s | BravSystems",
   },
 
   description:
-    "A BravSystems conecta tecnologia e gestão para organizar processos, centralizar informações e construir operações mais eficientes, seguras e preparadas para crescer.",
+    "A BravSystems desenvolve produtos SaaS e soluções tecnológicas para operação, gestão administrativa e financeira, RH e DP, comunicação e universidade corporativa.",
 
   keywords: [
     "BravSystems",
     "BravOs",
     "BravHas",
-    "BravCrm",
+    "BravHos",
+    "BravMsg",
+    "BravAcademy",
+    "software SaaS",
     "software de gestão",
-    "sistema de gestão empresarial",
     "gestão empresarial",
-    "gestão operacional",
-    "gestão administrativa",
-    "tecnologia para empresas",
-    "automação de processos",
+    "gestão para restaurantes",
+    "gestão administrativa e financeira",
+    "RH e departamento pessoal",
+    "comunicação empresarial",
+    "universidade corporativa white label",
   ],
 
   authors: [{ name: "BravSystems" }],
@@ -50,9 +53,9 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     url: "https://bravsystems.com.br",
     siteName: "BravSystems",
-    title: "BravSystems | Tecnologia e Gestão para Empresas",
+    title: "BravSystems | SaaS e Tecnologia para Gestão Empresarial",
     description:
-      "Tecnologia e gestão para organizar processos, centralizar informações e preparar empresas para crescer.",
+      "Produtos SaaS e soluções tecnológicas para organizar operação, administração, pessoas, comunicação e capacitação corporativa.",
     images: [
       {
         url: "/bravsystems-logo.png",
@@ -65,9 +68,9 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "BravSystems | Tecnologia e Gestão para Empresas",
+    title: "BravSystems | SaaS e Tecnologia para Gestão Empresarial",
     description:
-      "Tecnologia e gestão para organizar processos, centralizar informações e preparar empresas para crescer.",
+      "Produtos SaaS e soluções tecnológicas para organizar operação, administração, pessoas, comunicação e capacitação corporativa.",
     images: ["/bravsystems-logo.png"],
   },
 
@@ -77,6 +80,9 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
     },
   },
 };
