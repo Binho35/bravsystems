@@ -64,7 +64,7 @@ export default function Home() {
               </a>
             </div>
 
-            <div className="mt-9 grid gap-3 border-t border-[#cfdfE9] pt-6 text-sm font-semibold text-[#5f7689] sm:grid-cols-3">
+            <div className="mt-9 grid gap-3 border-t border-[#cfdfe9] pt-6 text-sm font-semibold text-[#5f7689] sm:grid-cols-3">
               <span>Operação conectada</span>
               <span>Visão centralizada</span>
               <span>Evolução orientada por uso real</span>
@@ -239,14 +239,14 @@ function Header({ platformHref }: { platformHref: string }) {
         </nav>
         <div className="ml-auto hidden items-center gap-2 sm:flex xl:ml-6">
           <a href={platformHref} className="rounded-full border border-[#c3d7e4] bg-white px-5 py-3 text-sm font-bold text-[#315b7a]">Entrar na plataforma</a>
-          <a href="/#bravos" className="rounded-full bg-[#0f4d78] px-5 py-3 text-sm font-extrabold text-white">Conhecer o BravOS</a>
+          <Link href="/#bravos" className="rounded-full bg-[#0f4d78] px-5 py-3 text-sm font-extrabold text-white">Conhecer o BravOS</Link>
         </div>
         <details className="relative ml-auto sm:hidden">
           <summary className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-xl border border-[#d6e2eb] bg-white text-xl font-bold text-[#154b7a] [&::-webkit-details-marker]:hidden" aria-label="Abrir menu">☰</summary>
           <nav className="absolute right-0 top-14 w-72 rounded-2xl border border-[#dce6ed] bg-white p-2 shadow-2xl" aria-label="Navegação mobile">
             {navigation.map(([label, href]) => <Link key={href} href={href} className="block rounded-xl px-4 py-3 text-sm font-semibold text-[#334155] hover:bg-[#eef5fa]">{label}</Link>)}
             <a href={platformHref} className="mt-1 block rounded-xl border border-[#cadae5] px-4 py-3 text-center text-sm font-bold text-[#315b7a]">Entrar na plataforma</a>
-            <a href="/#bravos" className="mt-2 block rounded-xl bg-[#0f4d78] px-4 py-3 text-center text-sm font-extrabold text-white">Conhecer o BravOS</a>
+            <Link href="/#bravos" className="mt-2 block rounded-xl bg-[#0f4d78] px-4 py-3 text-center text-sm font-extrabold text-white">Conhecer o BravOS</Link>
           </nav>
         </details>
       </div>
@@ -268,7 +268,7 @@ function Footer({ platformHref }: { platformHref: string }) {
         </div>
         <div>
           <div className="text-xs font-extrabold uppercase tracking-[.16em] text-[#75afd3]">Suporte e contato</div>
-          <div className="mt-4 grid gap-3 text-sm"><a href="mailto:contato@bravsystems.com.br">contato@bravsystems.com.br</a><a href="/#demonstracao">Agendar demonstração</a><a href={platformHref}>Entrar na plataforma</a></div>
+          <div className="mt-4 grid gap-3 text-sm"><a href="mailto:contato@bravsystems.com.br">contato@bravsystems.com.br</a><Link href="/#demonstracao">Agendar demonstração</Link><a href={platformHref}>Entrar na plataforma</a></div>
         </div>
         <div>
           <div className="text-xs font-extrabold uppercase tracking-[.16em] text-[#75afd3]">Institucional</div>
