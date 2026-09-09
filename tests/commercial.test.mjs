@@ -11,12 +11,49 @@ test("homepage não expõe placeholders técnicos antigos", async () => {
   assert.equal(page.includes("Operação offline-first"), false);
 });
 
+test("portal comercial prioriza BravOS e mantém CTAs obrigatórios", async () => {
+  const page = await read("app/page.tsx");
+  for (const text of ["Conhecer o BravOS", "Entrar na plataforma", "Agendar demonstração", "Demonstração do BravOS"]) {
+    assert.ok(page.includes(text), `${text} ausente`);
+  }
+  assert.ok(page.includes("NEXT_PUBLIC_BRAVOS_APP_URL"), "contrato de acesso à plataforma ausente");
+  assert.ok(page.includes('defaultInterest="BravOS"'), "formulário da homepage não está contextualizado para BravOS");
+});
+
+test("homepage demonstra jornada operacional e prova real sem métricas inventadas", async () => {
+  const page = await read("app/page.tsx");
+  for (const stage of ["Pedido", "Cozinha", "Caixa", "Estoque", "Gestão"]) {
+    assert.ok(page.includes(stage), `${stage} ausente da jornada`);
+  }
+  assert.ok(page.includes("¡Bravazzo! 335"), "operação-piloto não identificada");
+  assert.ok(page.includes("bravsystems-video-institucional.mp4"), "prova visual real do BravOS ausente");
+});
+
+test("ecossistema comercial destaca BravOS BravAcademy e BravMsg sem roadmap fictício", async () => {
+  const page = await read("app/page.tsx");
+  for (const slug of ["bravos", "bravacademy", "bravmsg"]) {
+    assert.ok(page.includes(`\"${slug}\"`), `${slug} ausente da seleção principal do ecossistema`);
+  }
+  assert.equal(page.includes("BravCRM"), false);
+  assert.equal(page.includes("BravInsights"), false);
+});
+
 test("portfólio contém os seis produtos oficiais", async () => {
   const products = await read("lib/products.ts");
   for (const name of ["BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo"]) {
     assert.ok(products.includes(`name: \"${name}\"`), `${name} ausente`);
   }
   assert.ok(products.includes('status: "Em homologação"'));
+});
+
+test("claims de BravHAS BravHOS e BravMsg seguem governança comercial atual", async () => {
+  const products = await read("lib/products.ts");
+  assert.ok(products.includes("Head Administrative System"));
+  assert.ok(products.includes("financeiro, pessoas, RH, DP"));
+  assert.equal(products.includes("RH e DP, que pertencem ao BravHOS"), false);
+  assert.ok(products.includes("vertical especializada da BravSystems"));
+  assert.ok(products.includes("Leads e relacionamento"));
+  assert.equal(products.includes('["Contatos", "Campanhas", "Inbox", "Consentimentos", "Opt-out e suppression", "CRM"'), false);
 });
 
 test("formulário possui política, honeypot e produto contextual", async () => {
