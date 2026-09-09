@@ -1,0 +1,34 @@
+name: Dependency Refresh
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Refresh Next patch and lockfile
+        run: npm install next@16.3.3 eslint-config-next@16.3.3 --save-exact --package-lock-only
+      - name: Audit refreshed dependency graph
+        run: npm audit --json > npm-audit.json || true
+      - name: Upload refreshed dependency files
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-refresh
+          path: |
+            package.json
+            package-lock.json
+            npm-audit.json
