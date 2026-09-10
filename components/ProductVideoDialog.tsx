@@ -31,6 +31,7 @@ export function ProductVideoDialog({ video }: { video: ProductVideo }) {
 
       <dialog
         ref={dialogRef}
+        aria-modal="true"
         aria-labelledby={`video-title-${video.slug}`}
         aria-describedby={`video-description-${video.slug}`}
         onCancel={(event) => {
@@ -62,7 +63,7 @@ export function ProductVideoDialog({ video }: { video: ProductVideo }) {
                 <div className="flex h-full flex-col items-center justify-center">
                   <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#8dc4e5]">{video.productName}</div>
                   <div className="mt-4 text-3xl font-bold">Apresentação em vídeo</div>
-                  <p className="mt-5 text-sm leading-6 text-[#c3d7e4]">A interface está preparada, mas o arquivo de mídia ainda não está materialmente disponível nesta branch de preview.</p>
+                  <p className="mt-5 text-sm leading-6 text-[#c3d7e4]">Esta apresentação ainda não foi disponibilizada neste ambiente.</p>
                 </div>
               </div>
             )}
