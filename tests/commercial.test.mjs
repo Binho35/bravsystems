@@ -89,6 +89,37 @@ test("API aplica validação e anti-abuso", async () => {
   assert.ok(route.includes("escapeHtml"));
 });
 
+test("vídeos de produto seguem o mapeamento aprovado e excluem BravMsg", async () => {
+  const videos = await read("lib/product-videos.ts");
+  for (const filename of [
+    "16623CBB-AD78-4480-B09E-EE8E53335411.mp4",
+    "0CFE05FE-68C5-4278-B49A-594BCA0AFB55(1).mp4",
+    "E8FD96E0-0A8D-41C4-8E0C-C77C43EC212F.mp4",
+    "5A6BC2BF-0A0B-4AFC-B8C9-77BB2AC84FBD.mp4",
+  ]) {
+    assert.ok(videos.includes(filename), `${filename} ausente do mapeamento`);
+  }
+  assert.equal(videos.includes("4AF9A997-3C6F-4747-BA29-FD244CCA2D9B.mp4"), false);
+  assert.equal(videos.includes('slug: "bravmsg"'), false);
+  assert.ok(videos.includes("width: 512"));
+  assert.ok(videos.includes("height: 910"));
+});
+
+test("player de produto é modal, sob demanda, 9:16 e sem autoplay", async () => {
+  const player = await read("components/ProductVideoDialog.tsx");
+  const productPage = await read("app/[slug]/page.tsx");
+  assert.ok(player.includes("Assistir apresentação"));
+  assert.ok(player.includes("aria-haspopup=\"dialog\""));
+  assert.ok(player.includes("<dialog"));
+  assert.ok(player.includes("controls"));
+  assert.ok(player.includes("playsInline"));
+  assert.ok(player.includes('preload="none"'));
+  assert.ok(player.includes("aspect-[512/910]"));
+  assert.equal(player.includes("autoPlay"), false);
+  assert.ok(player.includes("onCancel"));
+  assert.ok(productPage.includes("ProductVideoDialog"));
+});
+
 test("sitemap publica produtos e política canônica", async () => {
   const sitemap = await read("app/sitemap.ts");
   assert.ok(sitemap.includes("products.map"));
