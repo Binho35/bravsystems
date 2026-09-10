@@ -50,7 +50,7 @@ test("BravAcademy usa posicionamento público aprovado sem claims proibidos", as
   assert.ok(academy.includes('cta: "Conhecer BravAcademy"'));
   assert.ok(academy.includes('status: "Em evolução"'));
 
-  for (const forbidden of ["Disponível", "Production Ready", "experiência mobile completa", "SSO", "integração automática", "DRM"]) {
+  for (const forbidden of ["Disponível", "Production Ready", "experiência mobile completa", "SSO", "integração automática", "DRM", "produção pronta", "pronto para produção"]) {
     assert.equal(academy.includes(forbidden), false, `claim proibido no BravAcademy: ${forbidden}`);
   }
   assert.equal(academy.includes('"IA"'), false, "IA não pode ser apresentada como claim público do BravAcademy");
