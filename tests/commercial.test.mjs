@@ -38,6 +38,23 @@ test("ecossistema comercial destaca BravOS BravAcademy e BravMsg sem roadmap fic
   assert.equal(page.includes("BravInsights"), false);
 });
 
+test("BravAcademy usa posicionamento público aprovado sem claims proibidos", async () => {
+  const products = await read("lib/products.ts");
+  const start = products.indexOf('slug: "bravacademy"');
+  const end = products.indexOf('slug: "bravvideo"', start);
+  assert.ok(start >= 0 && end > start, "bloco BravAcademy não localizado");
+  const academy = products.slice(start, end);
+
+  assert.ok(academy.includes('category: "Universidade Corporativa White Label"'));
+  assert.ok(academy.includes('description: "Capacitação, trilhas de aprendizagem, avaliações, progresso e certificação em um ambiente personalizado para sua empresa."'));
+  assert.ok(academy.includes('cta: "Conhecer BravAcademy"'));
+  assert.ok(academy.includes('status: "Em evolução"'));
+
+  for (const forbidden of ["Disponível", "Production Ready", "experiência mobile completa", "SSO", "IA", "integração automática", "DRM"]) {
+    assert.equal(academy.includes(forbidden), false, `claim proibido no BravAcademy: ${forbidden}`);
+  }
+});
+
 test("portfólio contém os seis produtos oficiais", async () => {
   const products = await read("lib/products.ts");
   for (const name of ["BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo"]) {
