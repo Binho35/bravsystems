@@ -20,13 +20,30 @@ test("portal comercial prioriza BravOS e mantém CTAs obrigatórios", async () =
   assert.ok(page.includes('defaultInterest="BravOS"'), "formulário da homepage não está contextualizado para BravOS");
 });
 
-test("homepage demonstra jornada operacional e prova real sem métricas inventadas", async () => {
+test("homepage demonstra jornada operacional sem mídia institucional antiga", async () => {
   const page = await read("app/page.tsx");
   for (const stage of ["Pedido", "Cozinha", "Caixa", "Estoque", "Gestão"]) {
     assert.ok(page.includes(stage), `${stage} ausente da jornada`);
   }
   assert.ok(page.includes("¡Bravazzo! 335"), "operação-piloto não identificada");
-  assert.ok(page.includes("bravsystems-video-institucional.mp4"), "prova visual real do BravOS ausente");
+  assert.equal(page.includes("bravsystems-video-institucional.mp4"), false, "vídeo institucional antigo não pode permanecer na homepage");
+  assert.equal(page.includes('preload="metadata"'), false, "homepage não deve pré-carregar mídia antiga");
+});
+
+test("homepage descobre somente os três vídeos ativos com poster real e player sob demanda", async () => {
+  const page = await read("app/page.tsx");
+  for (const slug of ["bravos", "bravhas", "bravvideo"]) {
+    assert.ok(page.includes(`data-homepage-video={product.slug}`), "cards de vídeo da homepage ausentes");
+    assert.ok(page.includes(`\"${slug}\"`), `${slug} ausente da seleção de vídeos da homepage`);
+  }
+  assert.ok(page.includes('const homepageVideoSlugs = new Set(["bravos", "bravhas", "bravvideo"])'));
+  assert.ok(page.includes("getProductVideo(product.slug)"));
+  assert.ok(page.includes("video?.assetPresent"));
+  assert.ok(page.includes("<ProductVideoDialog video={video} />"));
+  assert.ok(page.includes("video.poster"));
+  assert.equal(page.includes('const homepageVideoSlugs = new Set(["bravos", "bravhas", "bravvideo", "bravacademy"'), false);
+  assert.equal(page.includes('const homepageVideoSlugs = new Set(["bravos", "bravhas", "bravvideo", "bravmsg"'), false);
+  assert.equal(page.includes('const homepageVideoSlugs = new Set(["bravos", "bravhas", "bravvideo", "bravhos"'), false);
 });
 
 test("ecossistema comercial destaca BravOS BravAcademy e BravMsg sem roadmap fictício", async () => {
@@ -133,6 +150,7 @@ test("ativação parcial libera BravOS BravHAS e BravVideo e mantém BravAcademy
 test("player de produto é modal, sob demanda, 9:16 e sem autoplay", async () => {
   const player = await read("components/ProductVideoDialog.tsx");
   const productPage = await read("app/[slug]/page.tsx");
+  const homePage = await read("app/page.tsx");
   assert.ok(player.includes("Assistir apresentação"));
   assert.ok(player.includes("aria-haspopup=\"dialog\""));
   assert.ok(player.includes("<dialog"));
@@ -143,6 +161,7 @@ test("player de produto é modal, sob demanda, 9:16 e sem autoplay", async () =>
   assert.equal(player.includes("autoPlay"), false);
   assert.ok(player.includes("onCancel"));
   assert.ok(productPage.includes("ProductVideoDialog"));
+  assert.ok(homePage.includes("ProductVideoDialog"));
 });
 
 test("sitemap publica produtos e política canônica", async () => {
