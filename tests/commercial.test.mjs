@@ -53,7 +53,7 @@ test("BravAcademy usa posicionamento público aprovado sem claims proibidos", as
   for (const forbidden of ["Disponível", "Production Ready", "experiência mobile completa", "SSO", "integração automática", "DRM"]) {
     assert.equal(academy.includes(forbidden), false, `claim proibido no BravAcademy: ${forbidden}`);
   }
-  assert.equal(academy.includes('capabilities: ["IA"'), false, "IA não pode ser apresentada como capacidade pública do BravAcademy");
+  assert.equal(academy.includes('"IA"'), false, "IA não pode ser apresentada como claim público do BravAcademy");
 });
 
 test("portfólio contém os seis produtos oficiais", async () => {
