@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">BravOS — visual demonstrativo do produto</title>
+  <desc id="desc">Mockup visual do BravOS com módulos de pedidos, cozinha, caixa, estoque e gestão.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8fcff"/>
+      <stop offset="1" stop-color="#dceef9"/>
+    </linearGradient>
+    <linearGradient id="nav" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c3658"/>
+      <stop offset="1" stop-color="#124f7a"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#0b2947" flood-opacity="0.18"/>
+    </filter>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="32"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="760" rx="34" fill="url(#bg)"/>
+  <circle cx="1025" cy="95" r="220" fill="#bfe3f6" opacity="0.55" filter="url(#soft)"/>
+  <circle cx="160" cy="660" r="210" fill="#d7edf8" opacity="0.8" filter="url(#soft)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="74" y="54" width="1052" height="650" rx="30" fill="#fff" stroke="#b8d1e2" stroke-width="2"/>
+    <path d="M104 54h992a30 30 0 0 1 30 30v42H74V84a30 30 0 0 1 30-30Z" fill="url(#nav)"/>
+    <circle cx="108" cy="90" r="7" fill="#ff6b6b"/>
+    <circle cx="132" cy="90" r="7" fill="#ffd166"/>
+    <circle cx="156" cy="90" r="7" fill="#55d17c"/>
+    <text x="198" y="97" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#e8f4fb">BravOS</text>
+    <text x="1040" y="96" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#9fd0ec" letter-spacing="1.4">VISUAL DEMONSTRATIVO</text>
+
+    <rect x="74" y="126" width="194" height="578" fill="#f5f9fc"/>
+    <text x="104" y="168" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="800" fill="#0b2947">BravOS</text>
+
+    <g font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#36566f">
+      <rect x="94" y="193" width="154" height="42" rx="12" fill="#dceef9"/>
+      <text x="126" y="219" font-weight="700" fill="#0f4d78">Início</text>
+      <text x="126" y="267">Pedidos</text>
+      <text x="126" y="313">Cozinha</text>
+      <text x="126" y="359">Caixa</text>
+      <text x="126" y="405">Estoque</text>
+      <text x="126" y="451">Gestão</text>
+      <text x="126" y="497">Operação</text>
+      <line x1="98" y1="525" x2="242" y2="525" stroke="#d6e4ed"/>
+      <text x="126" y="563">Relatórios</text>
+      <text x="126" y="609">Configurações</text>
+    </g>
+    <g fill="none" stroke="#1a6699" stroke-width="2">
+      <circle cx="108" cy="213" r="7"/><rect x="102" y="252" width="12" height="12" rx="2"/><path d="M102 301h12v12h-12zM101 347h14v12h-14zM102 394h12v12h-12zM102 440h12v12h-12zM102 486h12v12h-12z"/>
+    </g>
+
+    <rect x="294" y="149" width="480" height="38" rx="12" fill="#f4f8fb" stroke="#d6e4ed"/>
+    <text x="322" y="174" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#7a91a4">Buscar pedidos, produtos, relatórios...</text>
+    <circle cx="1062" cy="167" r="20" fill="#0f4d78"/>
+    <text x="1062" y="172" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="800" fill="#fff">BS</text>
+
+    <text x="294" y="226" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="800" fill="#0b2947">Bom dia, time!</text>
+    <text x="294" y="251" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#60758a">Uma visão central da operação do restaurante.</text>
+
+    <g font-family="Arial, Helvetica, sans-serif">
+      <g><rect x="294" y="276" width="190" height="92" rx="18" fill="#fff" stroke="#dce8ef"/><circle cx="326" cy="309" r="17" fill="#e7f2f9"/><text x="354" y="306" font-size="12" fill="#6b8192">Pedidos</text><text x="354" y="338" font-size="23" font-weight="800" fill="#0b2947">Em andamento</text></g>
+      <g><rect x="500" y="276" width="190" height="92" rx="18" fill="#fff" stroke="#dce8ef"/><circle cx="532" cy="309" r="17" fill="#eaf7ef"/><text x="560" y="306" font-size="12" fill="#6b8192">Caixa</text><text x="560" y="338" font-size="23" font-weight="800" fill="#0b2947">Visão do dia</text></g>
+      <g><rect x="706" y="276" width="190" height="92" rx="18" fill="#fff" stroke="#dce8ef"/><circle cx="738" cy="309" r="17" fill="#edf2ff"/><text x="766" y="306" font-size="12" fill="#6b8192">Clientes</text><text x="766" y="338" font-size="23" font-weight="800" fill="#0b2947">Atendimento</text></g>
+      <g><rect x="912" y="276" width="190" height="92" rx="18" fill="#fff" stroke="#dce8ef"/><circle cx="944" cy="309" r="17" fill="#e7f2f9"/><text x="972" y="306" font-size="12" fill="#6b8192">Tempo</text><text x="972" y="338" font-size="23" font-weight="800" fill="#0b2947">Operação</text></g>
+    </g>
+
+    <rect x="294" y="390" width="382" height="183" rx="20" fill="#fff" stroke="#dce8ef"/>
+    <text x="320" y="425" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="800" fill="#0b2947">Pedidos em andamento</text>
+    <text x="642" y="425" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#2563eb">Ver todos →</text>
+    <g font-family="Arial, Helvetica, sans-serif" font-size="12">
+      <line x1="320" y1="448" x2="650" y2="448" stroke="#edf2f5"/><text x="320" y="470" font-weight="700" fill="#264861">Pedido #1042</text><rect x="540" y="455" width="82" height="24" rx="8" fill="#dff1ff"/><text x="581" y="471" text-anchor="middle" fill="#1773a8">Em preparo</text>
+      <line x1="320" y1="489" x2="650" y2="489" stroke="#edf2f5"/><text x="320" y="512" font-weight="700" fill="#264861">Pedido #1041</text><rect x="540" y="497" width="82" height="24" rx="8" fill="#fff0d6"/><text x="581" y="513" text-anchor="middle" fill="#b96a00">Recebido</text>
+      <line x1="320" y1="530" x2="650" y2="530" stroke="#edf2f5"/><text x="320" y="553" font-weight="700" fill="#264861">Pedido #1040</text><rect x="540" y="538" width="82" height="24" rx="8" fill="#e5f7eb"/><text x="581" y="554" text-anchor="middle" fill="#25804b">Pronto</text>
+    </g>
+
+    <rect x="694" y="390" width="408" height="183" rx="20" fill="#fff" stroke="#dce8ef"/>
+    <text x="720" y="425" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="800" fill="#0b2947">Cozinha</text>
+    <text x="1072" y="425" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#2563eb">Ver painel →</text>
+    <g font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#34536b">
+      <rect x="720" y="446" width="98" height="28" rx="10" fill="#dceef9"/><text x="769" y="464" text-anchor="middle" font-weight="700" fill="#0f4d78">Em preparo</text>
+      <rect x="827" y="446" width="82" height="28" rx="10" fill="#f5f8fa"/><text x="868" y="464" text-anchor="middle">Prontos</text>
+      <rect x="918" y="446" width="94" height="28" rx="10" fill="#f5f8fa"/><text x="965" y="464" text-anchor="middle">Atrasados</text>
+      <line x1="720" y1="491" x2="1072" y2="491" stroke="#edf2f5"/><text x="720" y="514" font-weight="700">#1042</text><text x="788" y="514">1× Item em preparo</text><rect x="1011" y="499" width="60" height="22" rx="8" fill="#e5f7eb"/><text x="1041" y="514" text-anchor="middle" fill="#25804b">2 min</text>
+      <line x1="720" y1="532" x2="1072" y2="532" stroke="#edf2f5"/><text x="720" y="555" font-weight="700">#1041</text><text x="788" y="555">2× Item em preparo</text><rect x="1011" y="540" width="60" height="22" rx="8" fill="#fff0d6"/><text x="1041" y="555" text-anchor="middle" fill="#b96a00">4 min</text>
+    </g>
+
+    <g font-family="Arial, Helvetica, sans-serif">
+      <rect x="294" y="593" width="246" height="86" rx="18" fill="#fff" stroke="#dce8ef"/><text x="320" y="625" font-size="15" font-weight="800" fill="#0b2947">Caixa</text><text x="320" y="651" font-size="12" fill="#64798b">Pagamentos e fechamento</text><rect x="320" y="661" width="155" height="6" rx="3" fill="#dceef9"/>
+      <rect x="556" y="593" width="246" height="86" rx="18" fill="#fff" stroke="#dce8ef"/><text x="582" y="625" font-size="15" font-weight="800" fill="#0b2947">Estoque</text><text x="582" y="651" font-size="12" fill="#64798b">Itens e movimentações</text><rect x="582" y="661" width="155" height="6" rx="3" fill="#e5f7eb"/>
+      <rect x="818" y="593" width="284" height="86" rx="18" fill="#fff" stroke="#dce8ef"/><text x="844" y="625" font-size="15" font-weight="800" fill="#0b2947">Gestão</text><text x="844" y="651" font-size="12" fill="#64798b">Indicadores da operação</text>
+      <g fill="#6eb4df"><rect x="992" y="646" width="10" height="21" rx="3"/><rect x="1008" y="638" width="10" height="29" rx="3"/><rect x="1024" y="628" width="10" height="39" rx="3"/><rect x="1040" y="641" width="10" height="26" rx="3"/><rect x="1056" y="620" width="10" height="47" rx="3"/></g>
+    </g>
+  </g>
+</svg>
