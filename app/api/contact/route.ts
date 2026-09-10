@@ -13,10 +13,19 @@ type ContactPayload = {
 
 type RateLimitEntry = { count: number; resetAt: number };
 
+type ResendFailureCode =
+  | "RESEND_DOMAIN_NOT_VERIFIED"
+  | "RESEND_RATE_LIMITED"
+  | "RESEND_AUTH_REJECTED"
+  | "RESEND_SENDER_REJECTED"
+  | "RESEND_PROVIDER_UNAVAILABLE"
+  | "RESEND_PROVIDER_REJECTED";
+
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
 const MAX_PAYLOAD_BYTES = 16_384;
+const EMAIL_DELIVERY_FAILURE_MESSAGE = "Não foi possível enviar sua solicitação agora. Tente novamente em alguns instantes.";
 const rateLimitStore = new Map<string, RateLimitEntry>();
 const allowedInterests = new Set([
   "BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo",
@@ -45,6 +54,31 @@ function isRateLimited(request: Request) {
   current.count += 1;
   rateLimitStore.set(key, current);
   return false;
+}
+
+function classifyResendFailure(status: number, providerBody: string): ResendFailureCode {
+  let providerMessage = "";
+  try {
+    const parsed = JSON.parse(providerBody) as { message?: unknown };
+    providerMessage = typeof parsed.message === "string" ? parsed.message.toLowerCase() : "";
+  } catch {
+    providerMessage = "";
+  }
+
+  if (status === 403 && providerMessage.includes("domain") && providerMessage.includes("not verified")) {
+    return "RESEND_DOMAIN_NOT_VERIFIED";
+  }
+  if (status === 429) return "RESEND_RATE_LIMITED";
+  if (status === 401) return "RESEND_AUTH_REJECTED";
+  if (status === 403) return "RESEND_SENDER_REJECTED";
+  if (status >= 500) return "RESEND_PROVIDER_UNAVAILABLE";
+  return "RESEND_PROVIDER_REJECTED";
+}
+
+async function logResendFailure(response: Response, scope: "lead" | "welcome") {
+  const providerBody = await response.text();
+  const code = classifyResendFailure(response.status, providerBody);
+  console.error(`contact_email_provider_failure provider=resend scope=${scope} status=${response.status} code=${code}`);
 }
 
 export async function POST(request: Request) {
@@ -102,8 +136,8 @@ export async function POST(request: Request) {
     const contactFromEmail = process.env.CONTACT_FROM_EMAIL || "BravSystems <site@bravsystems.com.br>";
 
     if (!resendApiKey) {
-      console.error("RESEND_API_KEY não configurada.");
-      return NextResponse.json({ message: "O formulário ainda não está conectado ao serviço de e-mail. Tente novamente mais tarde." }, { status: 503 });
+      console.error("contact_email_configuration_error provider=resend code=RESEND_API_KEY_MISSING");
+      return NextResponse.json({ message: EMAIL_DELIVERY_FAILURE_MESSAGE }, { status: 503 });
     }
 
     const safe = {
@@ -129,8 +163,8 @@ export async function POST(request: Request) {
     });
 
     if (!resendResponse.ok) {
-      console.error("Falha ao enviar lead comercial via Resend.");
-      return NextResponse.json({ message: "Não foi possível enviar sua solicitação agora. Tente novamente em alguns instantes." }, { status: 502 });
+      await logResendFailure(resendResponse, "lead");
+      return NextResponse.json({ message: EMAIL_DELIVERY_FAILURE_MESSAGE }, { status: 502 });
     }
 
     const welcomeResponse = await fetch("https://api.resend.com/emails", {
@@ -145,11 +179,11 @@ export async function POST(request: Request) {
       }),
     });
 
-    if (!welcomeResponse.ok) console.error("Falha ao enviar confirmação de boas-vindas via Resend.");
+    if (!welcomeResponse.ok) await logResendFailure(welcomeResponse, "welcome");
 
     return NextResponse.json({ message: "Recebemos seu contato. A BravSystems retornará o mais breve possível." }, { status: 200 });
   } catch (error) {
-    console.error("Erro no processamento do formulário de contato.", error instanceof Error ? error.name : "UnknownError");
-    return NextResponse.json({ message: "Não foi possível processar sua solicitação. Tente novamente." }, { status: 500 });
+    console.error(`contact_email_unhandled_failure name=${error instanceof Error ? error.name : "UnknownError"}`);
+    return NextResponse.json({ message: EMAIL_DELIVERY_FAILURE_MESSAGE }, { status: 500 });
   }
 }
