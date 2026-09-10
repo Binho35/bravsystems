@@ -35,6 +35,11 @@ jobs:
             sleep 1
           done
           curl -fsS http://127.0.0.1:9515/status > /dev/null
+      - name: Validate exact approved asset bytes
+        run: |
+          curl -fsS http://127.0.0.1:3000/bravos-hero-approved.webp -o /tmp/bravos-hero-approved.webp
+          test "$(sha256sum /tmp/bravos-hero-approved.webp | awk '{print $1}')" = "391f08cedc6c6d2b6856cb2846b19f8f037ee3a22e75a201133f6bac72dfb8d7"
+          file /tmp/bravos-hero-approved.webp
       - name: Validate approved hero in desktop and mobile
         run: |
           mkdir -p hero-approved-evidence
@@ -55,23 +60,34 @@ jobs:
               await req('POST',`/session/${id}/url`,{url:'http://127.0.0.1:3000/'});
               await new Promise(r=>setTimeout(r,1000));
               const result=await exec(id, `
+                const done = arguments[arguments.length - 1];
                 const grid=document.querySelector('[aria-label="Fluxo operacional do BravOS"]');
-                if(!grid) return {ok:false,reason:'hero target missing'};
-                const style=getComputedStyle(grid);
-                const resources=performance.getEntriesByType('resource').map(e=>e.name);
-                return {
-                  ok: style.backgroundImage.includes('bravos-hero-approved.webp'),
-                  approvedRequested: resources.some(name=>name.includes('/bravos-hero-approved.webp')),
-                  oldRequested: resources.some(name=>name.includes('/bravos-hero-dashboard.svg')),
-                  oldChildrenVisible: [...grid.children].some(el=>getComputedStyle(el).display!=='none'),
-                  overflow: document.documentElement.scrollWidth > window.innerWidth,
-                  background: style.backgroundImage,
-                  width: grid.getBoundingClientRect().width,
-                  height: grid.getBoundingClientRect().height
+                if(!grid) return done({ok:false,reason:'hero target missing'});
+                const img=new Image();
+                img.onload=()=>{
+                  const style=getComputedStyle(grid);
+                  const resources=performance.getEntriesByType('resource').map(e=>e.name);
+                  const rect=grid.getBoundingClientRect();
+                  done({
+                    ok: style.backgroundImage.includes('bravos-hero-approved.webp'),
+                    decoded: img.naturalWidth===895 && img.naturalHeight===715,
+                    naturalWidth: img.naturalWidth,
+                    naturalHeight: img.naturalHeight,
+                    approvedRequested: resources.some(name=>name.includes('/bravos-hero-approved.webp')),
+                    oldRequested: resources.some(name=>name.includes('/bravos-hero-dashboard.svg')),
+                    oldChildrenVisible: [...grid.children].some(el=>getComputedStyle(el).display!=='none'),
+                    overflow: document.documentElement.scrollWidth > window.innerWidth,
+                    background: style.backgroundImage,
+                    width: rect.width,
+                    height: rect.height
+                  });
                 };
+                img.onerror=()=>done({ok:false,decoded:false,reason:'approved asset failed to decode'});
+                img.src='/bravos-hero-approved.webp?decode-check=1';
               `);
               console.log(`viewport=${width}x${height}`, JSON.stringify(result));
-              if(!result.ok) throw new Error('approved hero asset not applied');
+              if(!result.ok) throw new Error(result.reason || 'approved hero asset not applied');
+              if(!result.decoded) throw new Error('approved hero asset did not decode at 895x715');
               if(!result.approvedRequested) throw new Error('approved hero asset not requested');
               if(result.oldRequested) throw new Error('old reinterpretation still requested');
               if(result.oldChildrenVisible) throw new Error('old blue grid children still visible');
