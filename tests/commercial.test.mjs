@@ -105,6 +105,31 @@ test("vídeos de produto seguem o mapeamento aprovado e excluem BravMsg", async 
   assert.ok(videos.includes("height: 910"));
 });
 
+test("ativação parcial libera BravOS BravHAS e BravVideo e mantém BravAcademy oculto", async () => {
+  const videos = await read("lib/product-videos.ts");
+  const productPage = await read("app/[slug]/page.tsx");
+  const block = (slug, nextSlug) => {
+    const start = videos.indexOf(`slug: \"${slug}\"`);
+    const end = nextSlug ? videos.indexOf(`slug: \"${nextSlug}\"`, start + 1) : videos.indexOf("];", start);
+    assert.ok(start >= 0 && end > start, `bloco ${slug} não localizado`);
+    return videos.slice(start, end);
+  };
+
+  const bravos = block("bravos", "bravhas");
+  const bravhas = block("bravhas", "bravacademy");
+  const academy = block("bravacademy", "bravvideo");
+  const bravvideo = block("bravvideo");
+
+  assert.ok(bravos.includes("assetPresent: true"));
+  assert.ok(bravos.includes('/product-videos/posters/bravos.svg'));
+  assert.ok(bravhas.includes("assetPresent: true"));
+  assert.ok(bravhas.includes('/product-videos/posters/bravhas.svg'));
+  assert.ok(bravvideo.includes("assetPresent: true"));
+  assert.ok(bravvideo.includes('/product-videos/posters/bravvideo.svg'));
+  assert.ok(academy.includes("assetPresent: false"));
+  assert.ok(productPage.includes("productVideo?.assetPresent && <ProductVideoDialog"));
+});
+
 test("player de produto é modal, sob demanda, 9:16 e sem autoplay", async () => {
   const player = await read("components/ProductVideoDialog.tsx");
   const productPage = await read("app/[slug]/page.tsx");
