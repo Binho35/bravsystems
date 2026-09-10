@@ -1,0 +1,301 @@
+name: Product Video Playback Check
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  playback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Start app and ChromeDriver
+        run: |
+          npm start > /tmp/bravsystems-playback.log 2>&1 &
+          echo $! > /tmp/bravsystems-playback.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:3000/bravos > /dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:3000/bravos > /dev/null
+          command -v google-chrome
+          command -v chromedriver
+          chromedriver --port=9515 > /tmp/chromedriver.log 2>&1 &
+          echo $! > /tmp/chromedriver.pid
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:9515/status > /dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:9515/status > /dev/null
+      - name: Validate real playback desktop and mobile
+        run: |
+          mkdir -p playback-evidence
+          node <<'NODE'
+          const fs = require('node:fs');
+          const webdriver = 'http://127.0.0.1:9515';
+          const expected = {
+            bravos: {
+              video: '/product-videos/16623CBB-AD78-4480-B09E-EE8E53335411.mp4',
+              poster: '/product-videos/posters/bravos.svg',
+            },
+            bravhas: {
+              video: '/product-videos/0CFE05FE-68C5-4278-B49A-594BCA0AFB55(1).mp4',
+              poster: '/product-videos/posters/bravhas.svg',
+            },
+            bravvideo: {
+              video: '/product-videos/5A6BC2BF-0A0B-4AFC-B8C9-77BB2AC84FBD.mp4',
+              poster: '/product-videos/posters/bravvideo.svg',
+            },
+          };
+
+          async function wd(method, path, body) {
+            const response = await fetch(webdriver + path, {
+              method,
+              headers: body === undefined ? undefined : { 'content-type': 'application/json' },
+              body: body === undefined ? undefined : JSON.stringify(body),
+            });
+            const text = await response.text();
+            const data = text ? JSON.parse(text) : {};
+            if (!response.ok || data.value?.error) throw new Error(`${method} ${path}: ${text}`);
+            return data.value;
+          }
+
+          async function execute(sessionId, script) {
+            return wd('POST', `/session/${sessionId}/execute/sync`, { script, args: [] });
+          }
+
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+          async function waitUntil(fn, label, timeout = 6000) {
+            const started = Date.now();
+            let value;
+            while (Date.now() - started < timeout) {
+              value = await fn();
+              if (value) return value;
+              await sleep(100);
+            }
+            throw new Error(`timeout: ${label}; last=${JSON.stringify(value)}`);
+          }
+
+          async function createSession(width, height) {
+            const session = await wd('POST', '/session', {
+              capabilities: {
+                alwaysMatch: {
+                  browserName: 'chrome',
+                  'goog:chromeOptions': {
+                    args: [
+                      '--headless=new',
+                      '--no-sandbox',
+                      '--disable-dev-shm-usage',
+                      '--autoplay-policy=no-user-gesture-required',
+                      `--window-size=${width},${height}`,
+                    ],
+                  },
+                },
+              },
+            });
+            return session.sessionId;
+          }
+
+          async function validateProduct(slug, width, height) {
+            const sessionId = await createSession(width, height);
+            const config = expected[slug];
+            try {
+              await wd('POST', `/session/${sessionId}/url`, { url: `http://127.0.0.1:3000/${slug}` });
+              await sleep(700);
+
+              const initial = await execute(sessionId, `
+                const resources = performance.getEntriesByType('resource').map((r) => r.name);
+                return {
+                  width: window.innerWidth,
+                  overflow: document.documentElement.scrollWidth > window.innerWidth,
+                  mp4Requests: resources.filter((url) => url.includes('/product-videos/') && url.includes('.mp4')),
+                  videoCount: document.querySelectorAll('video').length,
+                  triggerCount: [...document.querySelectorAll('button')].filter((el) => el.textContent?.includes('Assistir apresentação')).length,
+                };
+              `);
+              if (initial.overflow) throw new Error(`${slug} overflow before open at ${width}`);
+              if (initial.mp4Requests.length !== 0) throw new Error(`${slug} downloaded mp4 before click: ${initial.mp4Requests}`);
+              if (initial.videoCount !== 0) throw new Error(`${slug} mounted video before click`);
+              if (initial.triggerCount !== 1) throw new Error(`${slug} expected one video trigger, got ${initial.triggerCount}`);
+
+              const clicked = await execute(sessionId, `
+                const button = [...document.querySelectorAll('button')].find((el) => el.textContent?.includes('Assistir apresentação'));
+                if (!button) return false;
+                button.scrollIntoView({ block: 'center' });
+                button.click();
+                return true;
+              `);
+              if (!clicked) throw new Error(`${slug} trigger click failed`);
+
+              await waitUntil(() => execute(sessionId, `return document.querySelector('dialog')?.open === true;`), `${slug} dialog open`);
+              const opened = await execute(sessionId, `
+                const video = document.querySelector('dialog video');
+                if (!video) return null;
+                return {
+                  src: video.currentSrc || video.querySelector('source')?.src || '',
+                  poster: video.getAttribute('poster'),
+                  autoplay: video.autoplay,
+                  paused: video.paused,
+                  currentTime: video.currentTime,
+                  muted: video.muted,
+                  volume: video.volume,
+                  controls: video.controls,
+                  playsInline: video.playsInline,
+                  count: document.querySelectorAll('video').length,
+                  overflow: document.documentElement.scrollWidth > window.innerWidth,
+                };
+              `);
+              if (!opened) throw new Error(`${slug} video not mounted after click`);
+              if (!opened.src.includes(config.video)) throw new Error(`${slug} wrong video source: ${opened.src}`);
+              if (opened.poster !== config.poster) throw new Error(`${slug} wrong poster: ${opened.poster}`);
+              if (opened.autoplay) throw new Error(`${slug} autoplay attribute enabled`);
+              if (!opened.paused || opened.currentTime > 0.05) throw new Error(`${slug} started without explicit play action`);
+              if (!opened.controls || !opened.playsInline) throw new Error(`${slug} native controls/playsInline missing`);
+              if (opened.count !== 1) throw new Error(`${slug} concurrent video elements=${opened.count}`);
+              if (opened.overflow) throw new Error(`${slug} overflow with modal open at ${width}`);
+              if (slug === 'bravvideo' && (opened.muted || opened.volume <= 0)) throw new Error('BravVideo unexpectedly muted before voluntary playback');
+
+              const playStarted = await execute(sessionId, `
+                const video = document.querySelector('dialog video');
+                video.play().catch((error) => console.error('PLAYBACK_TEST_PLAY_REJECTED', error?.name));
+                return true;
+              `);
+              if (!playStarted) throw new Error(`${slug} play action could not be issued`);
+
+              const progressed = await waitUntil(async () => {
+                const state = await execute(sessionId, `
+                  const video = document.querySelector('dialog video');
+                  return video ? { currentTime: video.currentTime, paused: video.paused, readyState: video.readyState, duration: video.duration } : null;
+                `);
+                return state && state.currentTime > 0.20 ? state : false;
+              }, `${slug} real playback progress`, 8000);
+              if (!Number.isFinite(progressed.duration) || progressed.duration <= 1) throw new Error(`${slug} invalid media duration ${progressed.duration}`);
+
+              await execute(sessionId, `document.querySelector('dialog video').pause(); return true;`);
+              const paused = await waitUntil(async () => {
+                const state = await execute(sessionId, `const v=document.querySelector('dialog video'); return v ? {paused:v.paused,currentTime:v.currentTime}:null;`);
+                return state?.paused ? state : false;
+              }, `${slug} pause`);
+              const pausedAt = paused.currentTime;
+              await sleep(350);
+              const afterPause = await execute(sessionId, `const v=document.querySelector('dialog video'); return {paused:v.paused,currentTime:v.currentTime};`);
+              if (!afterPause.paused || Math.abs(afterPause.currentTime - pausedAt) > 0.12) throw new Error(`${slug} pause did not hold`);
+
+              const seekTarget = await execute(sessionId, `
+                const v = document.querySelector('dialog video');
+                const target = Math.min(v.duration * 0.6, v.duration - 0.8);
+                v.currentTime = target;
+                return target;
+              `);
+              const sought = await waitUntil(async () => {
+                const time = await execute(sessionId, `return document.querySelector('dialog video')?.currentTime ?? -1;`);
+                return Math.abs(time - seekTarget) < 0.35 ? time : false;
+              }, `${slug} seek`);
+              if (sought <= 0.5) throw new Error(`${slug} seek target not reached`);
+
+              const screenshot = await wd('GET', `/session/${sessionId}/screenshot`);
+              fs.writeFileSync(`playback-evidence/${slug}-${width}x${height}.png`, Buffer.from(screenshot, 'base64'));
+
+              const requests = await execute(sessionId, `
+                return [...new Set(performance.getEntriesByType('resource').map((r) => r.name).filter((url) => url.includes('/product-videos/') && url.includes('.mp4')))];
+              `);
+              if (!requests.some((url) => url.includes(config.video))) throw new Error(`${slug} expected mp4 request not observed: ${requests}`);
+              const foreign = requests.filter((url) => !url.includes(config.video));
+              if (foreign.length) throw new Error(`${slug} loaded foreign product video: ${foreign}`);
+
+              const closed = await execute(sessionId, `
+                const button = document.querySelector("button[aria-label='Fechar apresentação']");
+                if (!button) return false;
+                button.click();
+                return true;
+              `);
+              if (!closed) throw new Error(`${slug} close action failed`);
+              await waitUntil(() => execute(sessionId, `return document.querySelector('dialog')?.open === false;`), `${slug} dialog close`);
+              await waitUntil(() => execute(sessionId, `return document.querySelectorAll('video').length === 0;`), `${slug} video unmount after close`);
+
+              await execute(sessionId, `
+                const button = [...document.querySelectorAll('button')].find((el) => el.textContent?.includes('Assistir apresentação'));
+                button.scrollIntoView({ block: 'center' });
+                button.click();
+                return true;
+              `);
+              await waitUntil(() => execute(sessionId, `return document.querySelector('dialog')?.open === true;`), `${slug} dialog reopen`);
+              const reopened = await execute(sessionId, `
+                const v = document.querySelector('dialog video');
+                return v ? {paused:v.paused,currentTime:v.currentTime,autoplay:v.autoplay,count:document.querySelectorAll('video').length}:null;
+              `);
+              if (!reopened || !reopened.paused || reopened.currentTime > 0.05 || reopened.autoplay || reopened.count !== 1) {
+                throw new Error(`${slug} reopen state invalid: ${JSON.stringify(reopened)}`);
+              }
+              await execute(sessionId, `document.querySelector("button[aria-label='Fechar apresentação']").click(); return true;`);
+              await waitUntil(() => execute(sessionId, `return document.querySelector('dialog')?.open === false;`), `${slug} final close`);
+
+              console.log(`PLAYBACK_PASS slug=${slug} viewport=${width}x${height} initialDownload=NO autoplay=NO play=PASS pause=PASS seek=PASS close=PASS reopen=PASS overflow=NO source=CORRECT poster=REAL`);
+              if (slug === 'bravvideo') console.log(`AUDIO_POLICY_PASS slug=bravvideo initialPaused=YES muted=NO controls=YES appAutoplay=NO voluntaryPlayRequired=YES`);
+            } finally {
+              await wd('DELETE', `/session/${sessionId}`).catch(() => {});
+            }
+          }
+
+          async function validateNoVideoCta(slug, width, height) {
+            const sessionId = await createSession(width, height);
+            try {
+              await wd('POST', `/session/${sessionId}/url`, { url: `http://127.0.0.1:3000/${slug}` });
+              await sleep(500);
+              const state = await execute(sessionId, `
+                const resources = performance.getEntriesByType('resource').map((r) => r.name);
+                return {
+                  triggers: [...document.querySelectorAll('button')].filter((el) => el.textContent?.includes('Assistir apresentação')).length,
+                  videos: document.querySelectorAll('video').length,
+                  mp4Requests: resources.filter((url) => url.includes('/product-videos/') && url.includes('.mp4')).length,
+                  overflow: document.documentElement.scrollWidth > window.innerWidth,
+                };
+              `);
+              if (state.triggers || state.videos || state.mp4Requests || state.overflow) throw new Error(`${slug} must have no video experience: ${JSON.stringify(state)}`);
+              console.log(`NO_VIDEO_PASS slug=${slug} viewport=${width}x${height} cta=ABSENT video=ABSENT mp4Request=ABSENT overflow=NO`);
+            } finally {
+              await wd('DELETE', `/session/${sessionId}`).catch(() => {});
+            }
+          }
+
+          (async () => {
+            for (const [width, height] of [[1440, 1000], [390, 844]]) {
+              for (const slug of ['bravos', 'bravhas', 'bravvideo']) await validateProduct(slug, width, height);
+              for (const slug of ['bravacademy', 'bravmsg']) await validateNoVideoCta(slug, width, height);
+            }
+          })().catch((error) => { console.error(error); process.exit(1); });
+          NODE
+      - name: Upload playback screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: product-video-playback-001b
+          path: playback-evidence/*.png
+          if-no-files-found: error
+      - name: Diagnostics
+        if: failure()
+        run: |
+          echo '--- app log ---'
+          tail -100 /tmp/bravsystems-playback.log || true
+          echo '--- chromedriver log ---'
+          tail -100 /tmp/chromedriver.log || true
+      - name: Cleanup
+        if: always()
+        run: |
+          test ! -f /tmp/chromedriver.pid || kill "$(cat /tmp/chromedriver.pid)" 2>/dev/null || true
+          test ! -f /tmp/bravsystems-playback.pid || kill "$(cat /tmp/bravsystems-playback.pid)" 2>/dev/null || true
