@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { LeadForm } from "@/components/LeadForm";
+import { ProductVideoDialog } from "@/components/ProductVideoDialog";
+import { getProductVideo } from "@/lib/product-videos";
 import { products } from "@/lib/products";
 
 const valuePillars = [
@@ -23,6 +25,12 @@ const operationFlow = [
 const ecosystemSlugs = new Set(["bravos", "bravacademy", "bravmsg"]);
 const ecosystemProducts = products.filter((product) => ecosystemSlugs.has(product.slug));
 const secondaryProducts = products.filter((product) => !ecosystemSlugs.has(product.slug));
+const homepageVideoSlugs = new Set(["bravos", "bravhas", "bravvideo"]);
+const homepageVideoProducts = products.flatMap((product) => {
+  if (!homepageVideoSlugs.has(product.slug)) return [];
+  const video = getProductVideo(product.slug);
+  return video?.assetPresent ? [{ product, video }] : [];
+});
 
 export default function Home() {
   const platformUrl = process.env.NEXT_PUBLIC_BRAVOS_APP_URL?.trim();
@@ -80,17 +88,17 @@ export default function Home() {
                 <span className="h-2.5 w-2.5 rounded-full bg-white/15" aria-hidden="true" />
                 <span className="ml-3">BravOS • visão do produto</span>
               </div>
-              <video className="aspect-video w-full bg-[#061d31] object-cover" controls preload="metadata" playsInline poster="/bravsystems-logo.png" aria-label="Demonstração visual real do BravOS">
-                <source src="/bravsystems-video-institucional.mp4" type="video/mp4" />
-              </video>
-              <div className="grid grid-cols-2 gap-px bg-white/10 sm:grid-cols-5">
-                {["Pedido", "Cozinha", "Caixa", "Estoque", "Gestão"].map((item) => (
-                  <div key={item} className="bg-[#0b2947] px-3 py-4 text-center text-xs font-bold uppercase tracking-[.1em] text-[#d6e7f2]">{item}</div>
+              <div className="grid min-h-[360px] grid-cols-2 gap-px bg-white/10 p-px sm:grid-cols-3" aria-label="Fluxo operacional do BravOS">
+                {["Pedido", "Cozinha", "Caixa", "Estoque", "Gestão", "Operação"].map((item, index) => (
+                  <div key={item} className="flex min-h-[150px] flex-col justify-between bg-[#0b2947] p-5 sm:min-h-[178px]">
+                    <span className="text-xs font-extrabold tracking-[.16em] text-[#6eb4df]">0{index + 1}</span>
+                    <span className="text-xl font-bold text-white">{item}</span>
+                  </div>
                 ))}
               </div>
             </div>
             <div className="relative mx-4 -mt-1 flex flex-col gap-2 rounded-b-2xl border-x border-b border-[#c9dce8] bg-white px-5 py-4 text-sm text-[#587086] shadow-lg sm:mx-8 sm:flex-row sm:items-center sm:justify-between">
-              <span><strong className="text-[#092846]">Prova visual real:</strong> mídia já existente do BravOS.</span>
+              <span>Pedido • Cozinha • Caixa • Estoque • Gestão</span>
               <span className="font-semibold text-[#0f4d78]">Produto em evolução</span>
             </div>
           </div>
@@ -139,7 +147,35 @@ export default function Home() {
       <section id="ecossistema" className="bg-[#eef6fb] py-20 sm:py-24">
         <SectionTitle eyebrow="Ecossistema Brav" title="Comece pela operação. Evolua para comunicação e desenvolvimento quando fizer sentido." text="O BravOS é a solução principal desta fase comercial. BravAcademy e BravMsg ampliam a visão do ecossistema sem transformar integrações futuras ou dependências externas em promessa de produto pronto." />
 
-        <div className="mx-auto mt-12 grid max-w-[1280px] gap-6 px-6 lg:grid-cols-[1.2fr_.8fr_.8fr] lg:px-8">
+        <div className="mx-auto mt-12 grid max-w-[1280px] gap-6 px-6 lg:grid-cols-3 lg:px-8" data-homepage-product-videos>
+          {homepageVideoProducts.map(({ product, video }) => (
+            <article key={product.slug} data-homepage-video={product.slug} className="rounded-[30px] border border-[#cbdde8] bg-white p-6 shadow-xl shadow-[#0b2947]/7 sm:p-7">
+              <div className="grid grid-cols-[112px_minmax(0,1fr)] gap-5">
+                <div className="overflow-hidden rounded-2xl border border-[#d4e3ec] bg-[#082844] shadow-lg shadow-[#0b2947]/10">
+                  <Image
+                    src={video.poster}
+                    alt={`Poster da apresentação do ${product.name}`}
+                    width={512}
+                    height={910}
+                    unoptimized
+                    className="aspect-[512/910] h-auto w-full object-cover"
+                  />
+                </div>
+                <div className="min-w-0 py-1">
+                  <div className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#2563eb]">{product.category}</div>
+                  <h3 className="mt-2 text-2xl font-bold tracking-[-.03em]">{product.name}</h3>
+                  <p className="mt-3 line-clamp-5 text-sm leading-6 text-[#60758a]">{product.description}</p>
+                </div>
+              </div>
+              <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-[#e1ebf1] pt-5">
+                <ProductVideoDialog video={video} />
+                <Link href={`/${product.slug}`} className="inline-flex min-h-12 items-center px-2 font-extrabold text-[#0f4d78]">Conhecer {product.name} →</Link>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="mx-auto mt-10 grid max-w-[1280px] gap-6 px-6 lg:grid-cols-[1.2fr_.8fr_.8fr] lg:px-8">
           {ecosystemProducts.map((product) => (
             <article key={product.slug} className={`flex min-h-[340px] flex-col rounded-[30px] border p-7 sm:p-8 ${product.slug === "bravos" ? "border-[#0f4d78] bg-[#0b2947] text-white shadow-2xl shadow-[#0b2947]/15" : "border-[#d1e0ea] bg-white"}`}>
               <div className={`text-xs font-extrabold uppercase tracking-[.16em] ${product.slug === "bravos" ? "text-[#86c2e7]" : "text-[#2563eb]"}`}>{product.category}</div>
