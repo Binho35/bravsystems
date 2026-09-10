@@ -16,7 +16,7 @@ const structuredData = {
       logo: "https://bravsystems.com.br/bravsystems-logo.png",
       email: "contato@bravsystems.com.br",
       founder: { "@type": "Person", name: "Robson Fernandes" },
-      description: "Empresa de tecnologia com produtos próprios para operação, gestão administrativa e financeira, pessoas, comunicação e treinamento corporativo.",
+      description: "Empresa de tecnologia com produtos próprios para operação e crescimento. O BravOS é a solução principal atual para operação e gestão de restaurantes, com BravAcademy, BravMsg e outras frentes em evolução no ecossistema.",
     },
     {
       "@type": "WebSite",
@@ -32,14 +32,14 @@ const structuredData = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://bravsystems.com.br"),
   title: {
-    default: "BravSystems | Tecnologia para Operação e Gestão Empresarial",
+    default: "BravSystems | Tecnologia para Operação e Crescimento",
     template: "%s | BravSystems",
   },
-  description: "Sistemas próprios para organizar operação, financeiro, pessoas, comunicação e treinamento. Conheça BravOS, BravHAS, BravHOS, BravMsg, BravAcademy e a tecnologia BravVideo em homologação.",
+  description: "Conheça o BravOS, solução da BravSystems para conectar vendas, cozinha, caixa, estoque e gestão de restaurantes. Solicite uma demonstração e explore o ecossistema Brav.",
   keywords: [
-    "BravSystems", "BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo",
-    "software de gestão", "gestão empresarial", "gestão para restaurantes", "gestão administrativa e financeira",
-    "RH e departamento pessoal", "comunicação empresarial", "universidade corporativa white label",
+    "BravSystems", "BravOS", "BravAcademy", "BravMsg", "BravHAS", "BravHOS", "BravVideo",
+    "software para restaurantes", "gestão de restaurantes", "PDV para restaurantes", "estoque para restaurantes",
+    "operação de restaurantes", "tecnologia para gestão", "universidade corporativa white label", "comunicação empresarial",
   ],
   authors: [{ name: "BravSystems" }],
   creator: "BravSystems",
@@ -50,14 +50,14 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     url: "https://bravsystems.com.br",
     siteName: "BravSystems",
-    title: "BravSystems | Tecnologia para Operação e Gestão Empresarial",
-    description: "Produtos próprios para reduzir retrabalho, centralizar processos e aumentar controle sobre operação, financeiro, pessoas, comunicação e treinamento.",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "BravSystems — Tecnologia aplicada à gestão e operação" }],
+    title: "BravSystems | Tecnologia para Operação e Crescimento",
+    description: "BravOS conecta vendas, cozinha, caixa, estoque e gestão em uma experiência pensada para a operação de restaurantes. Conheça o ecossistema BravSystems.",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "BravSystems — Tecnologia para operação e crescimento" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "BravSystems | Tecnologia para Operação e Gestão Empresarial",
-    description: "Produtos próprios para organizar operação, financeiro, pessoas, comunicação e treinamento.",
+    title: "BravSystems | Tecnologia para Operação e Crescimento",
+    description: "Conheça o BravOS e o ecossistema BravSystems para operação, comunicação e desenvolvimento.",
     images: ["/opengraph-image"],
   },
   robots: {
