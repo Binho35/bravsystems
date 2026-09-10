@@ -44,3 +44,35 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   outline: 2px solid #2563eb;
   outline-offset: 3px;
 }
+
+/* Hero BravOS: substitui a antiga grade azul por um visual demonstrativo do produto. */
+#inicio [aria-label="Fluxo operacional do BravOS"] {
+  display: block;
+  min-height: 0;
+  aspect-ratio: 1200 / 760;
+  padding: 0;
+  background-color: #eef6fb;
+  background-image: url("/bravos-hero-dashboard.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+#inicio [aria-label="Fluxo operacional do BravOS"] > * {
+  display: none;
+}
+
+#inicio div:has(> [aria-label="Fluxo operacional do BravOS"]) {
+  overflow: visible;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+#inicio div:has(> [aria-label="Fluxo operacional do BravOS"]) > :first-child {
+  display: none;
+}
+
+#inicio div:has(> div > [aria-label="Fluxo operacional do BravOS"]) > :last-child {
+  display: none;
+}
