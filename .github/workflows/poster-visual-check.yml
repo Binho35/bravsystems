@@ -1,0 +1,82 @@
+name: Poster Visual Check
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  posters:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Start app and ChromeDriver
+        run: |
+          npm start > /tmp/app.log 2>&1 &
+          echo $! > /tmp/app.pid
+          for i in {1..30}; do curl -fsS http://127.0.0.1:3000 >/dev/null && break || sleep 1; done
+          curl -fsS http://127.0.0.1:3000 >/dev/null
+          chromedriver --port=9515 > /tmp/chromedriver.log 2>&1 &
+          echo $! > /tmp/chromedriver.pid
+          for i in {1..20}; do curl -fsS http://127.0.0.1:9515/status >/dev/null && break || sleep 1; done
+      - name: Validate posters at 1440 and 390
+        run: |
+          mkdir -p poster-evidence
+          node <<'NODE'
+          const fs = require('node:fs');
+          const base = 'http://127.0.0.1:9515';
+          async function req(method, path, body) {
+            const r = await fetch(base + path, {method, headers: body ? {'content-type':'application/json'} : undefined, body: body ? JSON.stringify(body) : undefined});
+            const t = await r.text(); const j = t ? JSON.parse(t) : {};
+            if (!r.ok || j.value?.error) throw new Error(`${method} ${path}: ${t}`);
+            return j.value;
+          }
+          async function exec(id, script) { return req('POST', `/session/${id}/execute/sync`, {script,args:[]}); }
+          async function run(width,height,file) {
+            const s = await req('POST','/session',{capabilities:{alwaysMatch:{browserName:'chrome','goog:chromeOptions':{args:['--headless=new','--no-sandbox','--disable-dev-shm-usage',`--window-size=${width},${height}`]}}}});
+            const id=s.sessionId;
+            try {
+              await req('POST',`/session/${id}/url`,{url:'http://127.0.0.1:3000/#ecossistema'});
+              await new Promise(r=>setTimeout(r,800));
+              const result = await exec(id, `
+                const section=document.querySelector('[data-homepage-product-videos]');
+                section?.scrollIntoView({block:'center'});
+                const cards=[...document.querySelectorAll('[data-homepage-video]')];
+                const data=cards.map(card=>({slug:card.dataset.homepageVideo,src:card.querySelector('img')?.getAttribute('src'),naturalWidth:card.querySelector('img')?.naturalWidth,naturalHeight:card.querySelector('img')?.naturalHeight}));
+                return {count:cards.length,data,overflow:document.documentElement.scrollWidth>window.innerWidth,videos:document.querySelectorAll('video').length,mp4:performance.getEntriesByType('resource').filter(e=>e.name.includes('.mp4')).length};
+              `);
+              if (result.count !== 3) throw new Error('expected 3 active poster cards');
+              if (result.overflow) throw new Error('horizontal overflow');
+              if (result.videos !== 0 || result.mp4 !== 0) throw new Error('video/mp4 loaded before click');
+              const bySlug=Object.fromEntries(result.data.map(x=>[x.slug,x]));
+              for (const slug of ['bravos','bravhas','bravvideo']) if (!bySlug[slug]) throw new Error(`missing ${slug}`);
+              if (!bySlug.bravos.src.includes('bravos.svg')) throw new Error('wrong BravOS poster');
+              if (!bySlug.bravvideo.src.includes('bravvideo.svg')) throw new Error('wrong BravVideo poster');
+              if (!bySlug.bravhas.src.includes('bravhas.svg')) throw new Error('BravHAS poster regressed');
+              await new Promise(r=>setTimeout(r,200));
+              const shot=await req('GET',`/session/${id}/screenshot`);
+              fs.writeFileSync(file,Buffer.from(shot,'base64'));
+              console.log(JSON.stringify({viewport:`${width}x${height}`, ...result}));
+            } finally { await req('DELETE',`/session/${id}`).catch(()=>{}); }
+          }
+          (async()=>{await run(1440,1000,'poster-evidence/homepage-1440x1000.png'); await run(390,844,'poster-evidence/homepage-390x844.png');})().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: poster-visual-evidence-001d
+          path: poster-evidence/*.png
+          if-no-files-found: error
+      - if: always()
+        run: |
+          test ! -f /tmp/chromedriver.pid || kill "$(cat /tmp/chromedriver.pid)" 2>/dev/null || true
+          test ! -f /tmp/app.pid || kill "$(cat /tmp/app.pid)" 2>/dev/null || true
