@@ -74,11 +74,13 @@ test("claims de BravHAS BravHOS e BravMsg seguem governança comercial atual", a
   assert.equal(products.includes('["Contatos", "Campanhas", "Inbox", "Consentimentos", "Opt-out e suppression", "CRM"'), false);
 });
 
-test("formulário possui política, honeypot e produto contextual", async () => {
+test("formulário possui política, honeypot e só declara sucesso após resposta HTTP válida", async () => {
   const form = await read("components/LeadForm.tsx");
   assert.ok(form.includes("politica-de-privacidade"));
   assert.ok(form.includes('name="website"'));
   assert.ok(form.includes("defaultInterest"));
+  assert.ok(form.includes("if (!response.ok) throw"));
+  assert.ok(form.indexOf("if (!response.ok) throw") < form.indexOf('setStatus("success")'));
 });
 
 test("API aplica validação e anti-abuso", async () => {
@@ -87,6 +89,19 @@ test("API aplica validação e anti-abuso", async () => {
   assert.ok(route.includes("RATE_LIMIT_MAX_REQUESTS"));
   assert.ok(route.includes("allowedInterests"));
   assert.ok(route.includes("escapeHtml"));
+});
+
+test("API de contato é fail-closed e registra diagnóstico seguro do provedor", async () => {
+  const route = await read("app/api/contact/route.ts");
+  assert.ok(route.includes("EMAIL_DELIVERY_FAILURE_MESSAGE"));
+  assert.ok(route.includes("RESEND_DOMAIN_NOT_VERIFIED"));
+  assert.ok(route.includes("contact_email_provider_failure provider=resend"));
+  assert.ok(route.includes("contact_email_configuration_error provider=resend code=RESEND_API_KEY_MISSING"));
+  assert.ok(route.includes('if (!resendResponse.ok)'));
+  assert.ok(route.includes('{ status: 502 }'));
+  assert.equal(route.includes('console.error("Erro Resend:",'), false);
+  assert.equal(route.includes('console.error("Erro Resend no e-mail de boas-vindas:",'), false);
+  assert.equal(route.includes("providerBody}`"), false, "resposta bruta do provedor não pode ser logada");
 });
 
 test("sitemap publica produtos e política canônica", async () => {
