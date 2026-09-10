@@ -136,6 +136,7 @@ jobs:
           async function validateProduct(slug, width, height) {
             const sessionId = await createSession(width, height);
             const config = expected[slug];
+            const dialogSelector = `dialog[aria-labelledby="video-title-${slug}"]`;
             try {
               const initial = await loadHome(sessionId);
               const expectedCards = ['bravhas', 'bravos', 'bravvideo'];
@@ -164,10 +165,11 @@ jobs:
                 button.click();
                 return true;
               `);
-              await waitUntil(() => execute(sessionId, `return document.querySelector('dialog')?.open === true;`), `${slug} homepage dialog open`);
+              await waitUntil(() => execute(sessionId, `return document.querySelector('${dialogSelector}')?.open === true;`), `${slug} homepage dialog open`);
 
               const opened = await execute(sessionId, `
-                const video = document.querySelector('dialog video');
+                const dialog = document.querySelector('${dialogSelector}');
+                const video = dialog?.querySelector('video');
                 if (!video) return null;
                 return {
                   src: video.currentSrc || video.querySelector('source')?.src || '',
@@ -188,31 +190,31 @@ jobs:
               if (!opened.controls || !opened.playsInline || opened.count !== 1) throw new Error(`${slug} player contract invalid`);
               if (opened.overflow) throw new Error(`${slug} overflow with dialog at ${width}`);
 
-              await execute(sessionId, `document.querySelector('dialog video').play(); return true;`);
+              await execute(sessionId, `document.querySelector('${dialogSelector} video').play(); return true;`);
               const progressed = await waitUntil(async () => {
-                const state = await execute(sessionId, `const v=document.querySelector('dialog video'); return v ? {t:v.currentTime,d:v.duration}:null;`);
+                const state = await execute(sessionId, `const v=document.querySelector('${dialogSelector} video'); return v ? {t:v.currentTime,d:v.duration}:null;`);
                 return state && state.t > 0.20 ? state : false;
               }, `${slug} homepage play`);
               if (!Number.isFinite(progressed.d) || progressed.d <= 1) throw new Error(`${slug} invalid duration ${progressed.d}`);
 
-              await execute(sessionId, `document.querySelector('dialog video').pause(); return true;`);
+              await execute(sessionId, `document.querySelector('${dialogSelector} video').pause(); return true;`);
               const paused = await waitUntil(async () => {
-                const state = await execute(sessionId, `const v=document.querySelector('dialog video'); return v ? {paused:v.paused,t:v.currentTime}:null;`);
+                const state = await execute(sessionId, `const v=document.querySelector('${dialogSelector} video'); return v ? {paused:v.paused,t:v.currentTime}:null;`);
                 return state?.paused ? state : false;
               }, `${slug} homepage pause`);
               const pauseAt = paused.t;
               await sleep(300);
-              const held = await execute(sessionId, `const v=document.querySelector('dialog video'); return {paused:v.paused,t:v.currentTime};`);
+              const held = await execute(sessionId, `const v=document.querySelector('${dialogSelector} video'); return {paused:v.paused,t:v.currentTime};`);
               if (!held.paused || Math.abs(held.t - pauseAt) > 0.12) throw new Error(`${slug} pause did not hold`);
 
               const seekTarget = await execute(sessionId, `
-                const v=document.querySelector('dialog video');
+                const v=document.querySelector('${dialogSelector} video');
                 const target=Math.min(v.duration*0.6,v.duration-0.8);
                 v.currentTime=target;
                 return target;
               `);
               await waitUntil(async () => {
-                const t = await execute(sessionId, `return document.querySelector('dialog video')?.currentTime ?? -1;`);
+                const t = await execute(sessionId, `return document.querySelector('${dialogSelector} video')?.currentTime ?? -1;`);
                 return Math.abs(t - seekTarget) < 0.35 ? true : false;
               }, `${slug} homepage seek`);
 
@@ -226,8 +228,8 @@ jobs:
               const foreign = requests.filter((url) => !url.includes(config.video));
               if (foreign.length) throw new Error(`${slug} loaded foreign product MP4: ${foreign}`);
 
-              await execute(sessionId, `document.querySelector("button[aria-label='Fechar apresentação']").click(); return true;`);
-              await waitUntil(() => execute(sessionId, `return document.querySelector('dialog')?.open === false;`), `${slug} homepage close`);
+              await execute(sessionId, `document.querySelector('${dialogSelector} button[aria-label="Fechar apresentação"]').click(); return true;`);
+              await waitUntil(() => execute(sessionId, `return document.querySelector('${dialogSelector}')?.open === false;`), `${slug} homepage close`);
               await waitUntil(() => execute(sessionId, `return document.querySelectorAll('video').length === 0;`), `${slug} homepage video unmount`);
 
               await execute(sessionId, `
@@ -235,11 +237,11 @@ jobs:
                 const button = [...card.querySelectorAll('button')].find((el) => el.textContent?.includes('Assistir apresentação'));
                 button.click(); return true;
               `);
-              await waitUntil(() => execute(sessionId, `return document.querySelector('dialog')?.open === true;`), `${slug} homepage reopen`);
-              const reopened = await execute(sessionId, `const v=document.querySelector('dialog video'); return v ? {paused:v.paused,t:v.currentTime,autoplay:v.autoplay,count:document.querySelectorAll('video').length}:null;`);
+              await waitUntil(() => execute(sessionId, `return document.querySelector('${dialogSelector}')?.open === true;`), `${slug} homepage reopen`);
+              const reopened = await execute(sessionId, `const v=document.querySelector('${dialogSelector} video'); return v ? {paused:v.paused,t:v.currentTime,autoplay:v.autoplay,count:document.querySelectorAll('video').length}:null;`);
               if (!reopened || !reopened.paused || reopened.t > 0.05 || reopened.autoplay || reopened.count !== 1) throw new Error(`${slug} invalid reopen state: ${JSON.stringify(reopened)}`);
-              await execute(sessionId, `document.querySelector("button[aria-label='Fechar apresentação']").click(); return true;`);
-              await waitUntil(() => execute(sessionId, `return document.querySelector('dialog')?.open === false;`), `${slug} final close`);
+              await execute(sessionId, `document.querySelector('${dialogSelector} button[aria-label="Fechar apresentação"]').click(); return true;`);
+              await waitUntil(() => execute(sessionId, `return document.querySelector('${dialogSelector}')?.open === false;`), `${slug} final close`);
 
               console.log(`HOMEPAGE_VIDEO_PASS slug=${slug} viewport=${width}x${height} discoverable=YES poster=REAL initialDownload=NO legacyVideo=ABSENT autoplay=NO play=PASS pause=PASS seek=PASS close=PASS reopen=PASS overflow=NO source=CORRECT`);
             } finally {
