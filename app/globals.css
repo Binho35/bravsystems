@@ -45,14 +45,14 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   outline-offset: 3px;
 }
 
-/* Hero BravOS: substitui a antiga grade azul por um visual demonstrativo do produto. */
+/* Hero BravOS: usa o recorte fiel do asset aprovado por Robson. */
 #inicio [aria-label="Fluxo operacional do BravOS"] {
   display: block;
   min-height: 0;
-  aspect-ratio: 1200 / 760;
+  aspect-ratio: 895 / 715;
   padding: 0;
-  background-color: #eef6fb;
-  background-image: url("/bravos-hero-dashboard.svg");
+  background-color: transparent;
+  background-image: url("/bravos-hero-approved.webp");
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
