@@ -19,6 +19,24 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: Inspect candidate image blobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for sha in \
+            329346794b9860ce272378c6ecae6c8d60442c9d \
+            65b1174d30f12a4487a9b6404dc6b464029032d5 \
+            b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0 \
+            89566caf5254c6f39884d6442a8abc42ee7bb1f3
+          do
+            echo "candidate=$sha"
+            curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/Binho35/bravsystems/git/blobs/$sha" \
+              | jq -r '.content' | tr -d '\n' | base64 -d > "/tmp/$sha.bin"
+            wc -c "/tmp/$sha.bin"
+            sha256sum "/tmp/$sha.bin"
+            file "/tmp/$sha.bin" || true
+          done
       - name: Start app and ChromeDriver
         run: |
           npm start > /tmp/site.log 2>&1 &
@@ -38,8 +56,10 @@ jobs:
       - name: Validate exact approved asset bytes
         run: |
           curl -fsS http://127.0.0.1:3000/bravos-hero-approved.webp -o /tmp/bravos-hero-approved.webp
+          echo "served-bytes=$(wc -c < /tmp/bravos-hero-approved.webp)"
+          echo "served-sha256=$(sha256sum /tmp/bravos-hero-approved.webp | awk '{print $1}')"
+          file /tmp/bravos-hero-approved.webp || true
           test "$(sha256sum /tmp/bravos-hero-approved.webp | awk '{print $1}')" = "391f08cedc6c6d2b6856cb2846b19f8f037ee3a22e75a201133f6bac72dfb8d7"
-          file /tmp/bravos-hero-approved.webp
       - name: Validate approved hero in desktop and mobile
         run: |
           mkdir -p hero-approved-evidence
