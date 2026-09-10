@@ -38,7 +38,9 @@ export function ProductVideoDialog({ video }: { video: ProductVideo }) {
           event.preventDefault();
           closeDialog();
         }}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          if (!dialogRef.current?.open) setOpen(false);
+        }}
         onMouseDown={(event) => {
           if (event.target === event.currentTarget) closeDialog();
         }}
