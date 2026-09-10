@@ -74,11 +74,13 @@ test("claims de BravHAS BravHOS e BravMsg seguem governança comercial atual", a
   assert.equal(products.includes('["Contatos", "Campanhas", "Inbox", "Consentimentos", "Opt-out e suppression", "CRM"'), false);
 });
 
-test("formulário possui política, honeypot e produto contextual", async () => {
+test("formulário possui política, honeypot e só declara sucesso após resposta HTTP válida", async () => {
   const form = await read("components/LeadForm.tsx");
   assert.ok(form.includes("politica-de-privacidade"));
   assert.ok(form.includes('name="website"'));
   assert.ok(form.includes("defaultInterest"));
+  assert.ok(form.includes("if (!response.ok) throw"));
+  assert.ok(form.indexOf("if (!response.ok) throw") < form.indexOf('setStatus("success")'));
 });
 
 test("API aplica validação e anti-abuso", async () => {
