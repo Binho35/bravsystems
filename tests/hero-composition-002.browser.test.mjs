@@ -7,11 +7,28 @@ const DRIVER_PORT = 9519;
 const appBase = `http://127.0.0.1:${APP_PORT}`;
 const driverBase = `http://127.0.0.1:${DRIVER_PORT}`;
 
-function start(command, args) {
+function run(command, args) {
   return spawn(command, args, { stdio: ["ignore", "pipe", "pipe"], env: process.env });
 }
 
-async function waitFor(url, attempts = 60) {
+function startService(command, args) {
+  return spawn(command, args, {
+    stdio: "ignore",
+    env: process.env,
+    detached: true,
+  });
+}
+
+function stopService(child) {
+  if (!child?.pid) return;
+  try {
+    process.kill(-child.pid, "SIGTERM");
+  } catch {
+    try { child.kill("SIGTERM"); } catch {}
+  }
+}
+
+async function waitFor(url, attempts = 90) {
   for (let i = 0; i < attempts; i += 1) {
     try {
       const response = await fetch(url);
@@ -52,44 +69,67 @@ async function browserCheck(width, height, label, scrollHero) {
     },
   });
   const id = session.sessionId;
+
   try {
     await wd("POST", `/session/${id}/window/rect`, { width, height, x: 0, y: 0 });
     await wd("POST", `/session/${id}/url`, { url: `${appBase}/` });
-    await new Promise((resolve) => setTimeout(resolve, 900));
+    await new Promise((resolve) => setTimeout(resolve, 1200));
 
-    const result = await wd("POST", `/session/${id}/execute/sync`, {
+    const result = await wd("POST", `/session/${id}/execute/async`, {
       script: `
-        const hero = document.querySelector('[aria-label="Fluxo operacional do BravOS"]');
-        if (!hero) return { ok:false, reason:'hero ausente' };
-        ${scrollHero ? "hero.scrollIntoView({block:'center'});" : "window.scrollTo(0, 0);"}
-        const style = getComputedStyle(hero);
-        const rect = hero.getBoundingClientRect();
-        const imageUrl = style.backgroundImage.match(/url\\([\"']?(.*?)[\"']?\\)/)?.[1] || '';
-        const img = new Image();
-        img.src = imageUrl;
-        const ctas = [...document.querySelectorAll('#inicio a')].map(a => ({text:a.textContent.trim(), href:a.getAttribute('href'), rect:a.getBoundingClientRect().toJSON()}));
-        const nav = [...document.querySelectorAll('header a')].map(a => a.textContent.trim()).filter(Boolean);
-        return new Promise(resolve => {
-          const finish = () => resolve({
+        const done = arguments[arguments.length - 1];
+        (async () => {
+          const hero = document.querySelector('[aria-label="Fluxo operacional do BravOS"]');
+          if (!hero) return done({ ok:false, reason:'hero ausente' });
+          ${scrollHero ? "hero.scrollIntoView({block:'center'});" : "window.scrollTo(0, 0);"}
+          await new Promise(r => setTimeout(r, 250));
+          const style = getComputedStyle(hero);
+          const rect = hero.getBoundingClientRect();
+          const assetResponse = await fetch('/bravos-hero-composition-002.webp', { cache: 'no-store' });
+          const assetBlob = await assetResponse.blob();
+          let bitmapWidth = 0;
+          let bitmapHeight = 0;
+          try {
+            const bitmap = await createImageBitmap(assetBlob);
+            bitmapWidth = bitmap.width;
+            bitmapHeight = bitmap.height;
+            bitmap.close();
+          } catch {}
+          const ctas = [...document.querySelectorAll('#inicio a')].map(a => ({
+            text:a.textContent.trim(),
+            href:a.getAttribute('href'),
+            rect:a.getBoundingClientRect().toJSON(),
+          }));
+          const nav = [...document.querySelectorAll('header a')].map(a => a.textContent.trim()).filter(Boolean);
+          const headline = document.querySelector('#inicio h1');
+          const headlineStyle = headline ? getComputedStyle(headline) : null;
+          done({
             ok:true,
+            assetStatus:assetResponse.status,
+            assetType:assetBlob.type,
+            assetBytes:assetBlob.size,
             backgroundImage:style.backgroundImage,
             backgroundSize:style.backgroundSize,
             backgroundPosition:style.backgroundPosition,
             overflowX:document.documentElement.scrollWidth > window.innerWidth,
             heroRect:{left:rect.left,right:rect.right,top:rect.top,bottom:rect.bottom,width:rect.width,height:rect.height},
-            naturalWidth:img.naturalWidth,
-            naturalHeight:img.naturalHeight,
+            naturalWidth:bitmapWidth,
+            naturalHeight:bitmapHeight,
             ctas,
             nav,
+            headline: headline?.textContent?.trim() || '',
+            headlineFontSize: headlineStyle?.fontSize || '',
             viewport:{width:innerWidth,height:innerHeight},
           });
-          if (img.complete) finish(); else { img.onload=finish; img.onerror=finish; }
-        });
+        })().catch(err => done({ok:false, reason:String(err?.stack || err)}));
       `,
       args: [],
     });
 
     assert.equal(result.ok, true, result.reason);
+    assert.equal(result.assetStatus, 200, `${label}: asset HTTP inválido`);
+    assert.match(result.assetType, /image\/webp/);
+    assert.ok(result.assetBytes > 10_000, `${label}: asset pequeno/corrompido`);
     assert.match(result.backgroundImage, /bravos-hero-composition-002\.webp/);
     assert.equal(result.backgroundSize, "contain");
     assert.equal(result.backgroundPosition, "50% 50%");
@@ -98,38 +138,37 @@ async function browserCheck(width, height, label, scrollHero) {
     assert.equal(result.overflowX, false, `${label}: overflow horizontal`);
     assert.ok(result.heroRect.width > 250, `${label}: hero estreito demais`);
     assert.ok(result.heroRect.height > 180, `${label}: hero baixo demais`);
+    assert.equal(result.headline, "A operação acontece em tempo real. Sua gestão também deveria.");
     assert.deepEqual(result.ctas.slice(0, 3).map((c) => c.text), ["Conhecer o BravOS →", "Agendar demonstração", "Entrar na plataforma"]);
     assert.ok(result.nav.includes("BravOS"), `${label}: navegação regressiva`);
 
-    const shot = await wd("POST", `/session/${id}/goog/cdp/execute`, {
-      cmd: "Page.captureScreenshot",
-      params: { format: "jpeg", quality: 62, fromSurface: true },
-    });
-    assert.ok(shot?.data?.length > 1000, `${label}: screenshot não gerado`);
+    const shot = await wd("GET", `/session/${id}/screenshot`);
+    assert.ok(typeof shot === "string" && shot.length > 1000, `${label}: screenshot não gerado`);
     console.log(`HERO002_${label}_RESULT=${JSON.stringify(result)}`);
-    console.log(`HERO002_${label}_JPEG_BASE64=${shot.data}`);
+    console.log(`HERO002_${label}_JPEG_BASE64=${shot}`);
   } finally {
     await wd("DELETE", `/session/${id}`).catch(() => {});
   }
 }
 
 test("Hero BravOS 002 — browser real desktop/mobile", { timeout: 180_000 }, async () => {
-  const build = start("npm", ["run", "build"]);
+  const build = run("npm", ["run", "build"]);
   let buildOut = "";
   build.stdout.on("data", (d) => { buildOut += d; });
   build.stderr.on("data", (d) => { buildOut += d; });
   const buildCode = await new Promise((resolve) => build.on("close", resolve));
   assert.equal(buildCode, 0, `build auxiliar falhou\n${buildOut}`);
 
-  const app = start("npm", ["start", "--", "-p", String(APP_PORT)]);
-  const driver = start("chromedriver", [`--port=${DRIVER_PORT}`]);
+  const app = startService("npm", ["start", "--", "-p", String(APP_PORT)]);
+  const driver = startService("chromedriver", [`--port=${DRIVER_PORT}`]);
   try {
     await waitFor(`${appBase}/`);
     await waitFor(`${driverBase}/status`);
     await browserCheck(1440, 1000, "DESKTOP_1440x1000", false);
     await browserCheck(390, 844, "MOBILE_390x844", true);
   } finally {
-    app.kill("SIGTERM");
-    driver.kill("SIGTERM");
+    stopService(app);
+    stopService(driver);
+    await new Promise((resolve) => setTimeout(resolve, 500));
   }
 });
