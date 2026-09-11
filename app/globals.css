@@ -52,7 +52,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   max-width: 100%;
   min-width: 0;
   min-height: 0;
-  aspect-ratio: 895 / 715;
+  aspect-ratio: 1052 / 715;
   padding: 0;
   background-color: transparent;
   background-image: url("/bravos-hero-approved.webp");
@@ -83,11 +83,3 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   display: none;
 }
 
-/* Mobile: enquadramento mais fechado do MESMO asset, sem esticar ou deformar. */
-@media (max-width: 639px) {
-  #inicio [aria-label="Fluxo operacional do BravOS"] {
-    aspect-ratio: 2 / 3;
-    background-size: auto 100%;
-    background-position: 54% center;
-  }
-}
