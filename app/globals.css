@@ -45,19 +45,19 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   outline-offset: 3px;
 }
 
-/* Hero BravOS: usa exclusivamente a derivação fiel do asset oficial aprovado por Robson. */
+/* Hero BravOS 002: derivação fiel do asset oficial, com painel completo e sem recorte estrutural. */
 #inicio [aria-label="Fluxo operacional do BravOS"] {
   display: block;
   width: 100%;
   max-width: 100%;
   min-width: 0;
   min-height: 0;
-  aspect-ratio: 1052 / 715;
+  aspect-ratio: 1025 / 770;
   padding: 0;
-  background-color: transparent;
-  background-image: url("/bravos-hero-approved.webp");
+  background-color: #eef7fc;
+  background-image: url("/bravos-hero-composition-002.webp");
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center center;
   background-size: contain;
 }
 
@@ -69,7 +69,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
   border-color: transparent;
   background: transparent;
   box-shadow: none;
@@ -83,3 +83,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   display: none;
 }
 
+@media (max-width: 639px) {
+  #inicio [aria-label="Fluxo operacional do BravOS"] {
+    aspect-ratio: 1025 / 770;
+    background-size: contain;
+    background-position: center center;
+  }
+}
