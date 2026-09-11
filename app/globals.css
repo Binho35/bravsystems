@@ -45,9 +45,12 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   outline-offset: 3px;
 }
 
-/* Hero BravOS: usa o recorte fiel do asset aprovado por Robson. */
+/* Hero BravOS: usa exclusivamente a derivação fiel do asset oficial aprovado por Robson. */
 #inicio [aria-label="Fluxo operacional do BravOS"] {
   display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 0;
   aspect-ratio: 895 / 715;
   padding: 0;
@@ -63,7 +66,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 }
 
 #inicio div:has(> [aria-label="Fluxo operacional do BravOS"]) {
-  overflow: visible;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
   border-color: transparent;
   background: transparent;
   box-shadow: none;
@@ -75,4 +81,13 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 
 #inicio div:has(> div > [aria-label="Fluxo operacional do BravOS"]) > :last-child {
   display: none;
+}
+
+/* Mobile: enquadramento mais fechado do MESMO asset, sem esticar ou deformar. */
+@media (max-width: 639px) {
+  #inicio [aria-label="Fluxo operacional do BravOS"] {
+    aspect-ratio: 2 / 3;
+    background-size: auto 100%;
+    background-position: 54% center;
+  }
 }
