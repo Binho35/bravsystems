@@ -12,11 +12,7 @@ function run(command, args) {
 }
 
 function startService(command, args) {
-  return spawn(command, args, {
-    stdio: "ignore",
-    env: process.env,
-    detached: true,
-  });
+  return spawn(command, args, { stdio: "ignore", env: process.env, detached: true });
 }
 
 function stopService(child) {
@@ -85,7 +81,7 @@ async function browserCheck(width, height, label, scrollHero) {
           await new Promise(r => setTimeout(r, 250));
           const style = getComputedStyle(hero);
           const rect = hero.getBoundingClientRect();
-          const assetResponse = await fetch('/bravos-hero-composition-002.webp', { cache: 'no-store' });
+          const assetResponse = await fetch('/hero-bravos-002', { cache: 'no-store' });
           const assetBlob = await assetResponse.blob();
           let bitmapWidth = 0;
           let bitmapHeight = 0;
@@ -129,12 +125,12 @@ async function browserCheck(width, height, label, scrollHero) {
     assert.equal(result.ok, true, result.reason);
     assert.equal(result.assetStatus, 200, `${label}: asset HTTP inválido`);
     assert.match(result.assetType, /image\/webp/);
-    assert.ok(result.assetBytes > 10_000, `${label}: asset pequeno/corrompido`);
-    assert.match(result.backgroundImage, /bravos-hero-composition-002\.webp/);
+    assert.equal(result.assetBytes, 27232, `${label}: bytes da derivação divergentes`);
+    assert.match(result.backgroundImage, /hero-bravos-002/);
     assert.equal(result.backgroundSize, "contain");
     assert.equal(result.backgroundPosition, "50% 50%");
-    assert.equal(result.naturalWidth, 1025);
-    assert.equal(result.naturalHeight, 770);
+    assert.equal(result.naturalWidth, 615);
+    assert.equal(result.naturalHeight, 462);
     assert.equal(result.overflowX, false, `${label}: overflow horizontal`);
     assert.ok(result.heroRect.width > 250, `${label}: hero estreito demais`);
     assert.ok(result.heroRect.height > 180, `${label}: hero baixo demais`);
@@ -145,7 +141,7 @@ async function browserCheck(width, height, label, scrollHero) {
     const shot = await wd("GET", `/session/${id}/screenshot`);
     assert.ok(typeof shot === "string" && shot.length > 1000, `${label}: screenshot não gerado`);
     console.log(`HERO002_${label}_RESULT=${JSON.stringify(result)}`);
-    console.log(`HERO002_${label}_JPEG_BASE64=${shot}`);
+    console.log(`HERO002_${label}_PNG_BASE64=${shot}`);
   } finally {
     await wd("DELETE", `/session/${id}`).catch(() => {});
   }
