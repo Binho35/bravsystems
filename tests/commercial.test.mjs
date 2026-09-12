@@ -122,7 +122,9 @@ test("catálogo de acesso registra estágio governado dos seis produtos", async 
   }
   assert.ok(access.includes('bravos: { status: "EM HOMOLOGAÇÃO"'));
   assert.ok(access.includes('bravacademy: { status: "EM HOMOLOGAÇÃO"'));
-  assert.ok(access.includes('bravhas: { status: "ACESSO INTERNO"'));
+  assert.ok(access.includes('bravhas: { status: "EM HOMOLOGAÇÃO", environmentNote: "Ambiente de homologação operacional; acesso público depende de endereço oficial autorizado." }'));
+  assert.equal(access.includes('bravhas: { status: "ACESSO INTERNO"'), false);
+  assert.equal(access.includes("Ambiente existente ainda precisa de auditoria antes de eventual liberação pública."), false);
   assert.ok(access.includes("environmentNote"));
 });
 
