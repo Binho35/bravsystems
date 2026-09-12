@@ -158,7 +158,7 @@ async function captureEvidence(id, viewportLabel, width) {
   assert.ok(academyCard?.text.includes("Em homologação"), `${viewportLabel}: BravAcademy sem status de homologação no portfólio`);
   await capture(id, `${viewportLabel}-03-portfolio`);
 
-  await scrollToTarget(id, "#bravacademy", "center");
+  await scrollToTarget(id, "#bravacademy", "start");
   const academy = await execute(id, `
     const section = document.querySelector('#bravacademy');
     return {
@@ -172,7 +172,7 @@ async function captureEvidence(id, viewportLabel, width) {
   assert.equal(academy.journeySteps, 5, `${viewportLabel}: composição institucional BravAcademy incompleta`);
   await capture(id, `${viewportLabel}-04-bravacademy`);
 
-  await scrollToTarget(id, "#bravos", "center");
+  await scrollToTarget(id, "#bravos", "start");
   const bravos = await execute(id, `
     const section = document.querySelector('#bravos');
     const image = section?.querySelector('img');
