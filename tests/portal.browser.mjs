@@ -51,12 +51,10 @@ async function execute(id, script) {
 
 async function navigate(id, path) {
   await wd("POST", `/session/${id}/url`, { url: `${appBase}${path}` });
-  await new Promise((resolve) => setTimeout(resolve, 700));
+  await new Promise((resolve) => setTimeout(resolve, 650));
   await execute(id, `
     document.documentElement.style.scrollBehavior = 'auto';
     document.body.style.scrollBehavior = 'auto';
-    const main = document.querySelector('main');
-    if (main) main.style.scrollBehavior = 'auto';
     window.scrollTo({top:0,left:0,behavior:'instant'});
     return true;
   `);
@@ -83,6 +81,7 @@ async function auditPage(id, label) {
   assert.equal(result.hasFooter, true, `${label}: footer ausente`);
   assert.equal(result.h1Count, 1, `${label}: hierarquia H1 inválida`);
   assert.equal(result.links.some((href) => href.includes('.vercel.app')), false, `${label}: link técnico Vercel exposto`);
+  assert.equal(result.links.some((href) => href.includes('hostingersite.com')), false, `${label}: hostname temporário Hostinger exposto`);
   assert.equal(result.links.some((href) => href.includes('-git-')), false, `${label}: alias de branch exposto`);
   return result;
 }
@@ -91,8 +90,6 @@ async function scrollToTarget(id, selector, block = "start") {
   const result = await execute(id, `
     document.documentElement.style.scrollBehavior = 'auto';
     document.body.style.scrollBehavior = 'auto';
-    const main = document.querySelector('main');
-    if (main) main.style.scrollBehavior = 'auto';
     const element = document.querySelector(${JSON.stringify(selector)});
     if (!element) return { found:false };
     element.scrollIntoView({block:${JSON.stringify(block)}, inline:'nearest', behavior:'instant'});
@@ -106,7 +103,7 @@ async function scrollToTarget(id, selector, block = "start") {
       visible:rect.bottom > 0 && rect.top < window.innerHeight,
     };
   `);
-  await new Promise((resolve) => setTimeout(resolve, 80));
+  await new Promise((resolve) => setTimeout(resolve, 90));
   assert.equal(result.found, true, `alvo visual ausente: ${selector}`);
   assert.equal(result.visible, true, `alvo visual fora da viewport: ${selector}`);
   return result;
@@ -133,38 +130,83 @@ async function captureEvidence(id, viewportLabel, width) {
     assert.equal(mobileMenu, true, `${viewportLabel}: menu mobile não utilizável`);
   }
 
+  const homeJourney = await execute(id, `
+    const text = document.body.innerText;
+    return {
+      hasCommercial: text.includes('Conhecer soluções') && text.includes('Falar com a BravSystems'),
+      hasClientAccess: text.includes('Entrar / Meus Sistemas'),
+      heroProducts: [...document.querySelectorAll('[data-hero-ecosystem] a')].map(a => a.textContent.trim()),
+    };
+  `);
+  assert.equal(homeJourney.hasCommercial, true, `${viewportLabel}: jornada comercial ausente`);
+  assert.equal(homeJourney.hasClientAccess, true, `${viewportLabel}: jornada de cliente ausente`);
+  assert.equal(homeJourney.heroProducts.length, 6, `${viewportLabel}: Hero não representa os seis produtos`);
   await capture(id, `${viewportLabel}-01-home`);
 
   await scrollToTarget(id, "#inicio");
   await capture(id, `${viewportLabel}-02-hero`);
 
   await scrollToTarget(id, "#produtos");
-  const products = await execute(id, `return [...document.querySelectorAll('#produtos article h3')].map(el => el.textContent.trim());`);
-  assert.deepEqual(products, ["BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo"]);
+  const products = await execute(id, `
+    return [...document.querySelectorAll('#produtos article')].map(article => ({
+      name: article.querySelector('h3')?.textContent?.trim() || '',
+      text: article.textContent || '',
+    }));
+  `);
+  assert.deepEqual(products.map((item) => item.name), ["BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo"]);
+  const academyCard = products.find((item) => item.name === "BravAcademy");
+  assert.ok(academyCard?.text.includes("Em homologação"), `${viewportLabel}: BravAcademy sem status de homologação no portfólio`);
   await capture(id, `${viewportLabel}-03-portfolio`);
 
-  await navigate(id, "/acessar");
+  await scrollToTarget(id, "#bravacademy", "center");
+  const academy = await execute(id, `
+    const section = document.querySelector('#bravacademy');
+    return {
+      text: section?.textContent || '',
+      hasLink: Boolean(section?.querySelector('a[href="/bravacademy"]')),
+      journeySteps: section?.querySelectorAll('[aria-label="Jornada de aprendizagem do BravAcademy"] > div:last-child > div').length || 0,
+    };
+  `);
+  assert.ok(academy.text.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: destaque BravAcademy sem homologação`);
+  assert.equal(academy.hasLink, true, `${viewportLabel}: CTA Conhecer BravAcademy ausente`);
+  assert.equal(academy.journeySteps, 5, `${viewportLabel}: composição institucional BravAcademy incompleta`);
+  await capture(id, `${viewportLabel}-04-bravacademy`);
+
+  await scrollToTarget(id, "#bravos", "center");
+  const bravos = await execute(id, `
+    const section = document.querySelector('#bravos');
+    const image = section?.querySelector('img');
+    return {
+      text: section?.textContent || '',
+      imageSrc: image?.getAttribute('src') || '',
+      imageWidth: image?.naturalWidth || 0,
+    };
+  `);
+  assert.ok(bravos.text.includes("A operação acontece em tempo real. Sua gestão também deveria."), `${viewportLabel}: destaque BravOS ausente`);
+  assert.ok(bravos.imageSrc.includes("bravos-hero-approved.webp"), `${viewportLabel}: asset BravOS aprovado não utilizado`);
+  assert.ok(bravos.imageWidth > 0, `${viewportLabel}: asset BravOS não carregou`);
+  await capture(id, `${viewportLabel}-05-bravos`);
+
+  await navigate(id, "/meus-sistemas");
+  const aliasUrl = await wd("GET", `/session/${id}/url`);
+  assert.ok(aliasUrl.endsWith("/acessar"), `${viewportLabel}: /meus-sistemas não redireciona para /acessar`);
   const access = await auditPage(id, `${viewportLabel}/acessar`);
-  assert.equal(access.h1, "Acesse seu sistema BravSystems.");
+  assert.equal(access.h1, "Seus sistemas BravSystems em um único lugar.");
   const accessCards = await execute(id, `
-    const section = [...document.querySelectorAll('section')].find(section => section.textContent.includes('Sistemas BravSystems'));
-    if (!section) return { names: [], activeLogins: 0 };
-    section.id = 'browser-access-products';
+    const section = document.querySelector('#sistemas');
     return {
       names: [...section.querySelectorAll('article h3')].map(el => el.textContent.trim()),
       activeLogins: [...section.querySelectorAll('a')].filter(a => /^Acessar Brav/.test(a.textContent.trim())).length,
+      blockedCtas: [...section.querySelectorAll('article')].filter(article => article.textContent.includes('ACESSO EM IMPLANTAÇÃO')).length,
+      academyText: [...section.querySelectorAll('article')].find(article => article.querySelector('h3')?.textContent.trim() === 'BravAcademy')?.textContent || '',
     };
   `);
   assert.deepEqual(accessCards.names, ["BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo"]);
-  await scrollToTarget(id, "#browser-access-products");
-  await capture(id, `${viewportLabel}-04-central-acesso`);
-
-  await navigate(id, "/bravos");
-  const product = await auditPage(id, `${viewportLabel}/bravos`);
-  assert.ok(product.h1.length > 20, `${viewportLabel}: headline BravOS ausente`);
-  const productHasAccess = await execute(id, `return [...document.querySelectorAll('a')].some(a => a.textContent.includes('Central de Acesso') || a.textContent.includes('Acessar BravOS'));`);
-  assert.equal(productHasAccess, true, `${viewportLabel}: jornada cliente ausente na página do produto`);
-  await capture(id, `${viewportLabel}-05-produto-bravos`);
+  assert.equal(accessCards.activeLogins, 0, `${viewportLabel}: CI não deve ativar login sem URL oficial`);
+  assert.equal(accessCards.blockedCtas, 6, `${viewportLabel}: CTAs sem URL deveriam permanecer bloqueados`);
+  assert.ok(accessCards.academyText.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravAcademy sem status correto na Central`);
+  await scrollToTarget(id, "#sistemas");
+  await capture(id, `${viewportLabel}-06-central-acesso`);
 
   await navigate(id, "/");
   await scrollToTarget(id, "#contato");
@@ -176,20 +218,20 @@ async function captureEvidence(id, viewportLabel, width) {
     return rect.bottom > 0 && rect.top < window.innerHeight;
   `);
   assert.equal(formPresent, true, `${viewportLabel}: formulário comercial não está visível na evidência`);
-  await capture(id, `${viewportLabel}-06-contato`);
+  await capture(id, `${viewportLabel}-07-contato`);
 
   await scrollToTarget(id, "footer", "end");
   const footerAccess = await execute(id, `
     const footer = document.querySelector('footer');
     if (!footer) return false;
     const rect = footer.getBoundingClientRect();
-    const hasAccess = [...footer.querySelectorAll('a')].some(a => a.getAttribute('href') === '/acessar');
+    const hasAccess = [...footer.querySelectorAll('a')].some(a => a.getAttribute('href') === '/acessar' && a.textContent.includes('Meus Sistemas'));
     return hasAccess && rect.bottom > 0 && rect.top < window.innerHeight;
   `);
-  assert.equal(footerAccess, true, `${viewportLabel}: footer/Central de Acesso não está visível na evidência`);
-  await capture(id, `${viewportLabel}-07-footer`);
+  assert.equal(footerAccess, true, `${viewportLabel}: footer/Meus Sistemas não está visível na evidência`);
+  await capture(id, `${viewportLabel}-08-footer`);
 
-  return { home, access, product, accessCards };
+  return { home, access, accessCards };
 }
 
 async function runViewport(width, height, label) {
@@ -218,16 +260,16 @@ async function runViewport(width, height, label) {
       viewport: { width, height },
       homeTitle: result.home.title,
       accessTitle: result.access.title,
-      productTitle: result.product.title,
       accessProducts: result.accessCards.names.length,
       activeLoginsInCI: result.accessCards.activeLogins,
+      blockedCtasInCI: result.accessCards.blockedCtas,
     })}`);
   } finally {
     await wd("DELETE", `/session/${id}`).catch(() => {});
   }
 }
 
-test("Portal SaaS BravSystems — browser real desktop/mobile", { timeout: 180_000 }, async () => {
+test("Portal SaaS BravSystems — ecossistema e BravAcademy em desktop/mobile", { timeout: 180_000 }, async () => {
   await mkdir(evidenceDir, { recursive: true });
 
   const app = startService("npm", ["start", "--", "-p", String(APP_PORT)]);
