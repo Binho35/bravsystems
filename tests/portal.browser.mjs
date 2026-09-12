@@ -52,6 +52,14 @@ async function execute(id, script) {
 async function navigate(id, path) {
   await wd("POST", `/session/${id}/url`, { url: `${appBase}${path}` });
   await new Promise((resolve) => setTimeout(resolve, 700));
+  await execute(id, `
+    document.documentElement.style.scrollBehavior = 'auto';
+    document.body.style.scrollBehavior = 'auto';
+    const main = document.querySelector('main');
+    if (main) main.style.scrollBehavior = 'auto';
+    window.scrollTo({top:0,left:0,behavior:'instant'});
+    return true;
+  `);
 }
 
 async function auditPage(id, label) {
@@ -59,6 +67,7 @@ async function auditPage(id, label) {
     return {
       title: document.title,
       h1: document.querySelector('h1')?.textContent?.trim() || '',
+      h1Count: document.querySelectorAll('h1').length,
       overflowX: document.documentElement.scrollWidth > window.innerWidth,
       scrollWidth: document.documentElement.scrollWidth,
       viewportWidth: window.innerWidth,
@@ -72,19 +81,35 @@ async function auditPage(id, label) {
   assert.equal(result.overflowX, false, `${label}: overflow horizontal (${result.scrollWidth} > ${result.viewportWidth})`);
   assert.equal(result.hasHeader, true, `${label}: header ausente`);
   assert.equal(result.hasFooter, true, `${label}: footer ausente`);
+  assert.equal(result.h1Count, 1, `${label}: hierarquia H1 inválida`);
   assert.equal(result.links.some((href) => href.includes('.vercel.app')), false, `${label}: link técnico Vercel exposto`);
   assert.equal(result.links.some((href) => href.includes('-git-')), false, `${label}: alias de branch exposto`);
   return result;
 }
 
-async function scrollTo(id, selector, fallbackScript = "window.scrollTo(0,0)") {
-  await execute(id, `
+async function scrollToTarget(id, selector, block = "start") {
+  const result = await execute(id, `
+    document.documentElement.style.scrollBehavior = 'auto';
+    document.body.style.scrollBehavior = 'auto';
+    const main = document.querySelector('main');
+    if (main) main.style.scrollBehavior = 'auto';
     const element = document.querySelector(${JSON.stringify(selector)});
-    if (element) element.scrollIntoView({block:'start'});
-    else ${fallbackScript};
-    return true;
+    if (!element) return { found:false };
+    element.scrollIntoView({block:${JSON.stringify(block)}, inline:'nearest', behavior:'instant'});
+    const rect = element.getBoundingClientRect();
+    return {
+      found:true,
+      top:rect.top,
+      bottom:rect.bottom,
+      height:rect.height,
+      viewportHeight:window.innerHeight,
+      visible:rect.bottom > 0 && rect.top < window.innerHeight,
+    };
   `);
-  await new Promise((resolve) => setTimeout(resolve, 250));
+  await new Promise((resolve) => setTimeout(resolve, 80));
+  assert.equal(result.found, true, `alvo visual ausente: ${selector}`);
+  assert.equal(result.visible, true, `alvo visual fora da viewport: ${selector}`);
+  return result;
 }
 
 async function capture(id, label) {
@@ -93,18 +118,27 @@ async function capture(id, label) {
   await writeFile(new URL(`${label}.png`, evidenceDir), Buffer.from(png, "base64"));
 }
 
-async function captureEvidence(id, viewportLabel) {
+async function captureEvidence(id, viewportLabel, width) {
   await navigate(id, "/");
   const home = await auditPage(id, `${viewportLabel}/home`);
   assert.equal(home.h1, "Tecnologia para transformar operações complexas em gestão simples, conectada e escalável.");
 
-  await scrollTo(id, "#solucoes");
+  if (width <= 640) {
+    const mobileMenu = await execute(id, `
+      const summary = document.querySelector('header summary');
+      if (!summary) return false;
+      const rect = summary.getBoundingClientRect();
+      return rect.width >= 40 && rect.height >= 40 && getComputedStyle(summary).display !== 'none';
+    `);
+    assert.equal(mobileMenu, true, `${viewportLabel}: menu mobile não utilizável`);
+  }
+
   await capture(id, `${viewportLabel}-01-home`);
 
-  await scrollTo(id, "#inicio");
+  await scrollToTarget(id, "#inicio");
   await capture(id, `${viewportLabel}-02-hero`);
 
-  await scrollTo(id, "#produtos");
+  await scrollToTarget(id, "#produtos");
   const products = await execute(id, `return [...document.querySelectorAll('#produtos article h3')].map(el => el.textContent.trim());`);
   assert.deepEqual(products, ["BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo"]);
   await capture(id, `${viewportLabel}-03-portfolio`);
@@ -115,14 +149,14 @@ async function captureEvidence(id, viewportLabel) {
   const accessCards = await execute(id, `
     const section = [...document.querySelectorAll('section')].find(section => section.textContent.includes('Sistemas BravSystems'));
     if (!section) return { names: [], activeLogins: 0 };
-    section.scrollIntoView({block:'start'});
+    section.id = 'browser-access-products';
     return {
       names: [...section.querySelectorAll('article h3')].map(el => el.textContent.trim()),
       activeLogins: [...section.querySelectorAll('a')].filter(a => /^Acessar Brav/.test(a.textContent.trim())).length,
     };
   `);
   assert.deepEqual(accessCards.names, ["BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo"]);
-  await new Promise((resolve) => setTimeout(resolve, 250));
+  await scrollToTarget(id, "#browser-access-products");
   await capture(id, `${viewportLabel}-04-central-acesso`);
 
   await navigate(id, "/bravos");
@@ -133,14 +167,26 @@ async function captureEvidence(id, viewportLabel) {
   await capture(id, `${viewportLabel}-05-produto-bravos`);
 
   await navigate(id, "/");
-  await scrollTo(id, "#contato");
-  const formPresent = await execute(id, `return Boolean(document.querySelector('#contato form'));`);
-  assert.equal(formPresent, true, `${viewportLabel}: formulário comercial ausente`);
+  await scrollToTarget(id, "#contato");
+  const formPresent = await execute(id, `
+    const section = document.querySelector('#contato');
+    const form = section?.querySelector('form');
+    if (!form) return false;
+    const rect = section.getBoundingClientRect();
+    return rect.bottom > 0 && rect.top < window.innerHeight;
+  `);
+  assert.equal(formPresent, true, `${viewportLabel}: formulário comercial não está visível na evidência`);
   await capture(id, `${viewportLabel}-06-contato`);
 
-  await scrollTo(id, "footer");
-  const footerAccess = await execute(id, `return [...document.querySelectorAll('footer a')].some(a => a.getAttribute('href') === '/acessar');`);
-  assert.equal(footerAccess, true, `${viewportLabel}: Central de Acesso ausente do footer`);
+  await scrollToTarget(id, "footer", "end");
+  const footerAccess = await execute(id, `
+    const footer = document.querySelector('footer');
+    if (!footer) return false;
+    const rect = footer.getBoundingClientRect();
+    const hasAccess = [...footer.querySelectorAll('a')].some(a => a.getAttribute('href') === '/acessar');
+    return hasAccess && rect.bottom > 0 && rect.top < window.innerHeight;
+  `);
+  assert.equal(footerAccess, true, `${viewportLabel}: footer/Central de Acesso não está visível na evidência`);
   await capture(id, `${viewportLabel}-07-footer`);
 
   return { home, access, product, accessCards };
@@ -167,7 +213,7 @@ async function runViewport(width, height, label) {
 
   try {
     await wd("POST", `/session/${id}/window/rect`, { width, height, x: 0, y: 0 });
-    const result = await captureEvidence(id, label);
+    const result = await captureEvidence(id, label, width);
     console.log(`PORTAL_${label}_RESULT=${JSON.stringify({
       viewport: { width, height },
       homeTitle: result.home.title,
