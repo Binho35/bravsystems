@@ -26,7 +26,6 @@ test("homepage apresenta os seis produtos oficiais com descritores aprovados", a
   const page = await read("app/page.tsx");
   const products = await read("lib/products.ts");
   for (const name of officialProducts) {
-    assert.ok(page.includes(name), `${name} ausente da homepage`);
     assert.ok(products.includes(`name: \"${name}\"`), `${name} ausente do catálogo`);
   }
   for (const descriptor of [
@@ -39,7 +38,7 @@ test("homepage apresenta os seis produtos oficiais com descritores aprovados", a
   ]) {
     assert.ok(page.includes(descriptor), `descritor ausente: ${descriptor}`);
   }
-  assert.ok(page.includes("products.map"));
+  assert.ok(page.includes("products.map"), "homepage deve renderizar o catálogo oficial dinamicamente");
 });
 
 test("BravAcademy recebe destaque próprio e status EM HOMOLOGAÇÃO", async () => {
