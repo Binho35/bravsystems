@@ -46,11 +46,14 @@ test("homepage descobre somente os três vídeos ativos com poster real e player
   assert.equal(page.includes('const homepageVideoSlugs = new Set(["bravos", "bravhas", "bravvideo", "bravhos"'), false);
 });
 
-test("ecossistema comercial destaca os produtos oficiais sem roadmap fictício", async () => {
+test("ecossistema comercial destaca produtos oficiais sem roadmap fictício", async () => {
   const page = await read("app/page.tsx");
-  for (const slug of ["bravos", "bravacademy", "bravmsg"]) {
-    assert.ok(page.includes(`\"${slug}\"`) || page.includes(`/${slug}`), `${slug} ausente da homepage`);
+  const products = await read("lib/products.ts");
+  for (const name of ["BravOS", "BravAcademy", "BravMsg"]) {
+    assert.ok(page.includes(name), `${name} ausente da comunicação da homepage`);
+    assert.ok(products.includes(`name: \"${name}\"`), `${name} ausente do catálogo oficial`);
   }
+  assert.ok(page.includes("products.map"), "portfólio da homepage deve ser derivado do catálogo oficial");
   assert.equal(page.includes("BravCRM"), false);
   assert.equal(page.includes("BravInsights"), false);
 });
