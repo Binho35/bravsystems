@@ -46,10 +46,10 @@ test("homepage descobre somente os três vídeos ativos com poster real e player
   assert.equal(page.includes('const homepageVideoSlugs = new Set(["bravos", "bravhas", "bravvideo", "bravhos"'), false);
 });
 
-test("ecossistema comercial destaca BravOS BravAcademy e BravMsg sem roadmap fictício", async () => {
+test("ecossistema comercial destaca os produtos oficiais sem roadmap fictício", async () => {
   const page = await read("app/page.tsx");
   for (const slug of ["bravos", "bravacademy", "bravmsg"]) {
-    assert.ok(page.includes(`\"${slug}\"`), `${slug} ausente da seleção principal do ecossistema`);
+    assert.ok(page.includes(`\"${slug}\"`) || page.includes(`/${slug}`), `${slug} ausente da homepage`);
   }
   assert.equal(page.includes("BravCRM"), false);
   assert.equal(page.includes("BravInsights"), false);
@@ -164,8 +164,48 @@ test("player de produto é modal, sob demanda, 9:16 e sem autoplay", async () =>
   assert.ok(homePage.includes("ProductVideoDialog"));
 });
 
-test("sitemap publica produtos e política canônica", async () => {
+test("sitemap publica produtos, central de acesso e política canônica", async () => {
   const sitemap = await read("app/sitemap.ts");
   assert.ok(sitemap.includes("products.map"));
+  assert.ok(sitemap.includes("/acessar"));
   assert.ok(sitemap.includes("politica-de-privacidade"));
+});
+
+test("central de acesso separa login de jornada comercial", async () => {
+  const page = await read("app/acessar/page.tsx");
+  assert.ok(page.includes("Acesse seu sistema BravSystems"));
+  assert.ok(page.includes("productAccessCatalog"));
+  assert.ok(page.includes("Acesso público ainda não liberado"));
+  assert.ok(page.includes("Conhecer solução"));
+  assert.ok(page.includes("Solicitar demonstração"));
+  assert.ok(page.includes("loginHref"));
+  assert.equal(page.includes("-git-main-"), false, "Central não deve hardcodar alias de branch");
+  assert.equal(page.includes("vercel.app"), false, "Central não deve hardcodar domínio técnico Vercel");
+});
+
+test("catálogo de acesso exige URL HTTPS configurada e não inventa endpoints", async () => {
+  const access = await read("lib/product-access.ts");
+  for (const envName of [
+    "NEXT_PUBLIC_BRAVOS_APP_URL",
+    "NEXT_PUBLIC_BRAVHAS_APP_URL",
+    "NEXT_PUBLIC_BRAVHOS_APP_URL",
+    "NEXT_PUBLIC_BRAVMSG_APP_URL",
+    "NEXT_PUBLIC_BRAVACADEMY_APP_URL",
+    "NEXT_PUBLIC_BRAVVIDEO_APP_URL",
+  ]) {
+    assert.ok(access.includes(envName), `${envName} ausente do contrato de acesso`);
+  }
+  assert.ok(access.includes('url.protocol !== "https:"'));
+  assert.ok(access.includes('"localhost"'));
+  assert.ok(access.includes('loginHref ? "ACESSO DISPONÍVEL"'));
+  assert.equal(access.includes("https://bravos-"), false);
+  assert.equal(access.includes("vercel.app"), false);
+});
+
+test("navegação principal expõe jornada institucional e acesso ao cliente", async () => {
+  const header = await read("components/SiteHeader.tsx");
+  for (const label of ["Início", "Produtos", "Soluções", "Por que BravSystems", "Contato", "Acessar"]) {
+    assert.ok(header.includes(label), `${label} ausente da navegação`);
+  }
+  assert.ok(header.includes('href="/acessar"'));
 });
