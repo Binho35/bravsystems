@@ -31,10 +31,14 @@ function normalizeOfficialUrl(raw?: string) {
 
   try {
     const url = new URL(value);
+    const hostname = url.hostname.toLowerCase();
     const blockedHosts = new Set(["localhost", "127.0.0.1", "0.0.0.0"]);
-    if (url.protocol !== "https:" || blockedHosts.has(url.hostname) || url.hostname.endsWith(".local")) {
+    const technicalHost = hostname.endsWith(".local") || hostname.endsWith(".vercel.app") || hostname.endsWith(".vercel.sh");
+
+    if (url.protocol !== "https:" || blockedHosts.has(hostname) || technicalHost) {
       return null;
     }
+
     return url.toString();
   } catch {
     return null;
