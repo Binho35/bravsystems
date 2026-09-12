@@ -33,7 +33,7 @@ function normalizeOfficialUrl(raw?: string) {
     const url = new URL(value);
     const hostname = url.hostname.toLowerCase();
     const blockedHosts = new Set(["localhost", "127.0.0.1", "0.0.0.0"]);
-    const technicalHost = hostname.endsWith(".local") || hostname.endsWith(".vercel.app") || hostname.endsWith(".vercel.sh");
+    const technicalHost = hostname.endsWith(".local") || /\.vercel\.(?:app|sh)$/.test(hostname);
 
     if (url.protocol !== "https:" || blockedHosts.has(hostname) || technicalHost) {
       return null;
