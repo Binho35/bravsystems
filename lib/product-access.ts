@@ -31,7 +31,7 @@ const governedState: Record<string, { status: ProductAccessStatus; environmentNo
   bravacademy: { status: "EM HOMOLOGAÇÃO", environmentNote: "Ambiente de homologação operacional; hostname temporário não é publicado como acesso de cliente." },
   bravhos: { status: "EM DESENVOLVIMENTO", environmentNote: "Preview web em preparação." },
   bravmsg: { status: "EM DESENVOLVIMENTO", environmentNote: "Ambiente web ainda não liberado para acesso público." },
-  bravhas: { status: "ACESSO INTERNO", environmentNote: "Ambiente existente ainda precisa de auditoria antes de eventual liberação pública." },
+  bravhas: { status: "EM HOMOLOGAÇÃO", environmentNote: "Ambiente de homologação operacional; acesso público depende de endereço oficial autorizado." },
   bravvideo: { status: "EM DESENVOLVIMENTO", environmentNote: "Ambiente de desenvolvimento; acesso público ainda não homologado." },
 };
 
