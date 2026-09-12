@@ -31,7 +31,6 @@ function statusClass(status: Product["status"]) {
 
 export default function Home() {
   const bravos = products.find((product) => product.slug === "bravos")!;
-  const academy = products.find((product) => product.slug === "bravacademy")!;
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#f6f9fc] text-[#092846]">
@@ -43,21 +42,21 @@ export default function Home() {
           <div className="absolute -bottom-64 left-[8%] h-[520px] w-[520px] rounded-full bg-[#e5f1f8] blur-3xl" />
         </div>
 
-        <div className="relative mx-auto grid min-h-[720px] max-w-[1400px] items-center gap-12 px-5 py-14 sm:px-8 lg:grid-cols-[1.02fr_.98fr] lg:px-10 lg:py-20">
+        <div className="relative mx-auto grid min-h-[680px] max-w-[1400px] items-center gap-10 px-5 py-10 sm:min-h-[720px] sm:px-8 sm:py-14 lg:grid-cols-[1.02fr_.98fr] lg:px-10 lg:py-20">
           <div className="max-w-[760px]">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#c9dce8] bg-[#f8fbfd] px-4 py-2 text-[11px] font-extrabold uppercase tracking-[.16em] text-[#15517f]">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#c9dce8] bg-[#f8fbfd] px-4 py-2 text-[11px] font-extrabold uppercase tracking-[.13em] text-[#15517f] sm:tracking-[.16em]">
               <span className="h-2 w-2 rounded-full bg-[#2563eb]" aria-hidden="true" />
               BravSystems • Ecossistema SaaS B2B
             </div>
 
-            <h1 className="mt-7 text-[44px] font-bold leading-[1.02] tracking-[-.055em] sm:text-6xl lg:text-[72px]">
+            <h1 className="mt-6 text-[38px] font-bold leading-[1.04] tracking-[-.05em] sm:mt-7 sm:text-6xl sm:leading-[1.02] lg:text-[72px]">
               Tecnologia para transformar operações complexas em gestão simples, conectada e escalável.
             </h1>
-            <p className="mt-7 max-w-[690px] text-[18px] leading-8 text-[#587086] sm:text-[20px]">
+            <p className="mt-5 max-w-[690px] text-[16px] leading-7 text-[#587086] sm:mt-7 sm:text-[20px] sm:leading-8">
               Produtos próprios para operação, administração, pessoas, comunicação, aprendizagem e conteúdo corporativo — reunidos sob uma única visão de tecnologia e governança.
             </p>
 
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row sm:flex-wrap">
               <a href="#produtos" className="inline-flex min-h-13 items-center justify-center rounded-xl bg-[#0f4d78] px-7 text-[15px] font-extrabold text-white shadow-xl shadow-[#0f4d78]/20 transition hover:-translate-y-0.5 hover:bg-[#092846]">
                 Conhecer soluções →
               </a>
@@ -69,7 +68,7 @@ export default function Home() {
               </Link>
             </div>
 
-            <div className="mt-9 flex flex-wrap gap-x-7 gap-y-3 border-t border-[#d7e4ec] pt-6 text-sm font-semibold text-[#5f7689]">
+            <div className="mt-7 flex flex-wrap gap-x-7 gap-y-3 border-t border-[#d7e4ec] pt-5 text-sm font-semibold text-[#5f7689] sm:mt-9 sm:pt-6">
               <span>6 produtos no ecossistema</span>
               <span>SaaS B2B</span>
               <span>Maturidade comunicada com transparência</span>
