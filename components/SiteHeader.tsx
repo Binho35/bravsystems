@@ -2,10 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 const navigation = [
-  ["Soluções", "/#solucoes"],
-  ["Produtos", "/#produtos"],
+  ["Ecossistema", "/#produtos"],
   ["Destaques", "/#destaques"],
   ["Por que BravSystems", "/#por-que-bravsystems"],
+  ["Central", "/acessar"],
   ["Contato", "/#contato"],
 ] as const;
 
@@ -13,13 +13,16 @@ export function SiteHeader() {
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-50 border-b border-[#dbe7ef] bg-white/95 shadow-sm backdrop-blur-xl">
-        <div className="mx-auto flex min-h-[76px] max-w-[1400px] items-center px-5 lg:px-10">
+        <div className="mx-auto flex min-h-[72px] max-w-[1400px] items-center px-5 lg:px-10">
           <Link href="/#inicio" className="flex items-center gap-3 rounded-lg" aria-label="BravSystems — início">
-            <Image src="/bravsystems-logo.png" alt="BravSystems" width={64} height={64} priority className="h-[56px] w-[56px] object-contain" />
-            <span className="hidden text-sm font-extrabold tracking-[-.02em] text-[#092846] sm:block">BravSystems</span>
+            <Image src="/bravsystems-logo.png" alt="BravSystems" width={60} height={60} priority className="h-[52px] w-[52px] object-contain" />
+            <div className="hidden sm:block">
+              <div className="text-sm font-extrabold tracking-[-.02em] text-[#092846]">BravSystems</div>
+              <div className="mt-0.5 text-[9px] font-extrabold uppercase tracking-[.16em] text-[#6e8597]">Ecossistema SaaS B2B</div>
+            </div>
           </Link>
 
-          <nav className="ml-auto hidden items-center gap-6 text-sm font-semibold text-[#4e6679] xl:flex" aria-label="Navegação principal">
+          <nav className="ml-auto hidden items-center gap-5 text-sm font-semibold text-[#4e6679] xl:flex" aria-label="Navegação principal">
             {navigation.map(([label, href]) => (
               <Link key={href} href={href} className="rounded-md transition hover:text-[#0f4d78]">
                 {label}
@@ -28,11 +31,11 @@ export function SiteHeader() {
           </nav>
 
           <div className="ml-auto hidden items-center gap-2 sm:flex xl:ml-6">
-            <Link href="/#contato" className="rounded-full border border-[#c3d7e4] bg-white px-5 py-3 text-sm font-bold text-[#315b7a] transition hover:border-[#0f4d78] hover:text-[#092846]">
-              Falar com a BravSystems
+            <Link href="/#contato" className="rounded-full border border-[#c3d7e4] bg-white px-4 py-2.5 text-sm font-bold text-[#315b7a] transition hover:border-[#0f4d78] hover:text-[#092846]">
+              Falar com especialista
             </Link>
-            <Link href="/acessar" className="rounded-full bg-[#0f4d78] px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-[#0f4d78]/15 transition hover:bg-[#092846]">
-              Entrar / Meus Sistemas
+            <Link href="/acessar" className="rounded-full bg-[#0f4d78] px-4 py-2.5 text-sm font-extrabold text-white shadow-lg shadow-[#0f4d78]/15 transition hover:bg-[#092846]">
+              Meus Sistemas
             </Link>
           </div>
 
@@ -47,7 +50,7 @@ export function SiteHeader() {
                 </Link>
               ))}
               <Link href="/#contato" className="mt-2 block rounded-xl border border-[#d4e2eb] px-4 py-3 text-center text-sm font-bold text-[#315b7a]">
-                Falar com a BravSystems
+                Falar com especialista
               </Link>
               <Link href="/acessar" className="mt-2 block rounded-xl bg-[#0f4d78] px-4 py-3 text-center text-sm font-extrabold text-white">
                 Entrar / Meus Sistemas
@@ -56,7 +59,7 @@ export function SiteHeader() {
           </details>
         </div>
       </header>
-      <div className="h-[76px]" aria-hidden="true" />
+      <div className="h-[72px]" aria-hidden="true" />
     </>
   );
 }
