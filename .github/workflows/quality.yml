@@ -13,7 +13,7 @@ permissions:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,9 +24,23 @@ jobs:
           cache: npm
       - name: Install
         run: npm ci
+      - name: Audit
+        run: npm audit --audit-level=high
       - name: Lint
         run: npm run lint
       - name: Tests
         run: npm test
+      - name: TypeScript
+        run: npx tsc --noEmit
       - name: Build
         run: npm run build
+      - name: Browser E2E desktop/mobile
+        run: node --test tests/portal.browser.mjs
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bravsystems-ecosystem-academy-polish-${{ github.sha }}
+          path: artifacts/browser/*.png
+          if-no-files-found: warn
+          retention-days: 14
