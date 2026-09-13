@@ -55,7 +55,7 @@ async function navigate(id, path) {
   await execute(id, `
     document.documentElement.style.scrollBehavior = 'auto';
     document.body.style.scrollBehavior = 'auto';
-    window.scrollTo({top:0,left:0,behavior:'instant'});
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     return true;
   `);
 }
@@ -80,9 +80,9 @@ async function auditPage(id, label) {
   assert.equal(result.hasHeader, true, `${label}: header ausente`);
   assert.equal(result.hasFooter, true, `${label}: footer ausente`);
   assert.equal(result.h1Count, 1, `${label}: hierarquia H1 inválida`);
-  assert.equal(result.links.some((href) => href.includes('.vercel.app')), false, `${label}: link técnico Vercel exposto`);
-  assert.equal(result.links.some((href) => href.includes('hostingersite.com')), false, `${label}: hostname temporário Hostinger exposto`);
-  assert.equal(result.links.some((href) => href.includes('-git-')), false, `${label}: alias de branch exposto`);
+  assert.equal(result.links.some((href) => href.includes(".vercel.app")), false, `${label}: link técnico Vercel exposto`);
+  assert.equal(result.links.some((href) => href.includes("hostingersite.com")), false, `${label}: hostname temporário Hostinger exposto`);
+  assert.equal(result.links.some((href) => href.includes("-git-")), false, `${label}: alias técnico exposto`);
   return result;
 }
 
@@ -91,22 +91,20 @@ async function scrollToTarget(id, selector, block = "start") {
     document.documentElement.style.scrollBehavior = 'auto';
     document.body.style.scrollBehavior = 'auto';
     const element = document.querySelector(${JSON.stringify(selector)});
-    if (!element) return { found:false };
-    element.scrollIntoView({block:${JSON.stringify(block)}, inline:'nearest', behavior:'instant'});
+    if (!element) return { found: false };
+    element.scrollIntoView({ block: ${JSON.stringify(block)}, inline: 'nearest', behavior: 'instant' });
     const rect = element.getBoundingClientRect();
     return {
-      found:true,
-      top:rect.top,
-      bottom:rect.bottom,
-      height:rect.height,
-      viewportHeight:window.innerHeight,
-      visible:rect.bottom > 0 && rect.top < window.innerHeight,
+      found: true,
+      visible: rect.bottom > 0 && rect.top < window.innerHeight,
+      top: rect.top,
+      bottom: rect.bottom,
+      height: rect.height,
     };
   `);
-  await new Promise((resolve) => setTimeout(resolve, 90));
+  await new Promise((resolve) => setTimeout(resolve, 120));
   assert.equal(result.found, true, `alvo visual ausente: ${selector}`);
   assert.equal(result.visible, true, `alvo visual fora da viewport: ${selector}`);
-  return result;
 }
 
 async function capture(id, label) {
@@ -115,81 +113,86 @@ async function capture(id, label) {
   await writeFile(new URL(`${label}.png`, evidenceDir), Buffer.from(png, "base64"));
 }
 
-async function captureEvidence(id, viewportLabel, width) {
+async function captureHomeEvidence(id, viewportLabel, width) {
   await navigate(id, "/");
   const home = await auditPage(id, `${viewportLabel}/home`);
-  assert.equal(home.h1, "Tecnologia para transformar operações complexas em gestão simples, conectada e escalável.");
+  assert.equal(home.h1, "Software para operar melhor, decidir mais rápido e escalar com controle.");
 
-  if (width <= 640) {
-    const mobileMenu = await execute(id, `
-      const summary = document.querySelector('header summary');
-      if (!summary) return false;
-      const rect = summary.getBoundingClientRect();
-      return rect.width >= 40 && rect.height >= 40 && getComputedStyle(summary).display !== 'none';
-    `);
-    assert.equal(mobileMenu, true, `${viewportLabel}: menu mobile não utilizável`);
-  }
-
-  const homeJourney = await execute(id, `
-    const text = document.body.innerText;
+  const header = await execute(id, `
+    const header = document.querySelector('header');
     return {
-      hasCommercial: text.includes('Conhecer soluções') && text.includes('Falar com a BravSystems'),
-      hasClientAccess: text.includes('Entrar / Meus Sistemas'),
-      heroProducts: [...document.querySelectorAll('[data-hero-ecosystem] a')].map(a => a.textContent.trim()),
+      hasCentral: [...header.querySelectorAll('a')].some(a => a.getAttribute('href') === '/acessar'),
+      hasContact: [...header.querySelectorAll('a')].some(a => a.getAttribute('href') === '/#contato'),
+      hasBrand: header.textContent.includes('BravSystems'),
     };
   `);
-  assert.equal(homeJourney.hasCommercial, true, `${viewportLabel}: jornada comercial ausente`);
-  assert.equal(homeJourney.hasClientAccess, true, `${viewportLabel}: jornada de cliente ausente`);
-  assert.equal(homeJourney.heroProducts.length, 6, `${viewportLabel}: Hero não representa os seis produtos`);
+  assert.equal(header.hasCentral, true, `${viewportLabel}: Central ausente do header`);
+  assert.equal(header.hasContact, true, `${viewportLabel}: contato ausente do header`);
+  assert.equal(header.hasBrand, true, `${viewportLabel}: marca ausente do header`);
 
   if (width <= 640) {
-    const mobileHero = await execute(id, `
-      const title = document.querySelector('#inicio h1');
+    const mobile = await execute(id, `
+      const summary = document.querySelector('header summary');
       const primary = document.querySelector('#inicio a[href="#produtos"]');
-      const titleRect = title?.getBoundingClientRect();
+      const title = document.querySelector('#inicio h1');
+      const summaryRect = summary?.getBoundingClientRect();
       const primaryRect = primary?.getBoundingClientRect();
       return {
-        fontSize: title ? parseFloat(getComputedStyle(title).fontSize) : 999,
+        menuUsable: Boolean(summaryRect && summaryRect.width >= 40 && summaryRect.height >= 40),
         primaryVisible: Boolean(primaryRect && primaryRect.top < window.innerHeight && primaryRect.bottom > 0),
-        titleBottom: titleRect?.bottom || 9999,
+        fontSize: title ? parseFloat(getComputedStyle(title).fontSize) : 999,
       };
     `);
-    assert.ok(mobileHero.fontSize <= 40, `${viewportLabel}: headline mobile ainda excessivamente grande`);
-    assert.equal(mobileHero.primaryVisible, true, `${viewportLabel}: CTA primário do Hero não aparece na primeira viewport após polimento`);
+    assert.equal(mobile.menuUsable, true, `${viewportLabel}: menu mobile não utilizável`);
+    assert.equal(mobile.primaryVisible, true, `${viewportLabel}: CTA principal não está na primeira viewport`);
+    assert.ok(mobile.fontSize <= 40, `${viewportLabel}: headline mobile excessiva`);
   }
 
+  const hero = await execute(id, `
+    return {
+      products: [...document.querySelectorAll('[data-hero-ecosystem] a')].map(a => a.textContent.trim()),
+      hasOverview: Boolean(document.querySelector('[data-hero-portfolio]')),
+      hasCentral: document.body.innerText.includes('Entrar / Meus Sistemas'),
+      hasCommercial: document.body.innerText.includes('Falar com a BravSystems'),
+    };
+  `);
+  assert.equal(hero.products.length, 6, `${viewportLabel}: Hero deve representar seis produtos`);
+  assert.equal(hero.hasOverview, true, `${viewportLabel}: visão executiva do portfólio ausente`);
+  assert.equal(hero.hasCentral, true, `${viewportLabel}: jornada de acesso ausente`);
+  assert.equal(hero.hasCommercial, true, `${viewportLabel}: jornada comercial ausente`);
   await capture(id, `${viewportLabel}-01-home`);
 
-  await scrollToTarget(id, "#inicio");
-  await capture(id, `${viewportLabel}-02-hero`);
-
-  await scrollToTarget(id, "#produtos");
-  const products = await execute(id, `
-    return [...document.querySelectorAll('#produtos article')].map(article => ({
-      name: article.querySelector('h3')?.textContent?.trim() || '',
-      text: article.textContent || '',
+  await scrollToTarget(id, "#produtos", "start");
+  const productCards = await execute(id, `
+    return [...document.querySelectorAll('[data-product-card]')].map(card => ({
+      slug: card.getAttribute('data-product-card'),
+      name: card.querySelector('h3')?.textContent?.trim() || '',
+      text: card.textContent || '',
     }));
   `);
-  assert.deepEqual(products.map((item) => item.name), ["BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo"]);
-  const academyCard = products.find((item) => item.name === "BravAcademy");
-  assert.ok(academyCard?.text.includes("Em homologação"), `${viewportLabel}: BravAcademy sem status de homologação no portfólio`);
-  await capture(id, `${viewportLabel}-03-portfolio`);
+  assert.deepEqual(productCards.map((item) => item.name), ["BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo"]);
+  const academyCard = productCards.find((item) => item.slug === "bravacademy");
+  const bravhasCard = productCards.find((item) => item.slug === "bravhas");
+  assert.ok(academyCard?.text.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravAcademy sem estágio governado`);
+  assert.ok(bravhasCard?.text.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravHAS sem estágio governado`);
+  await capture(id, `${viewportLabel}-02-produtos`);
 
-  await scrollToTarget(id, "#bravacademy", "start");
+  await scrollToTarget(id, "#bravacademy", "center");
   const academy = await execute(id, `
     const section = document.querySelector('#bravacademy');
     return {
       text: section?.textContent || '',
-      hasLink: Boolean(section?.querySelector('a[href="/bravacademy"]')),
-      journeySteps: section?.querySelectorAll('[aria-label="Jornada de aprendizagem do BravAcademy"] > div:last-child > div').length || 0,
+      link: Boolean(section?.querySelector('a[href="/bravacademy"]')),
+      steps: section?.querySelectorAll('[aria-label="Jornada de aprendizagem do BravAcademy"] > div').length || 0,
     };
   `);
-  assert.ok(academy.text.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: destaque BravAcademy sem homologação`);
-  assert.equal(academy.hasLink, true, `${viewportLabel}: CTA Conhecer BravAcademy ausente`);
-  assert.equal(academy.journeySteps, 5, `${viewportLabel}: composição institucional BravAcademy incompleta`);
-  await capture(id, `${viewportLabel}-04-bravacademy`);
+  assert.ok(academy.text.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravAcademy sem homologação`);
+  assert.ok(academy.text.includes("Treinamento corporativo com identidade, trilha e evidência."), `${viewportLabel}: proposta Academy ausente`);
+  assert.equal(academy.link, true, `${viewportLabel}: CTA Academy ausente`);
+  assert.equal(academy.steps, 5, `${viewportLabel}: jornada Academy incompleta`);
+  await capture(id, `${viewportLabel}-03-bravacademy`);
 
-  await scrollToTarget(id, "#bravos", "start");
+  await scrollToTarget(id, "#bravos", "center");
   const bravos = await execute(id, `
     const section = document.querySelector('#bravos');
     const image = section?.querySelector('img');
@@ -199,73 +202,82 @@ async function captureEvidence(id, viewportLabel, width) {
       imageWidth: image?.naturalWidth || 0,
     };
   `);
-  assert.ok(bravos.text.includes("A operação acontece em tempo real. Sua gestão também deveria."), `${viewportLabel}: destaque BravOS ausente`);
-  assert.ok(bravos.imageSrc.includes("bravos-hero-approved.webp"), `${viewportLabel}: asset BravOS aprovado não utilizado`);
+  assert.ok(bravos.text.includes("A operação acontece em tempo real. Sua gestão também deveria."), `${viewportLabel}: BravOS ausente`);
+  assert.ok(bravos.imageSrc.includes("bravos-hero-approved.webp"), `${viewportLabel}: asset aprovado BravOS ausente`);
   assert.ok(bravos.imageWidth > 0, `${viewportLabel}: asset BravOS não carregou`);
-  await capture(id, `${viewportLabel}-05-bravos`);
+  await capture(id, `${viewportLabel}-04-bravos`);
 
+  return { home };
+}
+
+async function captureAccessEvidence(id, viewportLabel) {
   await navigate(id, "/meus-sistemas");
   const aliasUrl = await wd("GET", `/session/${id}/url`);
-  assert.ok(aliasUrl.endsWith("/acessar"), `${viewportLabel}: /meus-sistemas não redireciona para /acessar`);
+  assert.ok(aliasUrl.endsWith("/acessar"), `${viewportLabel}: /meus-sistemas não redirecionou`);
+
   const access = await auditPage(id, `${viewportLabel}/acessar`);
-  assert.equal(access.h1, "Seus sistemas BravSystems em um único lugar.");
-  const accessCards = await execute(id, `
-    const section = document.querySelector('#sistemas');
+  assert.equal(access.h1, "Sua central BravSystems, com status e acesso em um único lugar.");
+
+  const overview = await execute(id, `
+    const box = document.querySelector('[data-access-overview]');
     return {
-      names: [...section.querySelectorAll('article h3')].map(el => el.textContent.trim()),
-      activeLogins: [...section.querySelectorAll('a')].filter(a => /^Acessar Brav/.test(a.textContent.trim())).length,
-      blockedCtas: [...section.querySelectorAll('article')].filter(article => article.textContent.includes('ACESSO EM IMPLANTAÇÃO')).length,
-      academyText: [...section.querySelectorAll('article')].find(article => article.querySelector('h3')?.textContent.trim() === 'BravAcademy')?.textContent || '',
-      bravhasText: [...section.querySelectorAll('article')].find(article => article.querySelector('h3')?.textContent.trim() === 'BravHAS')?.textContent || '',
+      exists: Boolean(box),
+      text: box?.textContent || '',
     };
   `);
-  assert.deepEqual(accessCards.names, ["BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo"]);
-  assert.equal(accessCards.activeLogins, 0, `${viewportLabel}: CI não deve ativar login sem URL oficial`);
-  assert.equal(accessCards.blockedCtas, 6, `${viewportLabel}: CTAs sem URL deveriam permanecer bloqueados`);
-  assert.ok(accessCards.academyText.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravAcademy sem status correto na Central`);
-  assert.ok(accessCards.bravhasText.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravHAS sem status EM HOMOLOGAÇÃO na Central`);
-  assert.ok(accessCards.bravhasText.includes("Ambiente de homologação operacional; acesso público depende de endereço oficial autorizado."), `${viewportLabel}: BravHAS sem mensagem operacional atualizada`);
-  assert.equal(accessCards.bravhasText.includes("ACESSO INTERNO"), false, `${viewportLabel}: BravHAS ainda expõe ACESSO INTERNO`);
-  assert.equal(accessCards.bravhasText.includes("ainda precisa de auditoria"), false, `${viewportLabel}: BravHAS ainda expõe mensagem antiga`);
+  assert.equal(overview.exists, true, `${viewportLabel}: overview da Central ausente`);
+  assert.ok(overview.text.includes("Em homologação"), `${viewportLabel}: métrica homologação ausente`);
+  assert.ok(overview.text.includes("Acessos oficiais"), `${viewportLabel}: métrica acesso ausente`);
+  await capture(id, `${viewportLabel}-05-central-home`);
 
-  await scrollToTarget(id, "#sistemas");
-  await capture(id, `${viewportLabel}-06-central-acesso`);
-
-  const bravhasTarget = await execute(id, `
-    const section = document.querySelector('#sistemas');
-    const card = [...section.querySelectorAll('article')].find(article => article.querySelector('h3')?.textContent.trim() === 'BravHAS');
-    if (!card) return false;
-    card.id = 'bravhas-access-card';
-    return true;
+  await scrollToTarget(id, "#sistemas", "start");
+  const cards = await execute(id, `
+    const cards = [...document.querySelectorAll('[data-access-product]')];
+    return {
+      names: cards.map(card => card.querySelector('h3')?.textContent?.trim() || ''),
+      activeLogins: cards.flatMap(card => [...card.querySelectorAll('a')]).filter(a => /^Acessar Brav/.test(a.textContent.trim())).length,
+      blocked: cards.filter(card => card.querySelector('[data-access-blocked]')).length,
+      academyText: cards.find(card => card.getAttribute('data-access-product') === 'bravacademy')?.textContent || '',
+      bravhasText: cards.find(card => card.getAttribute('data-access-product') === 'bravhas')?.textContent || '',
+    };
   `);
-  assert.equal(bravhasTarget, true, `${viewportLabel}: card BravHAS não encontrado para evidência`);
-  await scrollToTarget(id, "#bravhas-access-card", "center");
-  await capture(id, `${viewportLabel}-07-bravhas-central`);
 
+  assert.deepEqual(cards.names, ["BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo"]);
+  assert.equal(cards.activeLogins, 0, `${viewportLabel}: CI não deve ativar login sem URL oficial`);
+  assert.equal(cards.blocked, 6, `${viewportLabel}: todos os acessos sem URL devem permanecer bloqueados`);
+  assert.ok(cards.academyText.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravAcademy incorreto na Central`);
+  assert.ok(cards.bravhasText.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravHAS incorreto na Central`);
+  assert.ok(cards.bravhasText.includes("Ambiente de homologação operacional; acesso público depende de endereço oficial autorizado."), `${viewportLabel}: mensagem BravHAS incorreta`);
+  assert.equal(cards.bravhasText.includes("ACESSO INTERNO"), false, `${viewportLabel}: BravHAS regrediu para ACESSO INTERNO`);
+  assert.equal(cards.bravhasText.includes("ainda precisa de auditoria"), false, `${viewportLabel}: mensagem antiga do BravHAS retornou`);
+  await capture(id, `${viewportLabel}-06-central-sistemas`);
+
+  await scrollToTarget(id, '[data-access-product="bravacademy"]', "center");
+  await capture(id, `${viewportLabel}-07-bravacademy-central`);
+
+  await scrollToTarget(id, '[data-access-product="bravhas"]', "center");
+  await capture(id, `${viewportLabel}-08-bravhas-central`);
+
+  return { access, cards };
+}
+
+async function captureClosingEvidence(id, viewportLabel) {
   await navigate(id, "/");
-  await scrollToTarget(id, "#contato");
+  await scrollToTarget(id, "#contato", "start");
   const formPresent = await execute(id, `
     const section = document.querySelector('#contato');
-    const form = section?.querySelector('form');
-    if (!form) return false;
-    const rect = section.getBoundingClientRect();
-    return rect.bottom > 0 && rect.top < window.innerHeight;
+    return Boolean(section?.querySelector('form'));
   `);
-  assert.equal(formPresent, true, `${viewportLabel}: formulário comercial não está visível na evidência`);
-  await capture(id, `${viewportLabel}-08-contato`);
+  assert.equal(formPresent, true, `${viewportLabel}: formulário comercial ausente`);
+  await capture(id, `${viewportLabel}-09-contato`);
 
   await scrollToTarget(id, "footer", "end");
   const footerAccess = await execute(id, `
     const footer = document.querySelector('footer');
-    if (!footer) return false;
-    const rect = footer.getBoundingClientRect();
-    const hasAccess = [...footer.querySelectorAll('a')].some(a => a.getAttribute('href') === '/acessar' && a.textContent.includes('Meus Sistemas'));
-    return hasAccess && rect.bottom > 0 && rect.top < window.innerHeight;
+    return [...footer.querySelectorAll('a')].some(a => a.getAttribute('href') === '/acessar' && a.textContent.includes('Meus Sistemas'));
   `);
-  assert.equal(footerAccess, true, `${viewportLabel}: footer/Meus Sistemas não está visível na evidência`);
-  await capture(id, `${viewportLabel}-09-footer`);
-
-  return { home, access, accessCards };
+  assert.equal(footerAccess, true, `${viewportLabel}: acesso ausente do footer`);
+  await capture(id, `${viewportLabel}-10-footer`);
 }
 
 async function runViewport(width, height, label) {
@@ -285,28 +297,31 @@ async function runViewport(width, height, label) {
       },
     },
   });
-  const id = session.sessionId;
 
+  const id = session.sessionId;
   try {
     await wd("POST", `/session/${id}/window/rect`, { width, height, x: 0, y: 0 });
-    const result = await captureEvidence(id, label, width);
+    const home = await captureHomeEvidence(id, label, width);
+    const central = await captureAccessEvidence(id, label);
+    await captureClosingEvidence(id, label);
+
     console.log(`PORTAL_${label}_RESULT=${JSON.stringify({
       viewport: { width, height },
-      homeTitle: result.home.title,
-      accessTitle: result.access.title,
-      accessProducts: result.accessCards.names.length,
-      activeLoginsInCI: result.accessCards.activeLogins,
-      blockedCtasInCI: result.accessCards.blockedCtas,
-      bravhasHomologation: result.accessCards.bravhasText.includes('EM HOMOLOGAÇÃO'),
+      homeTitle: home.home.title,
+      accessTitle: central.access.title,
+      accessProducts: central.cards.names.length,
+      activeLoginsInCI: central.cards.activeLogins,
+      blockedCtasInCI: central.cards.blocked,
+      bravacademyHomologation: central.cards.academyText.includes("EM HOMOLOGAÇÃO"),
+      bravhasHomologation: central.cards.bravhasText.includes("EM HOMOLOGAÇÃO"),
     })}`);
   } finally {
     await wd("DELETE", `/session/${id}`).catch(() => {});
   }
 }
 
-test("Portal SaaS BravSystems — ecossistema BravAcademy e BravHAS em desktop/mobile", { timeout: 180_000 }, async () => {
+test("Portal BravSystems 006 — evolução visual e Central em desktop/mobile", { timeout: 180_000 }, async () => {
   await mkdir(evidenceDir, { recursive: true });
-
   const app = startService("npm", ["start", "--", "-p", String(APP_PORT)]);
   const driver = startService("chromedriver", [`--port=${DRIVER_PORT}`]);
 
