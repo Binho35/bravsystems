@@ -247,7 +247,9 @@ async function captureAccessEvidence(id, viewportLabel) {
   assert.equal(cards.blocked, 6, `${viewportLabel}: todos os acessos sem URL devem permanecer bloqueados`);
   assert.ok(cards.academyText.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravAcademy incorreto na Central`);
   assert.ok(cards.bravhasText.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravHAS incorreto na Central`);
-  assert.ok(cards.bravhasText.includes("Ambiente de homologação operacional; acesso público depende de endereço oficial autorizado."), `${viewportLabel}: mensagem BravHAS incorreta`);
+  assert.ok(cards.bravhasText.includes("Administração, financeiro e pessoas"), `${viewportLabel}: categoria BravHAS incorreta`);
+  assert.ok(cards.bravhasText.includes("Suite administrativa da BravSystems para organizar financeiro, RH, DP, documentos e rotinas de gestão em um único centro de controle."), `${viewportLabel}: descrição BravHAS incorreta`);
+  assert.ok(cards.bravhasText.includes("Ambiente interno em homologação. Liberação pública não prevista nesta etapa."), `${viewportLabel}: mensagem BravHAS incorreta`);
   assert.equal(cards.bravhasText.includes("ACESSO INTERNO"), false, `${viewportLabel}: BravHAS regrediu para ACESSO INTERNO`);
   assert.equal(cards.bravhasText.includes("ainda precisa de auditoria"), false, `${viewportLabel}: mensagem antiga do BravHAS retornou`);
   await capture(id, `${viewportLabel}-06-central-sistemas`);
@@ -261,6 +263,30 @@ async function captureAccessEvidence(id, viewportLabel) {
   return { access, cards };
 }
 
+async function captureBravHASEvidence(id, viewportLabel) {
+  await navigate(id, "/bravhas");
+  const page = await auditPage(id, `${viewportLabel}/bravhas`);
+  assert.equal(page.h1, "Controle administrativo real para financeiro, pessoas e obrigações.");
+
+  const content = await execute(id, `
+    return {
+      body: document.body.innerText,
+      hasPrimary: [...document.querySelectorAll('a')].some(a => a.textContent.trim() === 'Conhecer o BravHAS'),
+      hasSecondary: [...document.querySelectorAll('a')].some(a => a.textContent.trim() === 'Ver visão geral'),
+    };
+  `);
+
+  assert.ok(content.body.includes("ADMINISTRAÇÃO CENTRAL"), `${viewportLabel}: eyebrow BravHAS ausente`);
+  assert.ok(content.body.includes("O BravHAS centraliza rotinas administrativas, RH, DP, documentos e indicadores em um único ambiente para dar clareza à operação, reduzir retrabalho e acelerar decisões."), `${viewportLabel}: subheadline BravHAS ausente`);
+  assert.ok(content.body.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravHAS sem homologação`);
+  assert.ok(content.body.includes("Ambiente controlado. Acesso liberado apenas para usuários autorizados."), `${viewportLabel}: governança institucional BravHAS ausente`);
+  assert.equal(content.hasPrimary, true, `${viewportLabel}: CTA principal BravHAS ausente`);
+  assert.equal(content.hasSecondary, true, `${viewportLabel}: CTA secundário BravHAS ausente`);
+  await capture(id, `${viewportLabel}-09-bravhas-page`);
+
+  return page;
+}
+
 async function captureClosingEvidence(id, viewportLabel) {
   await navigate(id, "/");
   await scrollToTarget(id, "#contato", "start");
@@ -269,7 +295,7 @@ async function captureClosingEvidence(id, viewportLabel) {
     return Boolean(section?.querySelector('form'));
   `);
   assert.equal(formPresent, true, `${viewportLabel}: formulário comercial ausente`);
-  await capture(id, `${viewportLabel}-09-contato`);
+  await capture(id, `${viewportLabel}-10-contato`);
 
   await scrollToTarget(id, "footer", "end");
   const footerAccess = await execute(id, `
@@ -277,7 +303,7 @@ async function captureClosingEvidence(id, viewportLabel) {
     return [...footer.querySelectorAll('a')].some(a => a.getAttribute('href') === '/acessar' && a.textContent.includes('Meus Sistemas'));
   `);
   assert.equal(footerAccess, true, `${viewportLabel}: acesso ausente do footer`);
-  await capture(id, `${viewportLabel}-10-footer`);
+  await capture(id, `${viewportLabel}-11-footer`);
 }
 
 async function runViewport(width, height, label) {
@@ -303,6 +329,7 @@ async function runViewport(width, height, label) {
     await wd("POST", `/session/${id}/window/rect`, { width, height, x: 0, y: 0 });
     const home = await captureHomeEvidence(id, label, width);
     const central = await captureAccessEvidence(id, label);
+    await captureBravHASEvidence(id, label);
     await captureClosingEvidence(id, label);
 
     console.log(`PORTAL_${label}_RESULT=${JSON.stringify({
@@ -320,7 +347,7 @@ async function runViewport(width, height, label) {
   }
 }
 
-test("Portal BravSystems 006 — evolução visual e Central em desktop/mobile", { timeout: 180_000 }, async () => {
+test("Portal BravSystems 008 — reposicionamento de copy do BravHAS em desktop/mobile", { timeout: 180_000 }, async () => {
   await mkdir(evidenceDir, { recursive: true });
   const app = startService("npm", ["start", "--", "-p", String(APP_PORT)]);
   const driver = startService("chromedriver", [`--port=${DRIVER_PORT}`]);
