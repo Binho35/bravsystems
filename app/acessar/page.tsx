@@ -83,14 +83,14 @@ export default function AccessPage() {
 
             <div className="mt-3 grid grid-cols-4 gap-1.5 sm:mt-4 sm:gap-3 lg:grid-cols-2">
               {[
-                [String(productAccessCatalog.length), "Produtos"],
-                [String(homologationCount), "Homologação"],
-                [String(developmentCount), "Desenvolv."],
-                [String(availableCount), "Acessos"],
+                [String(productAccessCatalog.length), "Produtos mapeados"],
+                [String(homologationCount), "Em homologação"],
+                [String(developmentCount), "Em desenvolvimento"],
+                [String(availableCount), "Acessos oficiais"],
               ].map(([value, label]) => (
                 <div key={label} className="rounded-xl border border-white/10 bg-[#0a2a46] px-2 py-2.5 text-center sm:rounded-2xl sm:px-4 sm:py-4 sm:text-left">
                   <div className="text-xl font-black tracking-[-.05em] text-white sm:text-3xl">{value}</div>
-                  <div className="mt-0.5 text-[8px] font-extrabold uppercase tracking-[.04em] text-[#9eb8ca] sm:mt-1 sm:text-[10px] sm:tracking-[.08em]">{label}</div>
+                  <div className="mt-0.5 text-[7px] font-extrabold uppercase tracking-[.02em] text-[#9eb8ca] sm:mt-1 sm:text-[10px] sm:tracking-[.08em]">{label}</div>
                 </div>
               ))}
             </div>
