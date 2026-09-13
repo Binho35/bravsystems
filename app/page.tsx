@@ -3,7 +3,8 @@ import Link from "next/link";
 import { LeadForm } from "@/components/LeadForm";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { products, type Product } from "@/lib/products";
+import { productAccessCatalog, type ProductAccessStatus } from "@/lib/product-access";
+import { products } from "@/lib/products";
 
 const homeDescriptors: Record<string, string> = {
   bravos: "Operação e gestão para restaurantes.",
@@ -14,248 +15,284 @@ const homeDescriptors: Record<string, string> = {
   bravvideo: "Produção e automação de conteúdo audiovisual corporativo.",
 };
 
-const frictionThemes = [
-  ["Processos desconectados", "Quando cada área trabalha em uma ferramenta ou planilha diferente, contexto e rastreabilidade se perdem."],
-  ["Gestão fragmentada", "Informação operacional sem visão consolidada dificulta priorização, acompanhamento e decisão."],
-  ["Pessoas e comunicação dispersas", "Rotinas de pessoas, atendimento e relacionamento precisam de histórico e governança para escalar."],
-  ["Conhecimento que não escala", "Treinamento e conteúdo corporativo exigem estrutura para manter padrão, acompanhamento e evolução."],
-] as const;
+const productInitials: Record<string, string> = {
+  bravos: "OS",
+  bravhas: "HAS",
+  bravhos: "HOS",
+  bravmsg: "MSG",
+  bravacademy: "ACA",
+  bravvideo: "VID",
+};
 
-const academyJourney = ["Cursos e aulas", "Trilhas", "Avaliações", "Progresso", "Certificação"] as const;
+const academyJourney = ["Cursos", "Trilhas", "Avaliações", "Progresso", "Certificação"] as const;
 
-function statusClass(status: Product["status"]) {
-  if (status === "Em homologação") return "border-amber-200 bg-amber-50 text-amber-800";
-  if (status === "Disponível") return "border-emerald-200 bg-emerald-50 text-emerald-800";
-  return "border-sky-200 bg-sky-50 text-sky-800";
+function statusTone(status: ProductAccessStatus) {
+  if (status === "ACESSO DISPONÍVEL") return "border-emerald-300/70 bg-emerald-50 text-emerald-800";
+  if (status === "EM HOMOLOGAÇÃO") return "border-amber-300/80 bg-amber-50 text-amber-800";
+  if (status === "ACESSO INTERNO") return "border-slate-300 bg-slate-100 text-slate-700";
+  return "border-sky-300/80 bg-sky-50 text-sky-800";
 }
 
 export default function Home() {
+  const accessBySlug = new Map(productAccessCatalog.map((item) => [item.slug, item]));
+  const homologationCount = productAccessCatalog.filter((item) => item.status === "EM HOMOLOGAÇÃO").length;
+  const availableCount = productAccessCatalog.filter((item) => item.loginHref).length;
   const bravos = products.find((product) => product.slug === "bravos")!;
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#f6f9fc] text-[#092846]">
+    <main className="min-h-screen overflow-x-hidden bg-[#f4f8fb] text-[#082844]">
       <SiteHeader />
 
-      <section id="inicio" className="relative overflow-hidden border-b border-[#dbe7ef] bg-white">
+      <section id="inicio" className="relative overflow-hidden border-b border-[#d5e4ed] bg-white">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-          <div className="absolute -right-40 -top-52 h-[680px] w-[680px] rounded-full bg-[#d9edf9] blur-3xl" />
-          <div className="absolute -bottom-64 left-[8%] h-[520px] w-[520px] rounded-full bg-[#e5f1f8] blur-3xl" />
+          <div className="absolute -right-44 -top-56 h-[720px] w-[720px] rounded-full bg-[#dceef8] blur-3xl" />
+          <div className="absolute -bottom-72 left-[5%] h-[540px] w-[540px] rounded-full bg-[#e8f3f9] blur-3xl" />
         </div>
 
-        <div className="relative mx-auto grid min-h-[680px] max-w-[1400px] items-center gap-10 px-5 py-10 sm:min-h-[720px] sm:px-8 sm:py-14 lg:grid-cols-[1.02fr_.98fr] lg:px-10 lg:py-20">
+        <div className="relative mx-auto grid max-w-[1400px] gap-10 px-5 py-10 sm:px-8 sm:py-14 lg:min-h-[660px] lg:grid-cols-[1.02fr_.98fr] lg:items-center lg:px-10 lg:py-16">
           <div className="max-w-[760px]">
             <div className="inline-flex items-center gap-2 rounded-full border border-[#c9dce8] bg-[#f8fbfd] px-4 py-2 text-[11px] font-extrabold uppercase tracking-[.13em] text-[#15517f] sm:tracking-[.16em]">
               <span className="h-2 w-2 rounded-full bg-[#2563eb]" aria-hidden="true" />
               BravSystems • Ecossistema SaaS B2B
             </div>
 
-            <h1 className="mt-6 text-[38px] font-bold leading-[1.04] tracking-[-.05em] sm:mt-7 sm:text-6xl sm:leading-[1.02] lg:text-[72px]">
-              Tecnologia para transformar operações complexas em gestão simples, conectada e escalável.
+            <h1 className="mt-6 max-w-[740px] text-[38px] font-bold leading-[1.04] tracking-[-.052em] sm:text-6xl sm:leading-[1.01] lg:text-[68px]">
+              Software para operar melhor, decidir mais rápido e escalar com controle.
             </h1>
-            <p className="mt-5 max-w-[690px] text-[16px] leading-7 text-[#587086] sm:mt-7 sm:text-[20px] sm:leading-8">
-              Produtos próprios para operação, administração, pessoas, comunicação, aprendizagem e conteúdo corporativo — reunidos sob uma única visão de tecnologia e governança.
+
+            <p className="mt-5 max-w-[680px] text-[16px] leading-7 text-[#587086] sm:text-[19px] sm:leading-8">
+              A BravSystems desenvolve produtos próprios para operação, administração, pessoas, comunicação, aprendizagem e conteúdo corporativo — com maturidade e acesso tratados de forma transparente.
             </p>
 
-            <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row sm:flex-wrap">
-              <a href="#produtos" className="inline-flex min-h-13 items-center justify-center rounded-xl bg-[#0f4d78] px-7 text-[15px] font-extrabold text-white shadow-xl shadow-[#0f4d78]/20 transition hover:-translate-y-0.5 hover:bg-[#092846]">
-                Conhecer soluções →
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <a href="#produtos" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#0f4d78] px-6 text-sm font-extrabold text-white shadow-xl shadow-[#0f4d78]/20 transition hover:-translate-y-0.5 hover:bg-[#092846]">
+                Explorar ecossistema →
               </a>
-              <a href="#contato" className="inline-flex min-h-13 items-center justify-center rounded-xl border border-[#b8cfdf] bg-white px-7 text-[15px] font-bold text-[#0f4d78] transition hover:border-[#0f4d78] hover:bg-[#f8fbfd]">
-                Falar com a BravSystems
-              </a>
-              <Link href="/acessar" className="inline-flex min-h-13 items-center justify-center rounded-xl px-5 text-[15px] font-bold text-[#315b7a] underline decoration-[#a6c3d7] underline-offset-4 transition hover:text-[#092846]">
+              <Link href="/acessar" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#b9cfdd] bg-white px-6 text-sm font-extrabold text-[#0f4d78] transition hover:border-[#0f4d78] hover:bg-[#f8fbfd]">
                 Entrar / Meus Sistemas
               </Link>
+              <a href="#contato" className="inline-flex min-h-12 items-center justify-center px-4 text-sm font-bold text-[#527087] underline decoration-[#b2c9d8] underline-offset-4 transition hover:text-[#092846]">
+                Falar com a BravSystems
+              </a>
             </div>
 
-            <div className="mt-7 flex flex-wrap gap-x-7 gap-y-3 border-t border-[#d7e4ec] pt-5 text-sm font-semibold text-[#5f7689] sm:mt-9 sm:pt-6">
-              <span>6 produtos no ecossistema</span>
-              <span>SaaS B2B</span>
-              <span>Maturidade comunicada com transparência</span>
-            </div>
-          </div>
-
-          <div className="relative">
-            <div className="absolute -inset-5 rounded-[40px] bg-gradient-to-br from-[#d8ecf8] via-white to-[#bad8ea] opacity-90 blur-2xl" aria-hidden="true" />
-            <div className="relative overflow-hidden rounded-[32px] border border-[#bdd4e3] bg-[#071f35] p-5 shadow-2xl shadow-[#0b2947]/25 sm:p-7">
-              <div className="flex items-start justify-between gap-5 border-b border-white/10 pb-5">
-                <div>
-                  <div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#7ec0e8]">Ecossistema BravSystems</div>
-                  <h2 className="mt-2 text-2xl font-bold tracking-[-.03em] text-white">Uma marca. Soluções especializadas.</h2>
+            <div className="mt-7 grid max-w-[640px] grid-cols-3 gap-2 border-t border-[#d9e6ee] pt-5">
+              {[
+                ["6", "produtos próprios"],
+                [String(homologationCount), "em homologação"],
+                [String(availableCount), "acessos oficiais"],
+              ].map(([value, label]) => (
+                <div key={label} className="rounded-2xl bg-[#f5f9fc] px-3 py-3 sm:px-4">
+                  <div className="text-xl font-black tracking-[-.04em] text-[#0f4d78] sm:text-2xl">{value}</div>
+                  <div className="mt-1 text-[10px] font-bold uppercase tracking-[.08em] text-[#708598] sm:text-[11px]">{label}</div>
                 </div>
-                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-[#b8cede]">B2B</span>
-              </div>
-
-              <div className="mt-5 grid grid-cols-2 gap-3" data-hero-ecosystem>
-                {products.map((product) => (
-                  <Link
-                    key={product.slug}
-                    href={`/${product.slug}`}
-                    className={`group rounded-2xl border p-4 transition hover:-translate-y-0.5 ${product.slug === "bravacademy" ? "border-[#76b9e2] bg-[#114a70]" : product.slug === "bravos" ? "border-[#4b8fba] bg-[#0d3858]" : "border-white/10 bg-white/[.055] hover:bg-white/[.09]"}`}
-                  >
-                    <div className="text-[10px] font-extrabold uppercase tracking-[.13em] text-[#79bce3]">{product.slug === "bravacademy" ? "Destaque" : "Produto"}</div>
-                    <div className="mt-2 text-lg font-bold text-white sm:text-xl">{product.name}</div>
-                    <div className="mt-1 text-xs leading-5 text-[#b8cede]">{homeDescriptors[product.slug]}</div>
-                  </Link>
-                ))}
-              </div>
-
-              <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-white/10 bg-white px-4 py-4 text-sm text-[#587086] sm:flex-row sm:items-center sm:justify-between">
-                <span>Cliente BravSystems?</span>
-                <Link href="/acessar" className="font-extrabold text-[#0f4d78]">Abrir Meus Sistemas →</Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="solucoes" className="bg-[#f7fafc] py-18 sm:py-22">
-        <div className="mx-auto max-w-[1280px] px-5 sm:px-8">
-          <div className="grid gap-10 lg:grid-cols-[.9fr_1.1fr] lg:items-start">
-            <div>
-              <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#2563eb]">Problemas que orientam nossos produtos</div>
-              <h2 className="mt-4 text-4xl font-bold tracking-[-.045em] sm:text-5xl">Menos sistemas isolados. Mais contexto para operar e decidir.</h2>
-              <p className="mt-5 max-w-xl text-[17px] leading-8 text-[#60758a]">A BravSystems parte de dores operacionais concretas e transforma essas necessidades em produtos especializados, sem confundir roadmap com capacidade disponível.</p>
-            </div>
-
-            <div className="grid gap-x-8 gap-y-0 sm:grid-cols-2">
-              {frictionThemes.map(([title, text]) => (
-                <article key={title} className="border-t border-[#cedee8] py-6">
-                  <h3 className="text-xl font-bold tracking-[-.02em]">{title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-[#60758a]">{text}</p>
-                </article>
               ))}
             </div>
           </div>
+
+          <div className="relative" data-hero-portfolio>
+            <div className="absolute -inset-4 rounded-[38px] bg-gradient-to-br from-[#d8edf8] via-white to-[#bcd9e9] blur-2xl" aria-hidden="true" />
+            <div className="relative overflow-hidden rounded-[30px] border border-[#254e6b] bg-[#071f35] p-5 shadow-2xl shadow-[#0b2947]/25 sm:p-6">
+              <div className="flex items-start justify-between gap-5 border-b border-white/10 pb-5">
+                <div>
+                  <div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#7fc0e7]">Portfólio governado</div>
+                  <h2 className="mt-2 text-2xl font-bold tracking-[-.035em] text-white">Uma visão única do ecossistema.</h2>
+                </div>
+                <span className="rounded-full border border-white/10 bg-white/[.06] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[.12em] text-[#b8cede]">BravSystems</span>
+              </div>
+
+              <div className="mt-4 grid gap-2.5" data-hero-ecosystem>
+                {products.map((product) => {
+                  const access = accessBySlug.get(product.slug)!;
+                  return (
+                    <Link key={product.slug} href={`/${product.slug}`} className="group grid grid-cols-[42px_1fr_auto] items-center gap-3 rounded-2xl border border-white/10 bg-white/[.055] px-3.5 py-3 transition hover:border-[#5c9cc5] hover:bg-white/[.09]">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#123c5b] text-[10px] font-black tracking-[.08em] text-[#8bc8ed]">
+                        {productInitials[product.slug]}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-x-2">
+                          <span className="font-extrabold text-white">{product.name}</span>
+                          <span className="hidden text-[11px] text-[#9fb8ca] sm:inline">{homeDescriptors[product.slug]}</span>
+                        </div>
+                        <div className="mt-0.5 truncate text-[11px] text-[#9fb8ca] sm:hidden">{homeDescriptors[product.slug]}</div>
+                      </div>
+                      <span className={`rounded-full border px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[.06em] ${access.status === "EM HOMOLOGAÇÃO" ? "border-amber-300/30 bg-amber-300/10 text-amber-200" : access.status === "ACESSO DISPONÍVEL" ? "border-emerald-300/30 bg-emerald-300/10 text-emerald-200" : "border-sky-300/25 bg-sky-300/10 text-sky-200"}`}>
+                        {access.status}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              <div className="mt-4 flex flex-col gap-2 rounded-2xl border border-[#2a5877] bg-[#0c304d] px-4 py-4 text-sm sm:flex-row sm:items-center sm:justify-between">
+                <span className="font-semibold text-[#bed3e1]">Cliente BravSystems? A Central mostra apenas acessos oficialmente autorizados.</span>
+                <Link href="/acessar" className="shrink-0 font-extrabold text-white">Abrir Central →</Link>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section id="produtos" className="border-y border-[#d5e5ef] bg-white py-20 sm:py-24">
-        <SectionTitle eyebrow="Portfólio" title="Seis produtos. Uma mesma disciplina de produto, acesso e governança." text="Cada solução possui escopo próprio, página dedicada e estágio de maturidade explícito. Acesso de cliente permanece separado da jornada comercial." />
-
-        <div className="mx-auto mt-12 grid max-w-[1280px] gap-5 px-5 sm:px-8 md:grid-cols-2 xl:grid-cols-3" data-product-grid>
-          {products.map((product) => (
-            <article key={product.slug} className={`group flex min-h-[350px] flex-col rounded-[28px] border p-6 transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#0b2947]/8 sm:p-7 ${product.slug === "bravacademy" ? "border-[#8ec3e4] bg-gradient-to-b from-[#f2f9fd] to-white shadow-xl shadow-[#0b2947]/6" : "border-[#d3e2eb] bg-[#fbfdfe]"}`}>
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#2563eb]">Produto BravSystems</div>
-                  <h3 className="mt-2 text-3xl font-bold tracking-[-.04em]">{product.name}</h3>
-                </div>
-                <span className={`rounded-full border px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[.07em] ${statusClass(product.status)}`}>{product.status}</span>
-              </div>
-              <p className="mt-5 text-[15px] font-semibold leading-6 text-[#355a75]">{homeDescriptors[product.slug]}</p>
-              <p className="mt-4 text-sm leading-7 text-[#60758a]">{product.description}</p>
-              <div className="mt-auto flex items-center justify-between gap-4 border-t border-[#e1ebf1] pt-6">
-                <Link href={`/${product.slug}`} className="font-extrabold text-[#0f4d78]">Conhecer {product.name} →</Link>
-                {product.slug === "bravacademy" ? <span className="text-xs font-bold uppercase tracking-[.1em] text-amber-700">Em homologação</span> : null}
-              </div>
+      <section id="solucoes" className="border-b border-[#d7e5ee] bg-[#eef6fb]">
+        <div className="mx-auto grid max-w-[1280px] gap-px bg-[#d7e5ee] sm:grid-cols-3">
+          {[
+            ["Operação conectada", "Soluções especializadas para reduzir controles paralelos e concentrar contexto."],
+            ["Maturidade explícita", "Desenvolvimento, homologação e acesso comercial são tratados como estágios diferentes."],
+            ["Acesso com governança", "A Central só libera endereços oficiais; previews e hostnames técnicos permanecem internos."],
+          ].map(([title, text]) => (
+            <article key={title} className="bg-[#eef6fb] px-5 py-7 sm:px-8">
+              <div className="text-xs font-extrabold uppercase tracking-[.16em] text-[#2563eb]">{title}</div>
+              <p className="mt-3 text-sm leading-7 text-[#5f7689]">{text}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section id="destaques" className="bg-[#eef6fb] py-20 sm:py-24">
-        <SectionTitle eyebrow="Produtos em destaque" title="Duas frentes estratégicas, com propostas e jornadas próprias." text="BravOS e BravAcademy ganham espaço proporcional ao momento atual do portfólio sem transformar nenhum ambiente de homologação em promessa de produção." />
-
-        <div className="mx-auto mt-12 grid max-w-[1280px] gap-6 px-5 sm:px-8 lg:grid-cols-2">
-          <article id="bravos" className="overflow-hidden rounded-[32px] border border-[#bdd4e3] bg-white shadow-xl shadow-[#0b2947]/7">
-            <div className="p-7 sm:p-8">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="text-xs font-extrabold uppercase tracking-[.17em] text-[#2563eb]">BravOS • Operação de restaurantes</span>
-                <span className={`rounded-full border px-3 py-1 text-[10px] font-extrabold uppercase ${statusClass(bravos.status)}`}>{bravos.status}</span>
-              </div>
-              <h3 className="mt-5 text-4xl font-bold tracking-[-.045em]">A operação acontece em tempo real. Sua gestão também deveria.</h3>
-              <p className="mt-5 text-[16px] leading-8 text-[#60758a]">{bravos.description}</p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Link href="/bravos" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#0f4d78] px-6 font-extrabold text-white">Conhecer o BravOS →</Link>
-                <a href="#contato" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#c3d7e4] bg-white px-6 font-bold text-[#315b7a]">Agendar demonstração</a>
-              </div>
+      <section id="produtos" className="bg-white py-16 sm:py-20">
+        <div className="mx-auto max-w-[1280px] px-5 sm:px-8">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#2563eb]">Ecossistema BravSystems</div>
+              <h2 className="mt-3 text-4xl font-bold tracking-[-.045em] sm:text-5xl">Seis produtos, cada um com função e estágio claros.</h2>
+              <p className="mt-4 text-[16px] leading-8 text-[#60758a]">Compare rapidamente proposta de valor, maturidade governada e próximo passo de cada solução.</p>
             </div>
-            <div className="border-t border-[#d7e4ec] bg-[#082844] p-4 sm:p-5">
-              <Image src="/bravos-hero-approved.webp" alt="Dashboard aprovado do BravOS" width={1025} height={770} className="h-auto w-full rounded-2xl object-contain" />
-            </div>
-          </article>
+            <Link href="/acessar" className="inline-flex min-h-11 items-center justify-center self-start rounded-xl border border-[#c6d9e5] px-5 text-sm font-extrabold text-[#0f4d78] lg:self-auto">
+              Ver Central de Sistemas →
+            </Link>
+          </div>
 
-          <article id="bravacademy" className="relative overflow-hidden rounded-[32px] border border-[#235f88] bg-[#082844] p-7 text-white shadow-2xl shadow-[#0b2947]/16 sm:p-8">
-            <div className="pointer-events-none absolute -right-24 -top-20 h-72 w-72 rounded-full bg-[#2877a9]/35 blur-3xl" aria-hidden="true" />
-            <div className="relative">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="text-xs font-extrabold uppercase tracking-[.17em] text-[#8bc8ed]">BravAcademy • Universidade Corporativa White Label</span>
-                <span className="rounded-full border border-amber-300/35 bg-amber-300/10 px-3 py-1 text-[10px] font-extrabold uppercase text-amber-200">EM HOMOLOGAÇÃO</span>
-              </div>
-              <h3 className="mt-5 text-4xl font-bold tracking-[-.045em] sm:text-[44px]">Capacitação corporativa com identidade, percurso e evidência.</h3>
-              <p className="mt-5 max-w-xl text-[16px] leading-8 text-[#c0d6e4]">Capacitação, trilhas de aprendizagem, avaliações, progresso e certificação em um ambiente personalizado para cada empresa.</p>
+          <div className="mt-9 grid gap-4 md:grid-cols-2 xl:grid-cols-3" data-product-grid>
+            {products.map((product, index) => {
+              const access = accessBySlug.get(product.slug)!;
+              const highlighted = product.slug === "bravacademy" || product.slug === "bravhas";
+              return (
+                <article key={product.slug} className={`group flex min-h-[310px] flex-col rounded-[26px] border p-5 transition hover:-translate-y-1 hover:shadow-xl sm:p-6 ${highlighted ? "border-[#9fc9e1] bg-gradient-to-b from-[#f1f8fc] to-white shadow-lg shadow-[#0b2947]/5" : "border-[#d6e3eb] bg-[#fbfdfe]"}`} data-product-card={product.slug}>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#0b2947] text-[10px] font-black tracking-[.08em] text-[#9dd0ef]">{productInitials[product.slug]}</div>
+                      <div>
+                        <div className="text-[10px] font-extrabold uppercase tracking-[.12em] text-[#6d8799]">0{index + 1} • Produto</div>
+                        <h3 className="mt-1 text-2xl font-bold tracking-[-.035em]">{product.name}</h3>
+                      </div>
+                    </div>
+                    <span className={`rounded-full border px-2.5 py-1.5 text-[9px] font-extrabold uppercase tracking-[.07em] ${statusTone(access.status)}`}>{access.status}</span>
+                  </div>
 
-              <div className="mt-8 rounded-[26px] border border-white/10 bg-white/[.055] p-5 sm:p-6" aria-label="Jornada de aprendizagem do BravAcademy">
-                <div className="text-[10px] font-extrabold uppercase tracking-[.16em] text-[#7fc0e7]">Jornada de aprendizagem</div>
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <p className="mt-5 text-[14px] font-bold leading-6 text-[#315d7e]">{homeDescriptors[product.slug]}</p>
+                  <p className="mt-2 line-clamp-3 text-sm leading-6 text-[#60758a]">{product.description}</p>
+
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {product.benefits.slice(0, 2).map((benefit) => (
+                      <span key={benefit} className="rounded-full border border-[#d9e6ee] bg-white px-3 py-1.5 text-[11px] font-bold text-[#527087]">{benefit}</span>
+                    ))}
+                  </div>
+
+                  <div className="mt-auto flex items-center justify-between gap-4 border-t border-[#e1ebf1] pt-5">
+                    <Link href={`/${product.slug}`} className="text-sm font-extrabold text-[#0f4d78]">Conhecer produto →</Link>
+                    {access.loginHref ? (
+                      <a href={access.loginHref} className="text-xs font-extrabold text-emerald-700" rel="noopener noreferrer">Acessar</a>
+                    ) : (
+                      <span className="text-[10px] font-extrabold uppercase tracking-[.08em] text-[#8a9baa]">Acesso oficial pendente</span>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section id="destaques" className="border-y border-[#d4e4ed] bg-[#eaf4fa] py-16 sm:py-20">
+        <div className="mx-auto max-w-[1280px] px-5 sm:px-8">
+          <div className="mb-8 max-w-3xl">
+            <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#2563eb]">Destaques do portfólio</div>
+            <h2 className="mt-3 text-4xl font-bold tracking-[-.045em] sm:text-5xl">Operação e aprendizagem em duas experiências próprias.</h2>
+          </div>
+
+          <div className="grid gap-5 lg:grid-cols-[1.02fr_.98fr]">
+            <article id="bravacademy" className="relative overflow-hidden rounded-[30px] border border-[#235f88] bg-[#082844] p-6 text-white shadow-2xl shadow-[#0b2947]/12 sm:p-8">
+              <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-[#2877a9]/35 blur-3xl" aria-hidden="true" />
+              <div className="relative">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="text-xs font-extrabold uppercase tracking-[.16em] text-[#8bc8ed]">BravAcademy</span>
+                  <span className="rounded-full border border-amber-300/35 bg-amber-300/10 px-3 py-1 text-[10px] font-extrabold uppercase text-amber-200">EM HOMOLOGAÇÃO</span>
+                </div>
+                <h3 className="mt-5 max-w-xl text-4xl font-bold tracking-[-.045em] sm:text-[44px]">Treinamento corporativo com identidade, trilha e evidência.</h3>
+                <p className="mt-5 max-w-xl text-[16px] leading-8 text-[#c0d6e4]">Capacitação, avaliações, progresso e certificação em uma Universidade Corporativa White Label preparada para evoluir sem expor ambiente técnico como acesso final.</p>
+
+                <div className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-5" aria-label="Jornada de aprendizagem do BravAcademy">
                   {academyJourney.map((item, index) => (
-                    <div key={item} className={`flex min-h-20 items-center gap-4 rounded-2xl border border-white/10 bg-white/[.055] px-4 py-4 ${index === academyJourney.length - 1 ? "sm:col-span-2" : ""}`}>
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#17628f] text-xs font-extrabold text-white">0{index + 1}</span>
-                      <span className="font-bold text-white">{item}</span>
+                    <div key={item} className="rounded-2xl border border-white/10 bg-white/[.06] px-3 py-4 text-center">
+                      <div className="text-[10px] font-black text-[#7fc0e7]">0{index + 1}</div>
+                      <div className="mt-1 text-xs font-bold text-white">{item}</div>
                     </div>
                   ))}
                 </div>
+
+                <div className="mt-7 flex flex-wrap items-center gap-3">
+                  <Link href="/bravacademy" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-6 text-sm font-extrabold text-[#0f4d78]">Conhecer BravAcademy →</Link>
+                  <Link href="/acessar" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/15 px-5 text-sm font-bold text-[#c6dce9]">Ver status de acesso</Link>
+                </div>
               </div>
+            </article>
 
-              <div className="mt-7 flex flex-wrap items-center gap-3">
-                <Link href="/bravacademy" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-6 font-extrabold text-[#0f4d78]">Conhecer BravAcademy →</Link>
-                <span className="text-sm font-semibold text-[#a9c8dc]">Acesso público de homologação não exposto nesta missão.</span>
+            <article id="bravos" className="overflow-hidden rounded-[30px] border border-[#bdd4e3] bg-white shadow-xl shadow-[#0b2947]/7">
+              <div className="p-6 sm:p-8">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="text-xs font-extrabold uppercase tracking-[.16em] text-[#2563eb]">BravOS • Restaurantes</span>
+                  <span className={`rounded-full border px-3 py-1 text-[10px] font-extrabold uppercase ${statusTone(accessBySlug.get("bravos")!.status)}`}>{accessBySlug.get("bravos")!.status}</span>
+                </div>
+                <h3 className="mt-5 text-4xl font-bold tracking-[-.045em]">A operação acontece em tempo real. Sua gestão também deveria.</h3>
+                <p className="mt-4 text-[15px] leading-7 text-[#60758a]">{bravos.description}</p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Link href="/bravos" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#0f4d78] px-5 text-sm font-extrabold text-white">Conhecer BravOS →</Link>
+                  <a href="#contato" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#c3d7e4] px-5 text-sm font-bold text-[#315b7a]">Agendar conversa</a>
+                </div>
               </div>
-            </div>
-          </article>
+              <div className="border-t border-[#d7e4ec] bg-[#082844] p-4">
+                <Image src="/bravos-hero-approved.webp" alt="Dashboard aprovado do BravOS" width={1025} height={770} className="h-auto max-h-[330px] w-full rounded-2xl object-contain" />
+              </div>
+            </article>
+          </div>
         </div>
       </section>
 
-      <section id="por-que-bravsystems" className="bg-white py-20 sm:py-24">
-        <div className="mx-auto grid max-w-[1280px] gap-10 px-5 sm:px-8 lg:grid-cols-[.9fr_1.1fr] lg:items-start">
+      <section id="por-que-bravsystems" className="bg-white py-12 sm:py-14">
+        <div className="mx-auto grid max-w-[1280px] gap-4 px-5 sm:px-8 md:grid-cols-4">
+          {[
+            ["Produto próprio", "Ativos de software evoluídos como portfólio de longo prazo."],
+            ["Operação real", "Necessidades concretas orientam prioridades e validação."],
+            ["Homologação ≠ produção", "Ambiente funcional não é tratado como produto comercial concluído."],
+            ["Acesso controlado", "URL técnica nunca substitui endereço oficial autorizado."],
+          ].map(([title, text]) => (
+            <article key={title} className="rounded-2xl border border-[#d8e5ed] bg-[#f8fbfd] p-5">
+              <h3 className="text-base font-extrabold">{title}</h3>
+              <p className="mt-2 text-sm leading-6 text-[#60758a]">{text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="acesso" className="bg-[#0a2946] py-12 text-white">
+        <div className="mx-auto flex max-w-[1280px] flex-col gap-6 px-5 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#2563eb]">Contexto real + governança</div>
-            <h2 className="mt-4 text-4xl font-bold tracking-[-.045em] sm:text-5xl">Produto próprio, evolução controlada e transparência sobre maturidade.</h2>
-            <p className="mt-5 text-[17px] leading-8 text-[#60758a]">A BravSystems diferencia desenvolvimento, homologação e disponibilidade comercial. O objetivo é evoluir ativos de software com evidência, não antecipar promessas.</p>
+            <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#8bc8ed]">Central corporativa</div>
+            <h2 className="mt-2 text-3xl font-bold tracking-[-.035em] sm:text-4xl">Entrar / Meus Sistemas</h2>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-[#bed3e1]">Veja o estágio real dos produtos e acesse somente endereços oficialmente autorizados.</p>
           </div>
-
-          <div className="overflow-hidden rounded-[30px] border border-[#d4e3ec] bg-[#f8fbfd]">
-            {[
-              ["Produto próprio", "As plataformas são tratadas como ativos de longo prazo, com evolução contínua e escopo explícito."],
-              ["Operação real", "No BravOS, o ¡Bravazzo! 335 funciona como operação-piloto para observar necessidades reais antes de ampliar promessas."],
-              ["Homologação separada de produção", "Ambiente navegável e código funcional não significam, por si só, prontidão comercial definitiva."],
-              ["Acesso com governança", "O portal só deve direcionar clientes para endereços oficialmente aprovados, sem expor branches, previews técnicos ou hostnames temporários."],
-            ].map(([title, text], index) => (
-              <article key={title} className={`p-6 sm:p-7 ${index ? "border-t border-[#d9e6ee]" : ""}`}>
-                <h3 className="text-xl font-bold">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[#60758a]">{text}</p>
-              </article>
-            ))}
-          </div>
+          <Link href="/acessar" className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-xl bg-white px-6 text-sm font-extrabold text-[#0f4d78]">Abrir Central de Sistemas →</Link>
         </div>
       </section>
 
-      <section id="acesso" className="border-y border-[#cbdfea] bg-[#0b2947] py-16 text-white">
-        <div className="mx-auto flex max-w-[1280px] flex-col gap-8 px-5 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#88c1e4]">Cliente BravSystems</div>
-            <h2 className="mt-3 text-3xl font-bold tracking-[-.035em] sm:text-4xl">Entrar / Meus Sistemas</h2>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-[#bfd3e1]">Encontre os produtos BravSystems, visualize o estágio correto de cada ambiente e acesse somente endereços oficialmente autorizados.</p>
-          </div>
-          <Link href="/acessar" className="inline-flex min-h-13 shrink-0 items-center justify-center rounded-xl bg-white px-7 font-extrabold text-[#0f4d78] shadow-xl shadow-black/10">Abrir Meus Sistemas →</Link>
-        </div>
-      </section>
-
-      <section id="contato" className="bg-[#e4f0f7] py-20 sm:py-24">
-        <div className="mx-auto grid max-w-[1280px] items-start gap-10 px-5 sm:px-8 lg:grid-cols-[.82fr_1.18fr]">
+      <section id="contato" className="bg-[#e9f3f8] py-16 sm:py-20">
+        <div className="mx-auto grid max-w-[1280px] items-start gap-8 px-5 sm:px-8 lg:grid-cols-[.78fr_1.22fr]">
           <div className="lg:sticky lg:top-28">
             <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#2563eb]">Contato comercial</div>
-            <h2 className="mt-4 text-4xl font-bold tracking-[-.045em] sm:text-5xl">Qual parte da sua operação precisa funcionar melhor?</h2>
-            <p className="mt-6 text-[17px] leading-8 text-[#5e7588]">Escolha a solução de interesse e conte o cenário. A conversa comercial parte da necessidade real e respeita o estágio de maturidade de cada produto.</p>
-            <div className="mt-8 grid gap-3 text-sm font-semibold text-[#45647d]">
-              <span>✓ Novo cliente: conhecer soluções e solicitar demonstração</span>
-              <span>✓ Cliente existente: acesso separado pela Central de Sistemas</span>
-              <span>✓ Sem promessa de funcionalidade ou ambiente não homologado</span>
-            </div>
-            <div className="mt-8 rounded-2xl border border-[#bfd5e4] bg-white/80 p-5">
-              <div className="text-xs font-bold uppercase tracking-[.14em] text-[#7a91a3]">Contato direto</div>
-              <a href="mailto:contato@bravsystems.com.br" className="mt-2 block font-extrabold text-[#0f4d78]">contato@bravsystems.com.br</a>
+            <h2 className="mt-3 text-4xl font-bold tracking-[-.045em] sm:text-5xl">Qual parte da sua operação precisa evoluir?</h2>
+            <p className="mt-5 text-[16px] leading-8 text-[#5e7588]">Conte o cenário. A conversa parte da necessidade real e respeita o estágio de maturidade de cada produto.</p>
+            <div className="mt-6 rounded-2xl border border-[#c3d8e5] bg-white/80 p-5 text-sm leading-7 text-[#45647d]">
+              <strong className="block text-[#0f4d78]">BravSystems</strong>
+              contato@bravsystems.com.br
             </div>
           </div>
           <LeadForm />
@@ -264,15 +301,5 @@ export default function Home() {
 
       <SiteFooter />
     </main>
-  );
-}
-
-function SectionTitle({ eyebrow, title, text }: { eyebrow: string; title: string; text: string }) {
-  return (
-    <div className="mx-auto max-w-[1280px] px-5 sm:px-8">
-      <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#2563eb]">{eyebrow}</div>
-      <h2 className="mt-4 max-w-5xl text-4xl font-bold tracking-[-.045em] sm:text-5xl">{title}</h2>
-      <p className="mt-5 max-w-3xl text-[17px] leading-8 text-[#60758a]">{text}</p>
-    </div>
   );
 }
