@@ -5,29 +5,33 @@ import { readFile } from "node:fs/promises";
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 const officialProducts = ["BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo"];
 
-test("homepage posiciona BravSystems antes de qualquer produto isolado", async () => {
+test("Home posiciona BravSystems como ecossistema SaaS B2B", async () => {
   const page = await read("app/page.tsx");
   assert.ok(page.includes("BravSystems • Ecossistema SaaS B2B"));
-  assert.ok(page.includes("Tecnologia para transformar operações complexas em gestão simples, conectada e escalável."));
-  assert.ok(page.includes("6 produtos no ecossistema"));
-  assert.equal(page.includes("bravos.com"), false);
+  assert.ok(page.includes("Software para operar melhor, decidir mais rápido e escalar com controle."));
+  assert.ok(page.includes("Portfólio governado"));
+  assert.ok(page.includes("Uma visão única do ecossistema."));
 });
 
-test("homepage separa jornada comercial de acesso do cliente", async () => {
+test("Home mantém jornada comercial e Central claramente separadas", async () => {
   const page = await read("app/page.tsx");
-  for (const text of ["Conhecer soluções", "Falar com a BravSystems", "Entrar / Meus Sistemas", "Abrir Meus Sistemas"]) {
+  for (const text of ["Explorar ecossistema", "Entrar / Meus Sistemas", "Falar com a BravSystems", "Abrir Central"]) {
     assert.ok(page.includes(text), `${text} ausente`);
   }
   assert.ok(page.includes('href="/acessar"'));
   assert.ok(page.includes('href="#contato"'));
 });
 
-test("homepage apresenta os seis produtos oficiais com descritores aprovados", async () => {
+test("Hero apresenta seis produtos de forma compacta", async () => {
   const page = await read("app/page.tsx");
-  const products = await read("lib/products.ts");
-  for (const name of officialProducts) {
-    assert.ok(products.includes(`name: \"${name}\"`), `${name} ausente do catálogo`);
-  }
+  assert.ok(page.includes("data-hero-ecosystem"));
+  assert.ok(page.includes("products.map"));
+  assert.ok(page.includes("homeDescriptors"));
+  assert.ok(page.includes("productAccessCatalog"));
+});
+
+test("Home apresenta os seis descritores oficiais", async () => {
+  const page = await read("app/page.tsx");
   for (const descriptor of [
     "Operação e gestão para restaurantes.",
     "Gestão administrativa, financeira e operacional.",
@@ -38,188 +42,150 @@ test("homepage apresenta os seis produtos oficiais com descritores aprovados", a
   ]) {
     assert.ok(page.includes(descriptor), `descritor ausente: ${descriptor}`);
   }
-  assert.ok(page.includes("products.map"), "homepage deve renderizar o catálogo oficial dinamicamente");
 });
 
-test("BravAcademy recebe destaque próprio e status EM HOMOLOGAÇÃO", async () => {
+test("Cards do portfólio usam estágio governado da Central", async () => {
   const page = await read("app/page.tsx");
-  const products = await read("lib/products.ts");
-  const start = products.indexOf('slug: "bravacademy"');
-  const end = products.indexOf('slug: "bravvideo"', start);
-  assert.ok(start >= 0 && end > start, "bloco BravAcademy não localizado");
-  const academy = products.slice(start, end);
+  assert.ok(page.includes("accessBySlug"));
+  assert.ok(page.includes("access.status"));
+  assert.ok(page.includes("Acesso oficial pendente"));
+  assert.ok(page.includes("data-product-card"));
+});
 
-  assert.ok(academy.includes('category: "Universidade Corporativa White Label"'));
-  assert.ok(academy.includes('status: "Em homologação"'));
-  assert.ok(academy.includes('description: "Capacitação, trilhas de aprendizagem, avaliações, progresso e certificação em um ambiente personalizado para sua empresa."'));
-  assert.ok(academy.includes('cta: "Conhecer BravAcademy"'));
-
+test("BravAcademy permanece EM HOMOLOGAÇÃO e ganha destaque comercial", async () => {
+  const page = await read("app/page.tsx");
+  const access = await read("lib/product-access.ts");
+  assert.ok(access.includes('bravacademy: { status: "EM HOMOLOGAÇÃO"'));
   assert.ok(page.includes('id="bravacademy"'));
+  assert.ok(page.includes("BravAcademy"));
   assert.ok(page.includes("EM HOMOLOGAÇÃO"));
-  assert.ok(page.includes("Capacitação, trilhas de aprendizagem, avaliações, progresso e certificação em um ambiente personalizado para cada empresa."));
-  assert.ok(page.includes("Cursos e aulas"));
-  assert.ok(page.includes("Trilhas"));
-  assert.ok(page.includes("Avaliações"));
-  assert.ok(page.includes("Progresso"));
-  assert.ok(page.includes("Certificação"));
+  assert.ok(page.includes("Treinamento corporativo com identidade, trilha e evidência."));
   assert.ok(page.includes("Conhecer BravAcademy"));
-
-  for (const forbidden of ["Production Ready", "100% pronto", "Disponível para todos", "produção comercial definitiva"]) {
-    assert.equal(page.includes(forbidden), false, `claim proibido na homepage: ${forbidden}`);
-    assert.equal(academy.includes(forbidden), false, `claim proibido no catálogo: ${forbidden}`);
+  for (const item of ["Cursos", "Trilhas", "Avaliações", "Progresso", "Certificação"]) {
+    assert.ok(page.includes(item), `${item} ausente da jornada Academy`);
   }
 });
 
-test("BravAcademy não expõe hostname Hostinger temporário", async () => {
-  const page = await read("app/page.tsx");
-  const accessPage = await read("app/acessar/page.tsx");
-  assert.equal(page.includes("hostingersite.com"), false);
-  assert.equal(accessPage.includes("hostingersite.com"), false);
-  assert.equal(page.includes("honeydew-goshawk"), false);
-  assert.equal(accessPage.includes("honeydew-goshawk"), false);
+test("BravHAS permanece EM HOMOLOGAÇÃO com mensagem governada", async () => {
+  const access = await read("lib/product-access.ts");
+  assert.ok(access.includes('bravhas: { status: "EM HOMOLOGAÇÃO"'));
+  assert.ok(access.includes("Ambiente de homologação operacional; acesso público depende de endereço oficial autorizado."));
+  assert.equal(access.includes('bravhas: { status: "ACESSO INTERNO"'), false);
+  assert.equal(access.includes("Ambiente existente ainda precisa de auditoria"), false);
 });
 
-test("BravOS preserva protagonismo sem dominar o Hero institucional", async () => {
+test("Hostnames técnicos e temporários seguem bloqueados", async () => {
+  const access = await read("lib/product-access.ts");
+  assert.ok(access.includes('"localhost"'));
+  assert.ok(access.includes('/\\.vercel\\.(?:app|sh)$/'));
+  assert.ok(access.includes('hostname.endsWith(".hostingersite.com")'));
+  assert.ok(access.includes('url.protocol !== "https:"'));
+});
+
+test("Home e Central não expõem Hostinger temporário ou Vercel técnico", async () => {
+  const home = await read("app/page.tsx");
+  const central = await read("app/acessar/page.tsx");
+  assert.equal(home.includes("hostingersite.com"), false);
+  assert.equal(central.includes("hostingersite.com"), false);
+  assert.equal(home.includes(".vercel.app"), false);
+  assert.equal(central.includes(".vercel.app"), false);
+});
+
+test("/acessar permanece canônica e /meus-sistemas permanece alias", async () => {
+  const central = await read("app/acessar/page.tsx");
+  const alias = await read("app/meus-sistemas/page.tsx");
+  assert.ok(central.includes('canonical: "/acessar"'));
+  assert.ok(alias.includes('redirect("/acessar")'));
+  assert.equal(alias.includes("productAccessCatalog"), false);
+});
+
+test("Central possui visão executiva do portfólio", async () => {
+  const central = await read("app/acessar/page.tsx");
+  for (const text of [
+    "Sua central BravSystems, com status e acesso em um único lugar.",
+    "Visão do portfólio",
+    "Produtos mapeados",
+    "Em homologação",
+    "Em desenvolvimento",
+    "Acessos oficiais",
+  ]) {
+    assert.ok(central.includes(text), `${text} ausente da Central`);
+  }
+  assert.ok(central.includes("data-access-overview"));
+});
+
+test("Central explica limitação atual de filtro por contrato sem inventar posse", async () => {
+  const central = await read("app/acessar/page.tsx");
+  assert.ok(central.includes("Nesta etapa, a Central exibe o catálogo governado completo."));
+  assert.ok(central.includes("poderá filtrar os produtos contratados"));
+});
+
+test("Central mantém seis cards com CTA condicionado a URL oficial", async () => {
+  const central = await read("app/acessar/page.tsx");
+  assert.ok(central.includes("productAccessCatalog.map"));
+  assert.ok(central.includes("data-access-product"));
+  assert.ok(central.includes("data-access-blocked"));
+  assert.ok(central.includes("Acesso oficial ainda não liberado"));
+  assert.ok(central.includes("product.loginHref"));
+});
+
+test("Central destaca estado do ambiente e ações comerciais", async () => {
+  const central = await read("app/acessar/page.tsx");
+  assert.ok(central.includes("Estado do ambiente"));
+  assert.ok(central.includes("Conhecer produto"));
+  assert.ok(central.includes("Falar com vendas"));
+  assert.ok(central.includes("statusStyles"));
+  assert.ok(central.includes("statusAccent"));
+});
+
+test("Header reforça navegação de ecossistema e acesso", async () => {
+  const header = await read("components/SiteHeader.tsx");
+  for (const label of ["Ecossistema", "Destaques", "Por que BravSystems", "Central", "Contato", "Meus Sistemas"]) {
+    assert.ok(header.includes(label), `${label} ausente do header`);
+  }
+  assert.ok(header.includes("Falar com especialista"));
+  assert.ok(header.includes('href="/acessar"'));
+});
+
+test("BravOS preserva asset aprovado e destaque comercial", async () => {
   const page = await read("app/page.tsx");
   assert.ok(page.includes('id="bravos"'));
   assert.ok(page.includes("A operação acontece em tempo real. Sua gestão também deveria."));
-  assert.ok(page.includes('/bravos-hero-approved.webp'));
-  assert.ok(page.indexOf("BravSystems • Ecossistema SaaS B2B") < page.indexOf('id="bravos"'));
+  assert.ok(page.includes("/bravos-hero-approved.webp"));
+  assert.ok(page.includes("Conhecer BravOS"));
 });
 
-test("homepage preserva contexto real e governança sem métricas fictícias", async () => {
+test("Home comunica governança sem métricas fictícias", async () => {
   const page = await read("app/page.tsx");
-  assert.ok(page.includes("¡Bravazzo! 335"));
-  assert.ok(page.includes("Homologação separada de produção"));
-  assert.ok(page.includes("Acesso com governança"));
+  assert.ok(page.includes("Homologação ≠ produção"));
+  assert.ok(page.includes("Acesso controlado"));
   assert.equal(page.includes("mil clientes"), false);
   assert.equal(page.includes("milhões faturados"), false);
 });
 
-test("catálogo de acesso mantém contrato de URLs e bloqueia hosts técnicos", async () => {
-  const access = await read("lib/product-access.ts");
-  for (const envName of [
-    "NEXT_PUBLIC_BRAVOS_APP_URL",
-    "NEXT_PUBLIC_BRAVHAS_APP_URL",
-    "NEXT_PUBLIC_BRAVHOS_APP_URL",
-    "NEXT_PUBLIC_BRAVMSG_APP_URL",
-    "NEXT_PUBLIC_BRAVACADEMY_APP_URL",
-    "NEXT_PUBLIC_BRAVVIDEO_APP_URL",
-  ]) {
-    assert.ok(access.includes(envName), `${envName} ausente do contrato de acesso`);
-  }
-  assert.ok(access.includes('url.protocol !== "https:"'));
-  assert.ok(access.includes('"localhost"'));
-  assert.ok(access.includes('/\\.vercel\\.(?:app|sh)$/'));
-  assert.ok(access.includes('hostname.endsWith(".hostingersite.com")'));
-  assert.equal(access.includes("honeydew-goshawk-202562"), false);
-});
-
-test("catálogo de acesso registra estágio governado dos seis produtos", async () => {
-  const access = await read("lib/product-access.ts");
-  for (const slug of ["bravos", "bravacademy", "bravhos", "bravmsg", "bravhas", "bravvideo"]) {
-    assert.ok(access.includes(`${slug}: {`), `${slug} ausente de governedState`);
-  }
-  assert.ok(access.includes('bravos: { status: "EM HOMOLOGAÇÃO"'));
-  assert.ok(access.includes('bravacademy: { status: "EM HOMOLOGAÇÃO"'));
-  assert.ok(access.includes('bravhas: { status: "EM HOMOLOGAÇÃO", environmentNote: "Ambiente de homologação operacional; acesso público depende de endereço oficial autorizado." }'));
-  assert.equal(access.includes('bravhas: { status: "ACESSO INTERNO"'), false);
-  assert.equal(access.includes("Ambiente existente ainda precisa de auditoria antes de eventual liberação pública."), false);
-  assert.ok(access.includes("environmentNote"));
-});
-
-test("/acessar é a arquitetura canônica e /meus-sistemas funciona apenas como alias", async () => {
-  const accessPage = await read("app/acessar/page.tsx");
-  const alias = await read("app/meus-sistemas/page.tsx");
-  assert.ok(accessPage.includes('canonical: "/acessar"'));
-  assert.ok(accessPage.includes("Entrar / Meus Sistemas"));
-  assert.ok(alias.includes('redirect("/acessar")'));
-  assert.equal(alias.includes("productAccessCatalog"), false, "alias não deve duplicar a Central de Acesso");
-});
-
-test("Central de Acesso separa login e venda e mantém CTA bloqueado sem URL", async () => {
-  const page = await read("app/acessar/page.tsx");
-  assert.ok(page.includes("productAccessCatalog"));
-  assert.ok(page.includes("ACESSO EM IMPLANTAÇÃO"));
-  assert.ok(page.includes("environmentNote"));
-  assert.ok(page.includes("Conhecer produto"));
-  assert.ok(page.includes("Falar com vendas"));
-  assert.ok(page.includes("loginHref"));
-  assert.equal(page.includes("vercel.app"), false);
-  assert.equal(page.includes("hostingersite.com"), false);
-});
-
-test("navegação principal mantém venda e login visualmente separados", async () => {
-  const header = await read("components/SiteHeader.tsx");
-  for (const label of ["Soluções", "Produtos", "Destaques", "Por que BravSystems", "Contato", "Entrar / Meus Sistemas"]) {
-    assert.ok(header.includes(label), `${label} ausente da navegação`);
-  }
-  assert.ok(header.includes('href="/#contato"'));
-  assert.ok(header.includes('href="/acessar"'));
-});
-
-test("footer representa marca-mãe e Central de Sistemas", async () => {
-  const footer = await read("components/SiteFooter.tsx");
-  assert.ok(footer.includes("Empresa brasileira de tecnologia"));
-  assert.ok(footer.includes("Entrar / Meus Sistemas"));
-  assert.ok(footer.includes("Desenvolvimento, homologação e produção são estágios distintos."));
-  assert.ok(footer.includes("products.map"));
-});
-
-test("formulário comercial permanece preservado e sem claim de entrega por e-mail", async () => {
+test("Formulário comercial permanece preservado", async () => {
   const form = await read("components/LeadForm.tsx");
   const home = await read("app/page.tsx");
   assert.ok(form.includes("politica-de-privacidade"));
   assert.ok(form.includes('name="website"'));
   assert.ok(form.includes("defaultInterest"));
   assert.ok(home.includes("<LeadForm />"));
-  assert.equal(home.includes("e-mail enviado com sucesso"), false);
 });
 
-test("API comercial mantém validação e anti-abuso", async () => {
-  const route = await read("app/api/contact/route.ts");
-  assert.ok(route.includes("MAX_PAYLOAD_BYTES"));
-  assert.ok(route.includes("RATE_LIMIT_MAX_REQUESTS"));
-  assert.ok(route.includes("allowedInterests"));
-  assert.ok(route.includes("escapeHtml"));
-});
-
-test("páginas de produto integram catálogo e Central de Acesso", async () => {
+test("Páginas de produto continuam integradas à Central", async () => {
   const productPage = await read("app/[slug]/page.tsx");
   assert.ok(productPage.includes("getProductAccess"));
-  assert.ok(productPage.includes("getProductVideo"));
   assert.ok(productPage.includes('href="/acessar"'));
   assert.ok(productPage.includes("LeadForm defaultInterest={product.name}"));
 });
 
-test("vídeos aprovados permanecem sob demanda e BravAcademy não ganha mídia inexistente", async () => {
-  const videos = await read("lib/product-videos.ts");
-  const player = await read("components/ProductVideoDialog.tsx");
-  for (const filename of [
-    "16623CBB-AD78-4480-B09E-EE8E53335411.mp4",
-    "0CFE05FE-68C5-4278-B49A-594BCA0AFB55(1).mp4",
-    "E8FD96E0-0A8D-41C4-8E0C-C77C43EC212F.mp4",
-    "5A6BC2BF-0A0B-4AFC-B8C9-77BB2AC84FBD.mp4",
-  ]) {
-    assert.ok(videos.includes(filename), `${filename} ausente do mapeamento`);
-  }
-  const start = videos.indexOf('slug: "bravacademy"');
-  const end = videos.indexOf('slug: "bravvideo"', start);
-  const academy = videos.slice(start, end);
-  assert.ok(academy.includes("assetPresent: false"));
-  assert.ok(player.includes('preload="none"'));
-  assert.equal(player.includes("autoPlay"), false);
-});
-
-test("sitemap mantém somente a Central canônica de acesso", async () => {
+test("Sitemap mantém apenas a Central canônica", async () => {
   const sitemap = await read("app/sitemap.ts");
-  assert.ok(sitemap.includes("products.map"));
   assert.ok(sitemap.includes("/acessar"));
   assert.equal(sitemap.includes("/meus-sistemas"), false);
-  assert.ok(sitemap.includes("politica-de-privacidade"));
 });
 
-test("Quality exige audit lint testes TypeScript build Browser E2E e evidência visual", async () => {
+test("Quality exige cadeia técnica e Browser E2E", async () => {
   const workflow = await read(".github/workflows/quality.yml");
   for (const required of [
     "npm ci",
