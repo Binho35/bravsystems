@@ -96,7 +96,7 @@ export default function AccessPage() {
             </div>
 
             <div className="mt-3 rounded-xl border border-[#386681] bg-[#0c304d] p-3 text-[11px] leading-5 text-[#bfd4e1] sm:mt-4 sm:rounded-2xl sm:p-4 sm:text-xs sm:leading-6">
-              Hoje a Central exibe o catálogo governado completo. O filtro por produtos contratados depende da futura identificação do cliente, sem expor URLs técnicas.
+              Nesta etapa, a Central exibe o catálogo governado completo. O filtro por produtos contratados depende da futura identificação do cliente, sem expor URLs técnicas.
             </div>
           </div>
         </div>
