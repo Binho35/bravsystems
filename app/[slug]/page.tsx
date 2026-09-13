@@ -43,6 +43,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const heroDescription = isBravHAS
     ? "O BravHAS centraliza rotinas administrativas, RH, DP, documentos e indicadores em um único ambiente para dar clareza à operação, reduzir retrabalho e acelerar decisões."
     : product.description;
+  const accessGovernanceTitle = isBravHAS
+    ? "Ambiente controlado. Acesso liberado apenas para usuários autorizados."
+    : "Acesse o ambiente oficial quando ele estiver liberado.";
+  const accessGovernanceText = isBravHAS
+    ? "A liberação pública não está prevista nesta etapa. A Central preserva a governança de acesso sem expor endereços técnicos."
+    : "A BravSystems centraliza os acessos em um único portal e não publica ambientes de Preview como produção.";
 
   const softwareJsonLd = product.slug === "bravvideo" ? null : {
     "@context": "https://schema.org",
@@ -117,8 +123,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <div className="mx-auto flex max-w-[1200px] flex-col gap-6 px-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <div className="text-xs font-extrabold uppercase tracking-[.16em] text-[#8fc2e2]">Já é cliente?</div>
-            <h2 className="mt-3 text-3xl font-bold">Acesse o ambiente oficial quando ele estiver liberado.</h2>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-[#bfd3e1]">A BravSystems centraliza os acessos em um único portal e não publica ambientes de Preview como produção.</p>
+            <h2 className="mt-3 text-3xl font-bold">{accessGovernanceTitle}</h2>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-[#bfd3e1]">{accessGovernanceText}</p>
           </div>
           <Link href="/acessar" className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-xl bg-white px-6 font-extrabold text-[#0f4d78]">Ir para a Central de Acesso →</Link>
         </div>
