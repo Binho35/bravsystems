@@ -3,8 +3,6 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
-const officialProducts = ["BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo"];
-
 test("Home posiciona BravSystems como ecossistema SaaS B2B", async () => {
   const page = await read("app/page.tsx");
   assert.ok(page.includes("BravSystems • Ecossistema SaaS B2B"));
