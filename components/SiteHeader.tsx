@@ -44,7 +44,7 @@ export function SiteHeader() {
             <summary className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-xl border border-[#d6e2eb] bg-white text-lg font-bold text-[#154b7a] [&::-webkit-details-marker]:hidden" aria-label="Abrir menu de navegação">
               ☰
             </summary>
-            <nav className="absolute right-0 top-13 w-[min(19rem,calc(100vw-2rem))] rounded-2xl border border-[#dce6ed] bg-white p-2 shadow-2xl" aria-label="Navegação responsiva">
+            <nav className="absolute right-0 top-[3.25rem] w-[min(19rem,calc(100vw-2rem))] rounded-2xl border border-[#dce6ed] bg-white p-2 shadow-2xl" aria-label="Navegação responsiva">
               {navigation.map(([label, href]) => (
                 <Link key={href} href={href} className="block rounded-xl px-4 py-3 text-sm font-semibold text-[#334155] hover:bg-[#eef5fa]">
                   {label}
