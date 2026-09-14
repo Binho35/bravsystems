@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+
+export const metadata: Metadata = {
+  title: "Página não encontrada",
+  description: "O endereço informado não corresponde a uma página ativa do site BravSystems.",
+  robots: { index: false, follow: true },
+};
 
 export default function NotFound() {
   return (
