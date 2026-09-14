@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/politica-de-privacidade" },
   openGraph: {
     type: "website",
-    url: "https://bravsystems.com.br/politica-de-privacidade",
+    url: "https://www.bravsystems.com.br/politica-de-privacidade",
     title: "Política de Privacidade | BravSystems",
     description: "Saiba como a BravSystems trata os dados enviados pelo site institucional e pelo formulário de contato comercial.",
   },
