@@ -78,9 +78,9 @@ test("Oito retratos aprovados são vinculados e somente cinco perfis permanecem 
     assert.ok(team.includes(`portraitSrc: "/team/${slug}.webp"`), `${slug}: portraitSrc aprovado ausente`);
   }
 
-  assert.equal(team.split('portraitStatus: "approved"').length - 1, 8, "devem existir exatamente oito retratos aprovados");
-  assert.equal(team.split('portraitSrc: null').length - 1, 5, "devem existir exatamente cinco retratos pendentes");
-  assert.equal(team.split('portraitStatus: "pending"').length - 1, 5, "devem existir exatamente cinco status pendentes");
+  assert.equal(team.split('portraitStatus: "approved",').length - 1, 8, "devem existir exatamente oito retratos aprovados");
+  assert.equal(team.split('portraitSrc: null,').length - 1, 5, "devem existir exatamente cinco retratos pendentes");
+  assert.equal(team.split('portraitStatus: "pending",').length - 1, 5, "devem existir exatamente cinco status pendentes");
 
   for (const slug of pendingPortraits) {
     assert.ok(team.includes(`slug: "${slug}"`), `${slug}: perfil pendente ausente`);
