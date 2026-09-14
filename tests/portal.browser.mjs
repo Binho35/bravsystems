@@ -229,7 +229,7 @@ async function captureTeamEvidence(id, viewportLabel) {
   assert.equal(team.contained, true, `${viewportLabel}: seção Equipe com overflow horizontal`);
   assert.equal(team.headerLink, true, `${viewportLabel}: Equipe ausente da navegação`);
   assert.ok(team.text.includes("Robson Fernandes"), `${viewportLabel}: liderança ausente`);
-  assert.ok(team.text.includes("Founder & CEO"), `${viewportLabel}: papel do fundador ausente`);
+  assert.ok(team.text.includes("FOUNDER & CEO"), `${viewportLabel}: papel do fundador ausente`);
   assert.ok(team.text.includes("Produto e tecnologia"), `${viewportLabel}: frente de produto ausente`);
   assert.ok(team.text.includes("Operações e qualidade"), `${viewportLabel}: frente de operações ausente`);
   assert.ok(team.text.includes("Comercial e relacionamento"), `${viewportLabel}: frente comercial ausente`);
