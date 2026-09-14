@@ -13,6 +13,12 @@ export const metadata: Metadata = {
     title: "Política de Privacidade | BravSystems",
     description: "Saiba como a BravSystems trata os dados enviados pelo site institucional e pelo formulário de contato comercial.",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Política de Privacidade | BravSystems",
+    description: "Saiba como a BravSystems trata os dados enviados pelo site institucional e pelo formulário de contato comercial.",
+    images: ["/opengraph-image"],
+  },
 };
 
 export default function PrivacyPage() {
