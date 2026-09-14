@@ -45,6 +45,15 @@ async function execute(id, script) {
   return wd("POST", `/session/${id}/execute/sync`, { script, args: [] });
 }
 
+async function waitForBrowser(id, predicate, label, attempts = 40) {
+  for (let i = 0; i < attempts; i += 1) {
+    const ready = await execute(id, `return Boolean(${predicate});`);
+    if (ready) return;
+    await new Promise((resolve) => setTimeout(resolve, 150));
+  }
+  throw new Error(`Timeout aguardando renderização: ${label}`);
+}
+
 async function capture(id, label) {
   const png = await wd("GET", `/session/${id}/screenshot`);
   assert.ok(typeof png === "string" && png.length > 1000, `${label}: screenshot não gerado`);
@@ -78,7 +87,7 @@ test("SITE HARDENING — navegação tablet, status, redirect legal e 404", { ti
 
     try {
       await wd("POST", `/session/${id}/url`, { url: `${appBase}/` });
-      await new Promise((resolve) => setTimeout(resolve, 400));
+      await waitForBrowser(id, `document.readyState === 'complete' && document.querySelector('header summary')`, "Home/header");
       const header = await execute(id, `
         const summary = document.querySelector('header summary');
         const desktopNav = document.querySelector('header nav[aria-label="Navegação principal"]');
@@ -93,6 +102,7 @@ test("SITE HARDENING — navegação tablet, status, redirect legal e 404", { ti
       assert.equal(header.desktopNavVisible, false, "tablet: nav desktop deveria aguardar XL");
 
       await execute(id, `document.querySelector('header summary')?.click(); return true;`);
+      await waitForBrowser(id, `document.querySelector('header nav[aria-label="Navegação responsiva"]')?.getBoundingClientRect().height > 0`, "menu responsivo aberto");
       const menu = await execute(id, `
         const nav = document.querySelector('header nav[aria-label="Navegação responsiva"]');
         return {
@@ -105,10 +115,12 @@ test("SITE HARDENING — navegação tablet, status, redirect legal e 404", { ti
       await capture(id, "TABLET_768x1024-13-header-menu");
 
       await wd("POST", `/session/${id}/url`, { url: `${appBase}/bravvideo` });
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      const bravvideo = await execute(id, `return { text: document.body.innerText, overflowX: document.documentElement.scrollWidth > innerWidth };`);
+      await waitForBrowser(id, `document.readyState === 'complete' && document.querySelector('h1')?.textContent?.includes('Uma frente experimental') && document.body.innerText.includes('Em desenvolvimento')`, "BravVideo com status governado");
+      const bravvideo = await execute(id, `return { text: document.body.innerText, overflowX: document.documentElement.scrollWidth > innerWidth, url: location.pathname };`);
+      assert.equal(bravvideo.url, "/bravvideo", "BravVideo: navegação não concluiu");
       assert.equal(bravvideo.overflowX, false, "BravVideo: overflow horizontal");
       assert.ok(bravvideo.text.includes("Em desenvolvimento"), "BravVideo: status Em desenvolvimento ausente");
+      assert.ok(bravvideo.text.includes("Tecnologia em desenvolvimento"), "BravVideo: transparência de maturidade ausente");
       assert.equal(bravvideo.text.includes("Tecnologia em homologação"), false, "BravVideo: limitação antiga ainda visível");
       await capture(id, "TABLET_768x1024-14-bravvideo-status");
 
@@ -117,14 +129,15 @@ test("SITE HARDENING — navegação tablet, status, redirect legal e 404", { ti
       assert.equal(legacy.headers.get("location"), "/politica-de-privacidade");
 
       await wd("POST", `/session/${id}/url`, { url: `${appBase}/rota-que-nao-existe-argos` });
-      await new Promise((resolve) => setTimeout(resolve, 250));
-      const notFound = await execute(id, `return { text: document.body.innerText, overflowX: document.documentElement.scrollWidth > innerWidth };`);
+      await waitForBrowser(id, `document.readyState === 'complete' && document.body.innerText.includes('Esta página não faz parte do caminho atual.')`, "404 institucional");
+      const notFound = await execute(id, `return { text: document.body.innerText, overflowX: document.documentElement.scrollWidth > innerWidth, robots: document.querySelector('meta[name="robots"]')?.content || '' };`);
       assert.equal(notFound.overflowX, false, "404: overflow horizontal");
       assert.ok(notFound.text.includes("Esta página não faz parte do caminho atual."), "404 institucional ausente");
       assert.ok(notFound.text.includes("Voltar para o início"), "404 sem CTA de retorno");
+      assert.ok(notFound.robots.includes("noindex"), "404 sem noindex");
       await capture(id, "TABLET_768x1024-15-404");
 
-      console.log(`SITE_HARDENING_TABLET_RESULT=${JSON.stringify({ viewport: { width: 768, height: 1024 }, menu: true, bravvideoStatus: "Em desenvolvimento", privacyRedirect: legacy.status, branded404: true })}`);
+      console.log(`SITE_HARDENING_TABLET_RESULT=${JSON.stringify({ viewport: { width: 768, height: 1024 }, menu: true, bravvideoStatus: "Em desenvolvimento", privacyRedirect: legacy.status, branded404: true, noindex404: true })}`);
     } finally {
       await wd("DELETE", `/session/${id}`).catch(() => {});
     }
