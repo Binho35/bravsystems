@@ -38,6 +38,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   if (!product) notFound();
   const productVideo = getProductVideo(product.slug);
   const access = getProductAccess(product);
+  const showAccessStatus = product.status.toLocaleUpperCase("pt-BR") !== access.status;
   const isBravHAS = product.slug === "bravhas";
   const heroEyebrow = isBravHAS ? "ADMINISTRAÇÃO CENTRAL" : product.category;
   const heroDescription = isBravHAS
@@ -71,7 +72,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="flex flex-wrap items-center gap-3">
             <span className="rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-[.14em] text-[#2563eb]">{heroEyebrow}</span>
             <span className={`rounded-full px-4 py-2 text-xs font-extrabold uppercase ${product.status === "Em homologação" ? "bg-amber-100 text-amber-800" : "bg-[#dcecf6] text-[#154b7a]"}`}>{product.status}</span>
-            <span className={`rounded-full border px-4 py-2 text-xs font-extrabold uppercase ${access.loginHref ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-slate-200 bg-white text-slate-600"}`}>{access.status}</span>
+            {showAccessStatus && (
+              <span className={`rounded-full border px-4 py-2 text-xs font-extrabold uppercase ${access.loginHref ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-slate-200 bg-white text-slate-600"}`}>{access.status}</span>
+            )}
           </div>
           <h1 className="mt-7 max-w-4xl text-5xl font-bold tracking-[-.05em] sm:text-6xl">{product.headline}</h1>
           <p className="mt-6 max-w-3xl text-[18px] leading-8 text-[#5f7185]">{heroDescription}</p>
