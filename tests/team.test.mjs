@@ -45,7 +45,7 @@ test("Transparência sobre IA aparece uma única vez e não como selo individual
   assert.equal(section.includes("Agente de IA BravSystems"), false);
   assert.equal(section.includes("Agentes de IA BravSystems"), false);
   assert.equal(section.includes("Transparência de IA"), false);
-  assert.equal((page.match(new RegExp(disclosure.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) || []).length, 1);
+  assert.equal(page.split(disclosure).length - 1, 1);
   assert.ok(page.includes("data-team-transparency"));
 });
 
