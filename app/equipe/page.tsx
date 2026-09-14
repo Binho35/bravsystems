@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -32,16 +31,15 @@ const portraitTones = [
   "from-[#11324d] via-[#2d6a8c] to-[#b9d9e9]",
 ] as const;
 
-function Portrait({ member, index = 0, priority = false }: { member: TeamMember; index?: number; priority?: boolean }) {
+function Portrait({ member, index = 0 }: { member: TeamMember; index?: number }) {
   if (member.portraitSrc) {
     return (
-      <Image
+      <img
         src={member.portraitSrc}
         alt={`Retrato institucional de ${member.name}`}
-        fill
-        priority={priority}
-        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-        className="object-cover object-center"
+        loading="lazy"
+        decoding="async"
+        className="absolute inset-0 h-full w-full object-contain object-center"
       />
     );
   }
@@ -72,7 +70,7 @@ function Portrait({ member, index = 0, priority = false }: { member: TeamMember;
 function SpecialistCard({ member, index }: { member: TeamMember; index: number }) {
   return (
     <article className="group overflow-hidden rounded-[26px] border border-[#d7e4ec] bg-white shadow-sm transition hover:-translate-y-1 hover:border-[#a9c9db] hover:shadow-xl" data-team-member={member.slug}>
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#dfeef7]">
+      <div className="relative aspect-square overflow-hidden bg-[#071827]">
         <Portrait member={member} index={index} />
       </div>
       <div className="p-5 sm:p-6">
@@ -121,7 +119,7 @@ export default function TeamPage() {
       <section className="bg-[#082844] py-12 text-white sm:py-16" data-team-founder>
         <div className="mx-auto grid max-w-[1280px] gap-7 px-4 sm:px-8 lg:grid-cols-[.75fr_1.25fr] lg:items-center">
           <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] border border-white/10 bg-[#123c5b] shadow-2xl shadow-black/20">
-            <Portrait member={founder} priority />
+            <Portrait member={founder} />
           </div>
           <div>
             <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#8bc8ed]">Liderança</div>
