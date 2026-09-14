@@ -32,7 +32,7 @@ export function SiteHeader() {
           </nav>
 
           <div className="ml-auto hidden items-center gap-2 sm:flex xl:ml-5 2xl:ml-6">
-            <Link href="/#contato" className="rounded-full border border-[#c3d7e4] bg-white px-4 py-2.5 text-sm font-bold text-[#315b7a] transition hover:border-[#0f4d78] hover:text-[#092846]">
+            <Link href="/#contato" className="hidden rounded-full border border-[#c3d7e4] bg-white px-4 py-2.5 text-sm font-bold text-[#315b7a] transition hover:border-[#0f4d78] hover:text-[#092846] lg:inline-flex">
               Falar com especialista
             </Link>
             <Link href="/acessar" className="rounded-full bg-[#0f4d78] px-4 py-2.5 text-sm font-extrabold text-white shadow-lg shadow-[#0f4d78]/15 transition hover:bg-[#092846]">
@@ -40,11 +40,11 @@ export function SiteHeader() {
             </Link>
           </div>
 
-          <details className="relative ml-auto sm:hidden">
-            <summary className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-xl border border-[#d6e2eb] bg-white text-lg font-bold text-[#154b7a] [&::-webkit-details-marker]:hidden" aria-label="Abrir menu">
+          <details className="relative ml-2 xl:hidden">
+            <summary className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-xl border border-[#d6e2eb] bg-white text-lg font-bold text-[#154b7a] [&::-webkit-details-marker]:hidden" aria-label="Abrir menu de navegação">
               ☰
             </summary>
-            <nav className="absolute right-0 top-12 w-[min(19rem,calc(100vw-2rem))] rounded-2xl border border-[#dce6ed] bg-white p-2 shadow-2xl" aria-label="Navegação mobile">
+            <nav className="absolute right-0 top-[3.25rem] w-[min(19rem,calc(100vw-2rem))] rounded-2xl border border-[#dce6ed] bg-white p-2 shadow-2xl" aria-label="Navegação responsiva">
               {navigation.map(([label, href]) => (
                 <Link key={href} href={href} className="block rounded-xl px-4 py-3 text-sm font-semibold text-[#334155] hover:bg-[#eef5fa]">
                   {label}
