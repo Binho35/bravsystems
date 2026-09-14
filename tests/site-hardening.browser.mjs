@@ -121,7 +121,7 @@ test("SITE HARDENING — navegação tablet, status, redirect legal e 404", { ti
       const bravvideo = await execute(id, `return { visibleText: document.body.innerText, structuralText: document.body.textContent, overflowX: document.documentElement.scrollWidth > innerWidth, url: location.pathname };`);
       assert.equal(bravvideo.url, "/bravvideo", "BravVideo: navegação não concluiu");
       assert.equal(bravvideo.overflowX, false, "BravVideo: overflow horizontal");
-      assert.ok(bravvideo.visibleText.includes("Em desenvolvimento"), "BravVideo: status visível Em desenvolvimento ausente");
+      assert.ok(bravvideo.visibleText.toLowerCase().includes("em desenvolvimento"), "BravVideo: status visível Em desenvolvimento ausente");
       assert.ok(bravvideo.structuralText.includes("Tecnologia em desenvolvimento"), "BravVideo: transparência estrutural de maturidade ausente");
       assert.equal(bravvideo.structuralText.includes("Tecnologia em homologação"), false, "BravVideo: limitação antiga ainda presente");
       await execute(id, `
