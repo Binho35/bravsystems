@@ -2,7 +2,7 @@ export type Product = {
   slug: string;
   name: string;
   category: string;
-  status: "Disponível" | "Em evolução" | "Em homologação";
+  status: "Disponível" | "Em desenvolvimento" | "Em homologação";
   headline: string;
   description: string;
   pain: string[];
@@ -18,7 +18,7 @@ export const products: Product[] = [
     slug: "bravos",
     name: "BravOS",
     category: "Operação e gestão para restaurantes",
-    status: "Em evolução",
+    status: "Em homologação",
     headline: "Menos controles paralelos. Mais visão da operação do restaurante.",
     description: "O BravOS organiza frentes operacionais de restaurantes em um ambiente único para reduzir retrabalho, aumentar rastreabilidade e apoiar decisões.",
     pain: ["PDV, estoque e fichas técnicas desconectados", "Compras e produção com controles paralelos", "Dificuldade para enxergar margem e operação", "Dependência excessiva de planilhas"],
@@ -46,7 +46,7 @@ export const products: Product[] = [
     slug: "bravhos",
     name: "BravHOS",
     category: "RH, DP e gestão de pessoas",
-    status: "Em evolução",
+    status: "Em desenvolvimento",
     headline: "Centralize a jornada do colaborador com mais governança e rastreabilidade.",
     description: "O BravHOS é a vertical especializada da BravSystems para informações e rotinas de pessoas, RH, Departamento Pessoal e desenvolvimento, podendo operar de forma independente do BravHAS.",
     pain: ["Documentos de colaboradores espalhados", "Admissões e rotinas manuais", "Pouca rastreabilidade de ponto, férias e afastamentos", "Histórico funcional fragmentado"],
@@ -60,7 +60,7 @@ export const products: Product[] = [
     slug: "bravmsg",
     name: "BravMsg",
     category: "Comunicação, campanhas e relacionamento",
-    status: "Em evolução",
+    status: "Em desenvolvimento",
     headline: "Organize contatos, campanhas e atendimento em uma operação mais rastreável.",
     description: "O BravMsg estrutura relacionamento, contatos e comunicação para reduzir dispersão e dar mais controle à operação comercial e de atendimento.",
     pain: ["Mensagens e contatos espalhados", "Atendimento descentralizado", "Campanhas sem histórico claro", "Dificuldade de acompanhar consentimentos e opt-out"],
@@ -88,14 +88,14 @@ export const products: Product[] = [
     slug: "bravvideo",
     name: "BravVideo",
     category: "Produção audiovisual corporativa com IA",
-    status: "Em homologação",
+    status: "Em desenvolvimento",
     headline: "Uma frente experimental para tornar conteúdo corporativo mais escalável.",
     description: "O BravVideo é uma tecnologia em desenvolvimento para produção audiovisual corporativa com apresentadores virtuais, composição de cenas, identidade visual e futura conexão com experiências de aprendizagem.",
     pain: ["Gravações humanas caras e lentas", "Nova gravação quando o conteúdo muda", "Dificuldade de padronizar apresentadores e cenas", "Escala limitada de produção"],
     benefits: ["Visão de padronização", "Potencial de redução de retrabalho", "Escala futura de conteúdo", "Integração estratégica com aprendizagem"],
     capabilities: ["Apresentadores virtuais", "Composição de cenas", "Identidade visual", "Legendas", "Aulas e conteúdo corporativo", "Integração futura com BravAcademy"],
     audience: ["Empresas com treinamento recorrente", "Times de comunicação interna", "Operações com alta demanda de conteúdo"],
-    limitations: ["Tecnologia em homologação", "Não é produto finalizado", "Dependências de provedores externos ainda estão em validação"],
+    limitations: ["Tecnologia em desenvolvimento", "Não é produto finalizado", "Dependências de provedores externos ainda estão em validação"],
     cta: "Quero acompanhar o BravVideo",
   },
 ];
