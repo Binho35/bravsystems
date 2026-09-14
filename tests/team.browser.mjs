@@ -9,6 +9,8 @@ const appBase = `http://127.0.0.1:${APP_PORT}`;
 const driverBase = `http://127.0.0.1:${DRIVER_PORT}`;
 const evidenceDir = new URL("../artifacts/browser/", import.meta.url);
 const disclosure = "A BravSystems opera com liderança humana e uma estrutura de agentes especializados apoiados por inteligência artificial.";
+const approvedSlugs = ["atlas", "forge", "sentry", "orion", "sofia", "vega", "lira", "marco"];
+const pendingSlugs = ["argos", "scout", "pulse", "nexus"];
 
 function startService(command, args) {
   return spawn(command, args, { stdio: "ignore", env: process.env, detached: true });
@@ -68,18 +70,25 @@ async function runViewport(width, height, label) {
   try {
     await wd("POST", `/session/${id}/window/rect`, { width, height, x: 0, y: 0 });
     await wd("POST", `/session/${id}/url`, { url: `${appBase}/equipe` });
-    await new Promise((resolve) => setTimeout(resolve, 700));
+    await new Promise((resolve) => setTimeout(resolve, 1200));
 
     const top = await execute(id, `
       const links = [...document.querySelectorAll('a[href]')].map(a => a.href);
       const sectionTitle = [...document.querySelectorAll('h2')].map(el => el.textContent?.trim()).find(text => text === 'Especialistas com papéis claros no ecossistema.') || '';
       const transparencyBlocks = [...document.querySelectorAll('[data-team-transparency]')];
       const transparency = transparencyBlocks[0]?.innerText || '';
-      const specialists = [...document.querySelectorAll('[data-team-member]')].map(card => ({
-        slug: card.getAttribute('data-team-member'),
-        name: card.querySelector('h2')?.textContent?.trim() || '',
-        text: card.innerText || '',
-      }));
+      const specialists = [...document.querySelectorAll('[data-team-member]')].map(card => {
+        const image = card.querySelector('img');
+        return {
+          slug: card.getAttribute('data-team-member'),
+          name: card.querySelector('h2')?.textContent?.trim() || '',
+          text: card.innerText || '',
+          hasPortrait: Boolean(image),
+          imageLoaded: image ? image.complete && image.naturalWidth > 0 : false,
+          imageSrc: image?.getAttribute('src') || '',
+          pending: Boolean(card.querySelector('[data-portrait-status="pending"]')),
+        };
+      });
       return {
         title: document.title,
         h1: document.querySelector('h1')?.textContent?.trim() || '',
@@ -87,6 +96,7 @@ async function runViewport(width, height, label) {
         hasHeader: Boolean(document.querySelector('header')),
         hasFooter: Boolean(document.querySelector('footer')),
         founder: document.querySelector('[data-team-founder]')?.innerText || '',
+        founderPending: Boolean(document.querySelector('[data-team-founder] [data-portrait-status="pending"]')),
         specialists,
         sectionTitle,
         transparency,
@@ -105,13 +115,27 @@ async function runViewport(width, height, label) {
     assert.equal(top.sectionTitle, "Especialistas com papéis claros no ecossistema.");
     assert.ok(top.founder.includes("Robson"), `${label}: Founder ausente`);
     assert.ok(top.founder.includes("Founder & CEO"), `${label}: cargo Founder ausente`);
+    assert.equal(top.founderPending, true, `${label}: Robson deve permanecer com placeholder enquanto o retrato está pendente`);
     assert.equal(top.specialists.length, 12, `${label}: quantidade de especialistas incorreta`);
     assert.equal(top.repeatedAiBadge, false, `${label}: selo repetido de IA ainda visível`);
     assert.equal(top.transparencyBlocks, 1, `${label}: deve existir um único bloco Como trabalhamos`);
     assert.ok(top.transparency.includes(disclosure), `${label}: bloco Como trabalhamos não contém transparência institucional`);
     assert.deepEqual(top.specialists.map((agent) => agent.slug), ["argos", "atlas", "forge", "sentry", "scout", "pulse", "nexus", "orion", "sofia", "vega", "lira", "marco"]);
     assert.deepEqual(top.specialists.map((agent) => agent.name), ["Argos", "Atlas", "Forge", "Sentry", "Scout", "Pulse", "Nexus", "Orion", "Sofia", "Vega", "Lira", "Marco"]);
-    assert.ok(top.pendingPortraits >= 13, `${label}: placeholders de retrato não identificados`);
+    assert.equal(top.pendingPortraits, 5, `${label}: devem permanecer exatamente cinco placeholders`);
+
+    for (const slug of approvedSlugs) {
+      const agent = top.specialists.find((item) => item.slug === slug);
+      assert.ok(agent?.hasPortrait, `${label}: ${slug} sem retrato real`);
+      assert.ok(agent?.imageLoaded, `${label}: ${slug} com imagem não carregada`);
+      assert.equal(agent?.pending, false, `${label}: ${slug} ainda marcado como pendente`);
+    }
+
+    for (const slug of pendingSlugs) {
+      const agent = top.specialists.find((item) => item.slug === slug);
+      assert.equal(agent?.hasPortrait, false, `${label}: ${slug} não deveria possuir retrato aprovado ainda`);
+      assert.equal(agent?.pending, true, `${label}: ${slug} deveria manter placeholder pendente`);
+    }
 
     await capture(id, `${label}-11-equipe-topo`);
 
@@ -121,24 +145,24 @@ async function runViewport(width, height, label) {
       window.scrollBy(0, -90);
       return true;
     `);
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await new Promise((resolve) => setTimeout(resolve, 250));
     await capture(id, `${label}-12-equipe-especialistas`);
 
     await execute(id, `
-      const disclosure = document.querySelector('[data-team-transparency]');
-      disclosure?.scrollIntoView({ block: 'center', behavior: 'instant' });
+      const approved = document.querySelector('[data-team-member="atlas"]');
+      approved?.scrollIntoView({ block: 'center', behavior: 'instant' });
       return true;
     `);
-    await new Promise((resolve) => setTimeout(resolve, 150));
-    await capture(id, `${label}-13-equipe-como-trabalhamos`);
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    await capture(id, `${label}-13-equipe-retratos`);
 
-    console.log(`TEAM_${label}_RESULT=${JSON.stringify({ viewport: { width, height }, specialists: top.specialists.length, founder: true, singleAiDisclosure: top.transparencyBlocks === 1, repeatedAiBadge: top.repeatedAiBadge, overflowX: top.overflowX, technicalLink: top.technicalLink })}`);
+    console.log(`TEAM_${label}_RESULT=${JSON.stringify({ viewport: { width, height }, specialists: top.specialists.length, approvedPortraits: top.specialists.filter(item => item.hasPortrait).length, pendingPortraits: top.pendingPortraits, founder: true, singleAiDisclosure: top.transparencyBlocks === 1, overflowX: top.overflowX, technicalLink: top.technicalLink })}`);
   } finally {
     await wd("DELETE", `/session/${id}`).catch(() => {});
   }
 }
 
-test("TEAM — posicionamento profissional em desktop e mobile", { timeout: 180_000 }, async () => {
+test("TEAM — oito retratos aprovados em desktop e mobile", { timeout: 180_000 }, async () => {
   await mkdir(evidenceDir, { recursive: true });
   const app = startService("npm", ["start", "--", "-p", String(APP_PORT)]);
   const driver = startService("chromedriver", [`--port=${DRIVER_PORT}`]);
