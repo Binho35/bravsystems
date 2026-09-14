@@ -6,7 +6,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { aiAgents, founder, type TeamMember } from "@/lib/team";
 
 export const metadata: Metadata = {
-  title: "Equipe | BravSystems",
+  title: "Equipe",
   description: "Conheça a liderança humana e a estrutura de agentes de inteligência artificial especializados que apoiam a evolução do ecossistema BravSystems.",
   alternates: { canonical: "/equipe" },
   openGraph: {
@@ -14,6 +14,12 @@ export const metadata: Metadata = {
     url: "https://bravsystems.com.br/equipe",
     title: "Equipe | BravSystems",
     description: "Liderança humana combinada a agentes de IA especializados em engenharia, produto, qualidade, operações, pesquisa e experiência digital.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Equipe | BravSystems",
+    description: "Conheça a liderança humana e os agentes de IA especializados que apoiam o ecossistema BravSystems.",
+    images: ["/opengraph-image"],
   },
 };
 
