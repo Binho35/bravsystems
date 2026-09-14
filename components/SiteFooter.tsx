@@ -35,6 +35,7 @@ export function SiteFooter() {
           <div className="text-xs font-extrabold uppercase tracking-[.16em] text-[#75afd3]">Institucional e legal</div>
           <div className="mt-4 grid gap-3 text-sm">
             <Link href="/#por-que-bravsystems" className="transition hover:text-white">Sobre a BravSystems</Link>
+            <Link href="/equipe" className="font-semibold text-white transition hover:text-[#8bc8ed]">Equipe BravSystems</Link>
             <Link href="/politica-de-privacidade" className="transition hover:text-white">Política de Privacidade</Link>
             <span className="text-[#7895aa]">Termos de Uso — pendente de publicação</span>
             <span className="text-[#7895aa]">Cookies — avaliar conforme necessidade</span>
