@@ -64,10 +64,21 @@ test("BravAcademy permanece EM HOMOLOGAÇÃO e ganha destaque comercial", async 
   }
 });
 
-test("BravHAS permanece EM HOMOLOGAÇÃO com mensagem governada", async () => {
+test("BravHAS permanece EM HOMOLOGAÇÃO com copy institucional do ciclo 008", async () => {
   const access = await read("lib/product-access.ts");
+  const products = await read("lib/products.ts");
+  const productPage = await read("app/[slug]/page.tsx");
   assert.ok(access.includes('bravhas: { status: "EM HOMOLOGAÇÃO"'));
-  assert.ok(access.includes("Ambiente de homologação operacional; acesso público depende de endereço oficial autorizado."));
+  assert.ok(access.includes('publicAccessDisabled = new Set(["bravhas"])'));
+  assert.ok(access.includes("Ambiente interno em homologação. Liberação pública não prevista nesta etapa."));
+  assert.ok(products.includes('category: "Administração, financeiro e pessoas"'));
+  assert.ok(products.includes('headline: "Controle administrativo real para financeiro, pessoas e obrigações."'));
+  assert.ok(products.includes('description: "Suite administrativa da BravSystems para organizar financeiro, RH, DP, documentos e rotinas de gestão em um único centro de controle."'));
+  assert.ok(products.includes('cta: "Conhecer o BravHAS"'));
+  assert.ok(productPage.includes("ADMINISTRAÇÃO CENTRAL"));
+  assert.ok(productPage.includes("O BravHAS centraliza rotinas administrativas, RH, DP, documentos e indicadores em um único ambiente para dar clareza à operação, reduzir retrabalho e acelerar decisões."));
+  assert.ok(productPage.includes("Ver visão geral"));
+  assert.ok(productPage.includes("Ambiente controlado. Acesso liberado apenas para usuários autorizados."));
   assert.equal(access.includes('bravhas: { status: "ACESSO INTERNO"'), false);
   assert.equal(access.includes("Ambiente existente ainda precisa de auditoria"), false);
 });

@@ -38,6 +38,18 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   if (!product) notFound();
   const productVideo = getProductVideo(product.slug);
   const access = getProductAccess(product);
+  const showAccessStatus = product.status.toLocaleUpperCase("pt-BR") !== access.status;
+  const isBravHAS = product.slug === "bravhas";
+  const heroEyebrow = isBravHAS ? "ADMINISTRAÇÃO CENTRAL" : product.category;
+  const heroDescription = isBravHAS
+    ? "O BravHAS centraliza rotinas administrativas, RH, DP, documentos e indicadores em um único ambiente para dar clareza à operação, reduzir retrabalho e acelerar decisões."
+    : product.description;
+  const accessGovernanceTitle = isBravHAS
+    ? "Ambiente controlado. Acesso liberado apenas para usuários autorizados."
+    : "Acesse o ambiente oficial quando ele estiver liberado.";
+  const accessGovernanceText = isBravHAS
+    ? "A liberação pública não está prevista nesta etapa. A Central preserva a governança de acesso sem expor endereços técnicos."
+    : "A BravSystems centraliza os acessos em um único portal e não publica ambientes de Preview como produção.";
 
   const softwareJsonLd = product.slug === "bravvideo" ? null : {
     "@context": "https://schema.org",
@@ -58,25 +70,33 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       <section className="border-b border-[#d7e3ec] bg-[#eef5fa] py-20">
         <div className="mx-auto max-w-[1200px] px-6">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-[.14em] text-[#2563eb]">{product.category}</span>
+            <span className="rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-[.14em] text-[#2563eb]">{heroEyebrow}</span>
             <span className={`rounded-full px-4 py-2 text-xs font-extrabold uppercase ${product.status === "Em homologação" ? "bg-amber-100 text-amber-800" : "bg-[#dcecf6] text-[#154b7a]"}`}>{product.status}</span>
-            <span className={`rounded-full border px-4 py-2 text-xs font-extrabold uppercase ${access.loginHref ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-slate-200 bg-white text-slate-600"}`}>{access.status}</span>
+            {showAccessStatus && (
+              <span className={`rounded-full border px-4 py-2 text-xs font-extrabold uppercase ${access.loginHref ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-slate-200 bg-white text-slate-600"}`}>{access.status}</span>
+            )}
           </div>
           <h1 className="mt-7 max-w-4xl text-5xl font-bold tracking-[-.05em] sm:text-6xl">{product.headline}</h1>
-          <p className="mt-6 max-w-3xl text-[18px] leading-8 text-[#5f7185]">{product.description}</p>
+          <p className="mt-6 max-w-3xl text-[18px] leading-8 text-[#5f7185]">{heroDescription}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <a href="#contato" className="inline-flex h-12 items-center justify-center rounded-xl bg-[#154b7a] px-6 font-bold text-white">{product.cta}</a>
-            {productVideo?.assetPresent && <ProductVideoDialog video={productVideo} />}
-            {access.loginHref ? (
-              <a href={access.loginHref} rel="noopener noreferrer" className="inline-flex h-12 items-center justify-center rounded-xl border border-emerald-300 bg-emerald-50 px-6 font-bold text-emerald-800">Acessar {product.name}</a>
+            {isBravHAS ? (
+              <a href="#visao-geral" className="inline-flex h-12 items-center justify-center rounded-xl border border-[#bdd3e2] bg-white px-6 font-bold text-[#154b7a]">Ver visão geral</a>
             ) : (
-              <Link href="/acessar" className="inline-flex h-12 items-center justify-center rounded-xl border border-[#bdd3e2] bg-white px-6 font-bold text-[#154b7a]">Central de Acesso</Link>
+              <>
+                {productVideo?.assetPresent && <ProductVideoDialog video={productVideo} />}
+                {access.loginHref ? (
+                  <a href={access.loginHref} rel="noopener noreferrer" className="inline-flex h-12 items-center justify-center rounded-xl border border-emerald-300 bg-emerald-50 px-6 font-bold text-emerald-800">Acessar {product.name}</a>
+                ) : (
+                  <Link href="/acessar" className="inline-flex h-12 items-center justify-center rounded-xl border border-[#bdd3e2] bg-white px-6 font-bold text-[#154b7a]">Central de Acesso</Link>
+                )}
+              </>
             )}
           </div>
         </div>
       </section>
 
-      <section className="bg-white py-20">
+      <section id={isBravHAS ? "visao-geral" : undefined} className="bg-white py-20">
         <div className="mx-auto grid max-w-[1200px] gap-8 px-6 lg:grid-cols-2">
           <InfoBlock eyebrow="A dor" title="O problema que queremos reduzir" items={product.pain} />
           <InfoBlock eyebrow="Benefícios" title="O resultado que orienta a solução" items={product.benefits} />
@@ -106,8 +126,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <div className="mx-auto flex max-w-[1200px] flex-col gap-6 px-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <div className="text-xs font-extrabold uppercase tracking-[.16em] text-[#8fc2e2]">Já é cliente?</div>
-            <h2 className="mt-3 text-3xl font-bold">Acesse o ambiente oficial quando ele estiver liberado.</h2>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-[#bfd3e1]">A BravSystems centraliza os acessos em um único portal e não publica ambientes de Preview como produção.</p>
+            <h2 className="mt-3 text-3xl font-bold">{accessGovernanceTitle}</h2>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-[#bfd3e1]">{accessGovernanceText}</p>
           </div>
           <Link href="/acessar" className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-xl bg-white px-6 font-extrabold text-[#0f4d78]">Ir para a Central de Acesso →</Link>
         </div>
