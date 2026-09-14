@@ -51,7 +51,7 @@ async function waitForBrowser(id, predicate, label, attempts = 60) {
     if (ready) return;
     await new Promise((resolve) => setTimeout(resolve, 150));
   }
-  const diagnostic = await execute(id, `return { url: location.href, title: document.title, h1: document.querySelector('h1')?.textContent || '', text: document.body?.textContent?.slice(0, 1000) || '' };`).catch(() => null);
+  const diagnostic = await execute(id, `return { url: location.href, title: document.title, h1: document.querySelector('h1')?.textContent || '', text: document.body?.textContent?.slice(0, 1000) || '', robots: [...document.querySelectorAll('meta[name="robots"]')].map(meta => meta.content) };`).catch(() => null);
   throw new Error(`Timeout aguardando renderização: ${label}; diagnóstico=${JSON.stringify(diagnostic)}`);
 }
 
@@ -138,11 +138,12 @@ test("SITE HARDENING — navegação tablet, status, redirect legal e 404", { ti
 
       await wd("POST", `/session/${id}/url`, { url: `${appBase}/rota-que-nao-existe-argos` });
       await waitForBrowser(id, `location.pathname === '/rota-que-nao-existe-argos' && document.body.textContent.includes('Esta página não faz parte do caminho atual.')`, "404 institucional");
-      const notFound = await execute(id, `return { text: document.body.innerText, overflowX: document.documentElement.scrollWidth > innerWidth, robots: document.querySelector('meta[name="robots"]')?.content || '' };`);
+      await waitForBrowser(id, `[...document.querySelectorAll('meta[name="robots"]')].some(meta => meta.content.toLowerCase().includes('noindex'))`, "404 noindex");
+      const notFound = await execute(id, `return { text: document.body.innerText, overflowX: document.documentElement.scrollWidth > innerWidth, robots: [...document.querySelectorAll('meta[name="robots"]')].map(meta => meta.content) };`);
       assert.equal(notFound.overflowX, false, "404: overflow horizontal");
       assert.ok(notFound.text.includes("Esta página não faz parte do caminho atual."), "404 institucional ausente");
       assert.ok(notFound.text.includes("Voltar para o início"), "404 sem CTA de retorno");
-      assert.ok(notFound.robots.includes("noindex"), "404 sem noindex");
+      assert.ok(notFound.robots.some((content) => content.toLowerCase().includes("noindex")), `404 sem noindex; robots=${JSON.stringify(notFound.robots)}`);
       await capture(id, "TABLET_768x1024-15-404");
 
       console.log(`SITE_HARDENING_TABLET_RESULT=${JSON.stringify({ viewport: { width: 768, height: 1024 }, menu: true, bravvideoStatus: "Em desenvolvimento", privacyRedirect: legacy.status, branded404: true, noindex404: true })}`);
