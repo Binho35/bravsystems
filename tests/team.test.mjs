@@ -4,24 +4,52 @@ import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-test("TEAM 001 publica liderança humana e doze agentes de IA sem fingir equipe humana", async () => {
+const expectedRoles = [
+  ["Argos", "Head of Technology Operations & Portfolio"],
+  ["Atlas", "Core Architecture & Backend"],
+  ["Forge", "Operations & Product Experience"],
+  ["Sentry", "Quality & Release Engineering"],
+  ["Scout", "Intelligence & Technology Audit"],
+  ["Pulse", "Messaging Platform Engineering"],
+  ["Nexus", "Product Engineering — BravHAS"],
+  ["Orion", "Product Engineering — BravHOS"],
+  ["Sofia", "Learning Experience & BravAcademy"],
+  ["Vega", "AI Media & Video Engineering"],
+  ["Lira", "Social Platform Engineering"],
+  ["Marco", "Web Experience & Institutional Brand"],
+];
+
+test("TEAM posiciona Robson e especialistas pelas funções profissionais", async () => {
   const team = await read("lib/team.ts");
   const page = await read("app/equipe/page.tsx");
 
   assert.ok(team.includes('name: "Robson"'));
   assert.ok(team.includes('role: "Founder & CEO"'));
-  assert.ok(page.includes("Liderança humana + agentes de IA"));
-  assert.ok(page.includes("Agente de IA BravSystems"));
-  assert.ok(page.includes("não cargos humanos nem históricos profissionais fictícios"));
+  assert.ok(page.includes("Especialistas com papéis claros no ecossistema."));
+  assert.ok(page.includes("Cada especialista atua em uma frente definida de tecnologia, produto, qualidade, operações e experiência digital da BravSystems."));
 
-  for (const name of ["Argos", "Atlas", "Forge", "Sentry", "Scout", "Pulse", "Nexus", "Orion", "Sofia", "Vega", "Lira", "Marco"]) {
+  for (const [name, role] of expectedRoles) {
     assert.ok(team.includes(`name: "${name}"`), `${name} ausente da equipe`);
+    assert.ok(team.includes(`role: "${role}"`), `${name}: função pública incorreta`);
   }
 
   assert.equal(team.includes('name: "Scott"'), false, "Scout/Scott deve permanecer identidade única");
 });
 
-test("TEAM 001 integra Equipe à Home, navegação, rodapé e sitemap", async () => {
+test("Transparência sobre IA aparece uma única vez e não como selo individual", async () => {
+  const page = await read("app/equipe/page.tsx");
+  const section = await read("components/TeamSection.tsx");
+  const disclosure = "A BravSystems opera com liderança humana e uma estrutura de agentes especializados apoiados por inteligência artificial.";
+
+  assert.equal(page.includes("Agente de IA BravSystems"), false);
+  assert.equal(section.includes("Agente de IA BravSystems"), false);
+  assert.equal(section.includes("Agentes de IA BravSystems"), false);
+  assert.equal(section.includes("Transparência de IA"), false);
+  assert.equal((page.match(new RegExp(disclosure.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) || []).length, 1);
+  assert.ok(page.includes("data-team-transparency"));
+});
+
+test("TEAM integra Equipe à Home, navegação, rodapé e sitemap", async () => {
   const home = await read("app/page.tsx");
   const section = await read("components/TeamSection.tsx");
   const header = await read("components/SiteHeader.tsx");
@@ -32,13 +60,14 @@ test("TEAM 001 integra Equipe à Home, navegação, rodapé e sitemap", async ()
   assert.ok(home.includes("<TeamSection />"));
   assert.ok(section.includes('id="equipe"'));
   assert.ok(section.includes("12 frentes especializadas, papéis explícitos."));
-  assert.ok(section.includes("Não são apresentados como funcionários humanos."));
+  assert.ok(section.includes("Responsabilidades claras por tecnologia, produto e disciplina"));
   assert.ok(header.includes('["Equipe", "/equipe"]'));
+  assert.equal(header.includes("Agentes de IA"), false);
   assert.ok(footer.includes('href="/equipe"'));
   assert.ok(sitemap.includes('`${base}/equipe`'));
 });
 
-test("Retratos pendentes não fingem pessoas humanas e permanecem preparados para asset aprovado", async () => {
+test("Retratos pendentes permanecem preparados para asset institucional aprovado", async () => {
   const team = await read("lib/team.ts");
   const page = await read("app/equipe/page.tsx");
 
@@ -46,6 +75,7 @@ test("Retratos pendentes não fingem pessoas humanas e permanecem preparados par
   assert.ok(team.includes('portraitStatus: "pending"'));
   assert.ok(page.includes("data-portrait-status"));
   assert.ok(page.includes("Identidade visual institucional provisória"));
+  assert.equal(page.includes('member.kind === "ai" ? "IA"'), false);
 });
 
 test("SEO da Equipe usa template global sem duplicar a marca", async () => {
