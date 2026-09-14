@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LeadForm } from "@/components/LeadForm";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { TeamSection } from "@/components/TeamSection";
 import { productAccessCatalog, type ProductAccessStatus } from "@/lib/product-access";
 import { products } from "@/lib/products";
 
@@ -275,6 +276,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <TeamSection />
 
       <section id="acesso" className="bg-[#0a2946] py-10 text-white sm:py-12">
         <div className="mx-auto flex max-w-[1280px] flex-col gap-5 px-4 sm:px-8 lg:flex-row lg:items-center lg:justify-between">

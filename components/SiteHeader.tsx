@@ -5,6 +5,7 @@ const navigation = [
   ["Ecossistema", "/#produtos"],
   ["Destaques", "/#destaques"],
   ["Por que BravSystems", "/#por-que-bravsystems"],
+  ["Equipe", "/equipe"],
   ["Central", "/acessar"],
   ["Contato", "/#contato"],
 ] as const;
@@ -22,7 +23,7 @@ export function SiteHeader() {
             </div>
           </Link>
 
-          <nav className="ml-auto hidden items-center gap-5 text-sm font-semibold text-[#4e6679] xl:flex" aria-label="Navegação principal">
+          <nav className="ml-auto hidden items-center gap-4 text-sm font-semibold text-[#4e6679] xl:flex 2xl:gap-5" aria-label="Navegação principal">
             {navigation.map(([label, href]) => (
               <Link key={href} href={href} className="rounded-md transition hover:text-[#0f4d78]">
                 {label}
@@ -30,7 +31,7 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <div className="ml-auto hidden items-center gap-2 sm:flex xl:ml-6">
+          <div className="ml-auto hidden items-center gap-2 sm:flex xl:ml-5 2xl:ml-6">
             <Link href="/#contato" className="rounded-full border border-[#c3d7e4] bg-white px-4 py-2.5 text-sm font-bold text-[#315b7a] transition hover:border-[#0f4d78] hover:text-[#092846]">
               Falar com especialista
             </Link>
