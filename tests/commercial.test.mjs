@@ -149,11 +149,25 @@ test("Central destaca estado do ambiente e ações comerciais", async () => {
 
 test("Header reforça navegação de ecossistema e acesso", async () => {
   const header = await read("components/SiteHeader.tsx");
-  for (const label of ["Ecossistema", "Destaques", "Por que BravSystems", "Central", "Contato", "Meus Sistemas"]) {
+  for (const label of ["Ecossistema", "Destaques", "Por que BravSystems", "Equipe", "Central", "Contato", "Meus Sistemas"]) {
     assert.ok(header.includes(label), `${label} ausente do header`);
   }
   assert.ok(header.includes("Falar com especialista"));
   assert.ok(header.includes('href="/acessar"'));
+});
+
+test("Equipe apresenta liderança e modelo de atuação sem inventar integrantes", async () => {
+  const home = await read("app/page.tsx");
+  const team = await read("components/TeamSection.tsx");
+  const footer = await read("components/SiteFooter.tsx");
+  assert.ok(home.includes("<TeamSection />"));
+  assert.ok(team.includes('id="equipe"'));
+  assert.ok(team.includes("Robson Fernandes"));
+  assert.ok(team.includes("Founder &amp; CEO"));
+  assert.ok(team.includes("Produto e tecnologia"));
+  assert.ok(team.includes("Operações e qualidade"));
+  assert.ok(team.includes("Comercial e relacionamento"));
+  assert.ok(footer.includes('href="/#equipe"'));
 });
 
 test("BravOS preserva asset aprovado e destaque comercial", async () => {

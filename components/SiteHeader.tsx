@@ -5,6 +5,7 @@ const navigation = [
   ["Ecossistema", "/#produtos"],
   ["Destaques", "/#destaques"],
   ["Por que BravSystems", "/#por-que-bravsystems"],
+  ["Equipe", "/#equipe"],
   ["Central", "/acessar"],
   ["Contato", "/#contato"],
 ] as const;
