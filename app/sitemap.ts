@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { products } from "@/lib/products";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://bravsystems.com.br";
+  const base = "https://www.bravsystems.com.br";
   return [
     { url: base, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
     { url: `${base}/acessar`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
