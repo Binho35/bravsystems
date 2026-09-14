@@ -11,27 +11,27 @@ const structuredData = {
   "@graph": [
     {
       "@type": "Organization",
-      "@id": "https://bravsystems.com.br/#organization",
+      "@id": "https://www.bravsystems.com.br/#organization",
       name: "BravSystems",
-      url: "https://bravsystems.com.br",
-      logo: "https://bravsystems.com.br/bravsystems-logo.png",
+      url: "https://www.bravsystems.com.br",
+      logo: "https://www.bravsystems.com.br/bravsystems-logo.png",
       email: "contato@bravsystems.com.br",
       founder: { "@type": "Person", name: "Robson Fernandes" },
       description: "Empresa brasileira de tecnologia que desenvolve plataformas SaaS próprias para operação, administração, pessoas, comunicação, aprendizagem e conteúdo corporativo.",
     },
     {
       "@type": "WebSite",
-      "@id": "https://bravsystems.com.br/#website",
-      url: "https://bravsystems.com.br",
+      "@id": "https://www.bravsystems.com.br/#website",
+      url: "https://www.bravsystems.com.br",
       name: "BravSystems",
-      publisher: { "@id": "https://bravsystems.com.br/#organization" },
+      publisher: { "@id": "https://www.bravsystems.com.br/#organization" },
       inLanguage: "pt-BR",
     },
   ],
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://bravsystems.com.br"),
+  metadataBase: new URL("https://www.bravsystems.com.br"),
   title: {
     default: "BravSystems | Plataformas SaaS para Operação e Gestão",
     template: "%s | BravSystems",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    url: "https://bravsystems.com.br",
+    url: "https://www.bravsystems.com.br",
     siteName: "BravSystems",
     title: "BravSystems | Plataformas SaaS para Operação e Gestão",
     description: "Produtos SaaS próprios para transformar processos empresariais em operações digitais mais simples, conectadas e eficientes.",
