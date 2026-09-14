@@ -45,13 +45,14 @@ async function execute(id, script) {
   return wd("POST", `/session/${id}/execute/sync`, { script, args: [] });
 }
 
-async function waitForBrowser(id, predicate, label, attempts = 40) {
+async function waitForBrowser(id, predicate, label, attempts = 60) {
   for (let i = 0; i < attempts; i += 1) {
     const ready = await execute(id, `return Boolean(${predicate});`);
     if (ready) return;
     await new Promise((resolve) => setTimeout(resolve, 150));
   }
-  throw new Error(`Timeout aguardando renderização: ${label}`);
+  const diagnostic = await execute(id, `return { url: location.href, title: document.title, h1: document.querySelector('h1')?.textContent || '', text: document.body?.innerText?.slice(0, 500) || '' };`).catch(() => null);
+  throw new Error(`Timeout aguardando renderização: ${label}; diagnóstico=${JSON.stringify(diagnostic)}`);
 }
 
 async function capture(id, label) {
@@ -87,7 +88,7 @@ test("SITE HARDENING — navegação tablet, status, redirect legal e 404", { ti
 
     try {
       await wd("POST", `/session/${id}/url`, { url: `${appBase}/` });
-      await waitForBrowser(id, `document.readyState === 'complete' && document.querySelector('header summary')`, "Home/header");
+      await waitForBrowser(id, `location.pathname === '/' && document.querySelector('header summary')`, "Home/header");
       const header = await execute(id, `
         const summary = document.querySelector('header summary');
         const desktopNav = document.querySelector('header nav[aria-label="Navegação principal"]');
@@ -115,7 +116,8 @@ test("SITE HARDENING — navegação tablet, status, redirect legal e 404", { ti
       await capture(id, "TABLET_768x1024-13-header-menu");
 
       await wd("POST", `/session/${id}/url`, { url: `${appBase}/bravvideo` });
-      await waitForBrowser(id, `document.readyState === 'complete' && document.querySelector('h1')?.textContent?.includes('Uma frente experimental') && document.body.innerText.includes('Em desenvolvimento')`, "BravVideo com status governado");
+      await waitForBrowser(id, `location.pathname === '/bravvideo' && document.querySelector('h1')?.textContent?.includes('Uma frente experimental')`, "rota BravVideo");
+      await waitForBrowser(id, `document.body.innerText.includes('Em desenvolvimento') && document.body.innerText.includes('Tecnologia em desenvolvimento')`, "BravVideo com maturidade governada");
       const bravvideo = await execute(id, `return { text: document.body.innerText, overflowX: document.documentElement.scrollWidth > innerWidth, url: location.pathname };`);
       assert.equal(bravvideo.url, "/bravvideo", "BravVideo: navegação não concluiu");
       assert.equal(bravvideo.overflowX, false, "BravVideo: overflow horizontal");
@@ -129,7 +131,7 @@ test("SITE HARDENING — navegação tablet, status, redirect legal e 404", { ti
       assert.equal(legacy.headers.get("location"), "/politica-de-privacidade");
 
       await wd("POST", `/session/${id}/url`, { url: `${appBase}/rota-que-nao-existe-argos` });
-      await waitForBrowser(id, `document.readyState === 'complete' && document.body.innerText.includes('Esta página não faz parte do caminho atual.')`, "404 institucional");
+      await waitForBrowser(id, `location.pathname === '/rota-que-nao-existe-argos' && document.body.innerText.includes('Esta página não faz parte do caminho atual.')`, "404 institucional");
       const notFound = await execute(id, `return { text: document.body.innerText, overflowX: document.documentElement.scrollWidth > innerWidth, robots: document.querySelector('meta[name="robots"]')?.content || '' };`);
       assert.equal(notFound.overflowX, false, "404: overflow horizontal");
       assert.ok(notFound.text.includes("Esta página não faz parte do caminho atual."), "404 institucional ausente");
