@@ -35,6 +35,8 @@ const governedState: Record<string, { status: ProductAccessStatus; environmentNo
   bravvideo: { status: "EM DESENVOLVIMENTO", environmentNote: "Ambiente de desenvolvimento; acesso público ainda não homologado." },
 };
 
+const publicAccessDisabled = new Set(["bravhas"]);
+
 function normalizeOfficialUrl(raw?: string) {
   const value = raw?.trim();
   if (!value) return null;
@@ -59,7 +61,9 @@ function normalizeOfficialUrl(raw?: string) {
 }
 
 export function getProductAccess(product: Product): ProductAccess {
-  const loginHref = normalizeOfficialUrl(configuredUrls[product.slug]);
+  const loginHref = publicAccessDisabled.has(product.slug)
+    ? null
+    : normalizeOfficialUrl(configuredUrls[product.slug]);
   const state = governedState[product.slug] ?? {
     status: product.status === "Em homologação" ? "EM HOMOLOGAÇÃO" : "EM DESENVOLVIMENTO",
     environmentNote: "Acesso público ainda não homologado.",

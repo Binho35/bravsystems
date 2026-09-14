@@ -69,6 +69,7 @@ test("BravHAS permanece EM HOMOLOGAÇÃO com copy institucional do ciclo 008", a
   const products = await read("lib/products.ts");
   const productPage = await read("app/[slug]/page.tsx");
   assert.ok(access.includes('bravhas: { status: "EM HOMOLOGAÇÃO"'));
+  assert.ok(access.includes('publicAccessDisabled = new Set(["bravhas"])'));
   assert.ok(access.includes("Ambiente interno em homologação. Liberação pública não prevista nesta etapa."));
   assert.ok(products.includes('category: "Administração, financeiro e pessoas"'));
   assert.ok(products.includes('headline: "Controle administrativo real para financeiro, pessoas e obrigações."'));
