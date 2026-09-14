@@ -210,6 +210,32 @@ async function captureHomeEvidence(id, viewportLabel, width) {
   return { home };
 }
 
+async function captureTeamEvidence(id, viewportLabel) {
+  await navigate(id, "/");
+  await scrollToTarget(id, "#equipe", "center");
+
+  const team = await execute(id, `
+    const section = document.querySelector('#equipe');
+    const rect = section?.getBoundingClientRect();
+    return {
+      text: section?.innerText || '',
+      visible: Boolean(rect && rect.bottom > 0 && rect.top < window.innerHeight),
+      contained: Boolean(section && section.scrollWidth <= section.clientWidth),
+      headerLink: Boolean(document.querySelector('header a[href="/#equipe"]')),
+    };
+  `);
+
+  assert.equal(team.visible, true, `${viewportLabel}: seção Equipe fora da viewport`);
+  assert.equal(team.contained, true, `${viewportLabel}: seção Equipe com overflow horizontal`);
+  assert.equal(team.headerLink, true, `${viewportLabel}: Equipe ausente da navegação`);
+  assert.ok(team.text.includes("Robson Fernandes"), `${viewportLabel}: liderança ausente`);
+  assert.ok(team.text.includes("Founder & CEO"), `${viewportLabel}: papel do fundador ausente`);
+  assert.ok(team.text.includes("Produto e tecnologia"), `${viewportLabel}: frente de produto ausente`);
+  assert.ok(team.text.includes("Operações e qualidade"), `${viewportLabel}: frente de operações ausente`);
+  assert.ok(team.text.includes("Comercial e relacionamento"), `${viewportLabel}: frente comercial ausente`);
+  await capture(id, `${viewportLabel}-09-team`);
+}
+
 async function captureAccessEvidence(id, viewportLabel) {
   await navigate(id, "/meus-sistemas");
   const aliasUrl = await wd("GET", `/session/${id}/url`);
@@ -328,6 +354,7 @@ async function runViewport(width, height, label) {
   try {
     await wd("POST", `/session/${id}/window/rect`, { width, height, x: 0, y: 0 });
     const home = await captureHomeEvidence(id, label, width);
+    await captureTeamEvidence(id, label);
     const central = await captureAccessEvidence(id, label);
     await captureBravHASEvidence(id, label);
     await captureClosingEvidence(id, label);
@@ -347,7 +374,7 @@ async function runViewport(width, height, label) {
   }
 }
 
-test("Portal BravSystems 008 — reposicionamento de copy do BravHAS em desktop/mobile", { timeout: 180_000 }, async () => {
+test("Portal BravSystems Team 001 — equipe institucional em desktop/mobile", { timeout: 180_000 }, async () => {
   await mkdir(evidenceDir, { recursive: true });
   const app = startService("npm", ["start", "--", "-p", String(APP_PORT)]);
   const driver = startService("chromedriver", [`--port=${DRIVER_PORT}`]);
