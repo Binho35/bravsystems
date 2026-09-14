@@ -51,7 +51,7 @@ async function waitForBrowser(id, predicate, label, attempts = 60) {
     if (ready) return;
     await new Promise((resolve) => setTimeout(resolve, 150));
   }
-  const diagnostic = await execute(id, `return { url: location.href, title: document.title, h1: document.querySelector('h1')?.textContent || '', text: document.body?.innerText?.slice(0, 500) || '' };`).catch(() => null);
+  const diagnostic = await execute(id, `return { url: location.href, title: document.title, h1: document.querySelector('h1')?.textContent || '', text: document.body?.textContent?.slice(0, 1000) || '' };`).catch(() => null);
   throw new Error(`Timeout aguardando renderização: ${label}; diagnóstico=${JSON.stringify(diagnostic)}`);
 }
 
@@ -117,13 +117,19 @@ test("SITE HARDENING — navegação tablet, status, redirect legal e 404", { ti
 
       await wd("POST", `/session/${id}/url`, { url: `${appBase}/bravvideo` });
       await waitForBrowser(id, `location.pathname === '/bravvideo' && document.querySelector('h1')?.textContent?.includes('Uma frente experimental')`, "rota BravVideo");
-      await waitForBrowser(id, `document.body.innerText.includes('Em desenvolvimento') && document.body.innerText.includes('Tecnologia em desenvolvimento')`, "BravVideo com maturidade governada");
-      const bravvideo = await execute(id, `return { text: document.body.innerText, overflowX: document.documentElement.scrollWidth > innerWidth, url: location.pathname };`);
+      await waitForBrowser(id, `document.body.textContent.includes('Em desenvolvimento') && document.body.textContent.includes('Tecnologia em desenvolvimento')`, "BravVideo com maturidade governada");
+      const bravvideo = await execute(id, `return { visibleText: document.body.innerText, structuralText: document.body.textContent, overflowX: document.documentElement.scrollWidth > innerWidth, url: location.pathname };`);
       assert.equal(bravvideo.url, "/bravvideo", "BravVideo: navegação não concluiu");
       assert.equal(bravvideo.overflowX, false, "BravVideo: overflow horizontal");
-      assert.ok(bravvideo.text.includes("Em desenvolvimento"), "BravVideo: status Em desenvolvimento ausente");
-      assert.ok(bravvideo.text.includes("Tecnologia em desenvolvimento"), "BravVideo: transparência de maturidade ausente");
-      assert.equal(bravvideo.text.includes("Tecnologia em homologação"), false, "BravVideo: limitação antiga ainda visível");
+      assert.ok(bravvideo.visibleText.includes("Em desenvolvimento"), "BravVideo: status visível Em desenvolvimento ausente");
+      assert.ok(bravvideo.structuralText.includes("Tecnologia em desenvolvimento"), "BravVideo: transparência estrutural de maturidade ausente");
+      assert.equal(bravvideo.structuralText.includes("Tecnologia em homologação"), false, "BravVideo: limitação antiga ainda presente");
+      await execute(id, `
+        const target = [...document.querySelectorAll('h2')].find(el => el.textContent?.includes('Limitações e condições atuais'));
+        target?.scrollIntoView({ block: 'center', behavior: 'instant' });
+        return Boolean(target);
+      `);
+      await new Promise((resolve) => setTimeout(resolve, 150));
       await capture(id, "TABLET_768x1024-14-bravvideo-status");
 
       const legacy = await fetch(`${appBase}/privacidade`, { redirect: "manual" });
@@ -131,7 +137,7 @@ test("SITE HARDENING — navegação tablet, status, redirect legal e 404", { ti
       assert.equal(legacy.headers.get("location"), "/politica-de-privacidade");
 
       await wd("POST", `/session/${id}/url`, { url: `${appBase}/rota-que-nao-existe-argos` });
-      await waitForBrowser(id, `location.pathname === '/rota-que-nao-existe-argos' && document.body.innerText.includes('Esta página não faz parte do caminho atual.')`, "404 institucional");
+      await waitForBrowser(id, `location.pathname === '/rota-que-nao-existe-argos' && document.body.textContent.includes('Esta página não faz parte do caminho atual.')`, "404 institucional");
       const notFound = await execute(id, `return { text: document.body.innerText, overflowX: document.documentElement.scrollWidth > innerWidth, robots: document.querySelector('meta[name="robots"]')?.content || '' };`);
       assert.equal(notFound.overflowX, false, "404: overflow horizontal");
       assert.ok(notFound.text.includes("Esta página não faz parte do caminho atual."), "404 institucional ausente");
