@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/equipe" },
   openGraph: {
     type: "website",
-    url: "https://bravsystems.com.br/equipe",
+    url: "https://www.bravsystems.com.br/equipe",
     title: "Equipe | BravSystems",
     description: "Conheça a estrutura especializada que apoia a evolução tecnológica, operacional e de produto da BravSystems.",
   },

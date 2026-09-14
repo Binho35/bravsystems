@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     alternates: { canonical: `/${product.slug}` },
     openGraph: {
       type: "website",
-      url: `https://bravsystems.com.br/${product.slug}`,
+      url: `https://www.bravsystems.com.br/${product.slug}`,
       title: `${product.name} | BravSystems`,
       description: product.description,
       images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: `${product.name} — BravSystems` }],
@@ -58,8 +58,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     description: product.description,
-    url: `https://bravsystems.com.br/${product.slug}`,
-    publisher: { "@type": "Organization", name: "BravSystems", url: "https://bravsystems.com.br" },
+    url: `https://www.bravsystems.com.br/${product.slug}`,
+    publisher: { "@type": "Organization", name: "BravSystems", url: "https://www.bravsystems.com.br" },
   };
 
   return (

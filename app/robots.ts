@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://bravsystems.com.br/sitemap.xml",
-    host: "https://bravsystems.com.br",
+    sitemap: "https://www.bravsystems.com.br/sitemap.xml",
+    host: "https://www.bravsystems.com.br",
   };
 }

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/acessar" },
   openGraph: {
     type: "website",
-    url: "https://bravsystems.com.br/acessar",
+    url: "https://www.bravsystems.com.br/acessar",
     title: "Meus Sistemas | BravSystems",
     description: "Consulte seus produtos BravSystems e use somente acessos oficialmente autorizados.",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Meus Sistemas — BravSystems" }],
