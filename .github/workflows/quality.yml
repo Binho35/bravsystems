@@ -34,10 +34,11 @@ jobs:
         run: npx tsc --noEmit
       - name: Build
         run: npm run build
-      - name: Browser E2E desktop/mobile
+      - name: Browser E2E desktop/mobile/tablet
         run: |
           node --test tests/portal.browser.mjs
           node --test tests/team.browser.mjs
+          node --test tests/site-hardening.browser.mjs
       - name: Upload visual evidence
         if: always()
         uses: actions/upload-artifact@v4
