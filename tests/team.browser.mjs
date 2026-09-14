@@ -54,6 +54,56 @@ async function capture(id, label) {
   await writeFile(new URL(`${label}.png`, evidenceDir), Buffer.from(png, "base64"));
 }
 
+async function waitForPortrait(id, slug, expectedPath, timeoutMs = 6000) {
+  const started = Date.now();
+
+  while (Date.now() - started < timeoutMs) {
+    const state = await execute(id, `
+      const card = document.querySelector('[data-team-member="${slug}"]');
+      card?.scrollIntoView({ block: 'center', behavior: 'instant' });
+      const image = card?.querySelector('img');
+      return {
+        cardFound: Boolean(card),
+        imageFound: Boolean(image),
+        complete: Boolean(image?.complete),
+        naturalWidth: image?.naturalWidth || 0,
+        src: image?.getAttribute('src') || '',
+        currentSrc: image?.currentSrc || '',
+        pending: Boolean(card?.querySelector('[data-portrait-status="pending"]')),
+      };
+    `);
+
+    if (
+      state.cardFound &&
+      state.imageFound &&
+      state.complete &&
+      state.naturalWidth > 0 &&
+      !state.pending &&
+      (state.src.includes(expectedPath) || state.currentSrc.includes(expectedPath))
+    ) {
+      return state;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  const finalState = await execute(id, `
+    const card = document.querySelector('[data-team-member="${slug}"]');
+    const image = card?.querySelector('img');
+    return {
+      cardFound: Boolean(card),
+      imageFound: Boolean(image),
+      complete: Boolean(image?.complete),
+      naturalWidth: image?.naturalWidth || 0,
+      src: image?.getAttribute('src') || '',
+      currentSrc: image?.currentSrc || '',
+      pending: Boolean(card?.querySelector('[data-portrait-status="pending"]')),
+    };
+  `);
+
+  throw new Error(`${slug}: retrato não carregou dentro de ${timeoutMs}ms — ${JSON.stringify(finalState)}`);
+}
+
 async function runViewport(width, height, label) {
   const session = await wd("POST", "/session", {
     capabilities: {
@@ -70,7 +120,14 @@ async function runViewport(width, height, label) {
   try {
     await wd("POST", `/session/${id}/window/rect`, { width, height, x: 0, y: 0 });
     await wd("POST", `/session/${id}/url`, { url: `${appBase}/equipe` });
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    await new Promise((resolve) => setTimeout(resolve, 250));
+
+    const loadedPortraits = {};
+    for (const slug of approvedSlugs) {
+      loadedPortraits[slug] = await waitForPortrait(id, slug, `/team/${slug}.webp`);
+    }
+
+    await execute(id, `window.scrollTo({ top: 0, behavior: 'instant' }); return true;`);
 
     const top = await execute(id, `
       const links = [...document.querySelectorAll('a[href]')].map(a => a.href);
@@ -86,6 +143,7 @@ async function runViewport(width, height, label) {
           hasPortrait: Boolean(image),
           imageLoaded: image ? image.complete && image.naturalWidth > 0 : false,
           imageSrc: image?.getAttribute('src') || '',
+          imageCurrentSrc: image?.currentSrc || '',
           pending: Boolean(card.querySelector('[data-portrait-status="pending"]')),
         };
       });
@@ -127,8 +185,13 @@ async function runViewport(width, height, label) {
     for (const slug of approvedSlugs) {
       const agent = top.specialists.find((item) => item.slug === slug);
       assert.ok(agent?.hasPortrait, `${label}: ${slug} sem retrato real`);
-      assert.ok(agent?.imageLoaded, `${label}: ${slug} com imagem não carregada`);
+      assert.ok(agent?.imageLoaded, `${label}: ${slug} com imagem não carregada após polling`);
       assert.equal(agent?.pending, false, `${label}: ${slug} ainda marcado como pendente`);
+      assert.ok(
+        agent?.imageSrc.includes(`/team/${slug}.webp`) || agent?.imageCurrentSrc.includes(`/team/${slug}.webp`),
+        `${label}: ${slug} com src inesperado`,
+      );
+      assert.ok(loadedPortraits[slug]?.naturalWidth > 0, `${label}: ${slug} sem largura natural válida`);
     }
 
     for (const slug of pendingSlugs) {
@@ -145,7 +208,7 @@ async function runViewport(width, height, label) {
       window.scrollBy(0, -90);
       return true;
     `);
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    await new Promise((resolve) => setTimeout(resolve, 150));
     await capture(id, `${label}-12-equipe-especialistas`);
 
     await execute(id, `
@@ -153,7 +216,7 @@ async function runViewport(width, height, label) {
       approved?.scrollIntoView({ block: 'center', behavior: 'instant' });
       return true;
     `);
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    await new Promise((resolve) => setTimeout(resolve, 100));
     await capture(id, `${label}-13-equipe-retratos`);
 
     console.log(`TEAM_${label}_RESULT=${JSON.stringify({ viewport: { width, height }, specialists: top.specialists.length, approvedPortraits: top.specialists.filter(item => item.hasPortrait).length, pendingPortraits: top.pendingPortraits, founder: true, singleAiDisclosure: top.transparencyBlocks === 1, overflowX: top.overflowX, technicalLink: top.technicalLink })}`);
