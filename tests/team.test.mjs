@@ -47,3 +47,15 @@ test("Retratos pendentes não fingem pessoas humanas e permanecem preparados par
   assert.ok(page.includes("data-portrait-status"));
   assert.ok(page.includes("Identidade visual institucional provisória"));
 });
+
+test("SEO da Equipe usa template global sem duplicar a marca", async () => {
+  const page = await read("app/equipe/page.tsx");
+  const layout = await read("app/layout.tsx");
+
+  assert.ok(layout.includes('template: "%s | BravSystems"'));
+  assert.ok(page.includes('title: "Equipe",'));
+  assert.equal(page.includes('title: "Equipe | BravSystems",\n  description:'), false);
+  assert.ok(page.includes('canonical: "/equipe"'));
+  assert.ok(page.includes('twitter: {'));
+  assert.ok(page.includes('title: "Equipe | BravSystems"'));
+});
