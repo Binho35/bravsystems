@@ -35,12 +35,14 @@ jobs:
       - name: Build
         run: npm run build
       - name: Browser E2E desktop/mobile
-        run: node --test tests/portal.browser.mjs
+        run: |
+          node --test tests/portal.browser.mjs
+          node --test tests/team.browser.mjs
       - name: Upload visual evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: bravsystems-ecosystem-academy-polish-${{ github.sha }}
+          name: bravsystems-site-evidence-${{ github.sha }}
           path: artifacts/browser/*.png
           if-no-files-found: warn
           retention-days: 14
