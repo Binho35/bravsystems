@@ -8,6 +8,7 @@ const DRIVER_PORT = 9521;
 const appBase = `http://127.0.0.1:${APP_PORT}`;
 const driverBase = `http://127.0.0.1:${DRIVER_PORT}`;
 const evidenceDir = new URL("../artifacts/browser/", import.meta.url);
+const disclosure = "A BravSystems opera com liderança humana e uma estrutura de agentes especializados apoiados por inteligência artificial.";
 
 function startService(command, args) {
   return spawn(command, args, { stdio: "ignore", env: process.env, detached: true });
@@ -71,17 +72,26 @@ async function runViewport(width, height, label) {
 
     const top = await execute(id, `
       const links = [...document.querySelectorAll('a[href]')].map(a => a.href);
+      const sectionTitle = [...document.querySelectorAll('h2')].map(el => el.textContent?.trim()).find(text => text === 'Especialistas com papéis claros no ecossistema.') || '';
+      const transparencyBlocks = [...document.querySelectorAll('[data-team-transparency]')];
+      const transparency = transparencyBlocks[0]?.innerText || '';
+      const specialists = [...document.querySelectorAll('[data-team-member]')].map(card => ({
+        slug: card.getAttribute('data-team-member'),
+        name: card.querySelector('h2')?.textContent?.trim() || '',
+        text: card.innerText || '',
+      }));
       return {
         title: document.title,
         h1: document.querySelector('h1')?.textContent?.trim() || '',
         overflowX: document.documentElement.scrollWidth > window.innerWidth,
         hasHeader: Boolean(document.querySelector('header')),
         hasFooter: Boolean(document.querySelector('footer')),
-        founder: document.querySelector('[data-team-founder]')?.textContent || '',
-        agents: [...document.querySelectorAll('[data-team-member]')].map(card => ({
-          slug: card.getAttribute('data-team-member'),
-          text: card.textContent || '',
-        })),
+        founder: document.querySelector('[data-team-founder]')?.innerText || '',
+        specialists,
+        sectionTitle,
+        transparency,
+        transparencyBlocks: transparencyBlocks.length,
+        repeatedAiBadge: specialists.some(card => card.text.includes('Agente de IA BravSystems')),
         technicalLink: links.some(href => href.includes('.vercel.app') || href.includes('hostingersite.com') || href.includes('-git-')),
         pendingPortraits: document.querySelectorAll('[data-portrait-status="pending"]').length,
       };
@@ -91,12 +101,16 @@ async function runViewport(width, height, label) {
     assert.equal(top.hasHeader, true, `${label}: header ausente`);
     assert.equal(top.hasFooter, true, `${label}: footer ausente`);
     assert.equal(top.technicalLink, false, `${label}: hostname técnico exposto`);
-    assert.equal(top.h1, "Uma estrutura híbrida para construir, operar e evoluir tecnologia.");
+    assert.equal(top.h1, "Uma estrutura especializada para construir, operar e evoluir tecnologia.");
+    assert.equal(top.sectionTitle, "Especialistas com papéis claros no ecossistema.");
     assert.ok(top.founder.includes("Robson"), `${label}: Founder ausente`);
     assert.ok(top.founder.includes("Founder & CEO"), `${label}: cargo Founder ausente`);
-    assert.equal(top.agents.length, 12, `${label}: quantidade de agentes incorreta`);
-    assert.ok(top.agents.every((agent) => agent.text.includes("Agente de IA BravSystems")), `${label}: transparência de IA ausente`);
-    assert.deepEqual(top.agents.map((agent) => agent.slug), ["argos", "atlas", "forge", "sentry", "scout", "pulse", "nexus", "orion", "sofia", "vega", "lira", "marco"]);
+    assert.equal(top.specialists.length, 12, `${label}: quantidade de especialistas incorreta`);
+    assert.equal(top.repeatedAiBadge, false, `${label}: selo repetido de IA ainda visível`);
+    assert.equal(top.transparencyBlocks, 1, `${label}: deve existir um único bloco Como trabalhamos`);
+    assert.ok(top.transparency.includes(disclosure), `${label}: bloco Como trabalhamos não contém transparência institucional`);
+    assert.deepEqual(top.specialists.map((agent) => agent.slug), ["argos", "atlas", "forge", "sentry", "scout", "pulse", "nexus", "orion", "sofia", "vega", "lira", "marco"]);
+    assert.deepEqual(top.specialists.map((agent) => agent.name), ["Argos", "Atlas", "Forge", "Sentry", "Scout", "Pulse", "Nexus", "Orion", "Sofia", "Vega", "Lira", "Marco"]);
     assert.ok(top.pendingPortraits >= 13, `${label}: placeholders de retrato não identificados`);
 
     await capture(id, `${label}-11-equipe-topo`);
@@ -108,15 +122,23 @@ async function runViewport(width, height, label) {
       return true;
     `);
     await new Promise((resolve) => setTimeout(resolve, 150));
-    await capture(id, `${label}-12-equipe-agentes`);
+    await capture(id, `${label}-12-equipe-especialistas`);
 
-    console.log(`TEAM_${label}_RESULT=${JSON.stringify({ viewport: { width, height }, agents: top.agents.length, founder: true, aiDisclosure: true, overflowX: top.overflowX, technicalLink: top.technicalLink })}`);
+    await execute(id, `
+      const disclosure = document.querySelector('[data-team-transparency]');
+      disclosure?.scrollIntoView({ block: 'center', behavior: 'instant' });
+      return true;
+    `);
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    await capture(id, `${label}-13-equipe-como-trabalhamos`);
+
+    console.log(`TEAM_${label}_RESULT=${JSON.stringify({ viewport: { width, height }, specialists: top.specialists.length, founder: true, singleAiDisclosure: top.transparencyBlocks === 1, repeatedAiBadge: top.repeatedAiBadge, overflowX: top.overflowX, technicalLink: top.technicalLink })}`);
   } finally {
     await wd("DELETE", `/session/${id}`).catch(() => {});
   }
 }
 
-test("TEAM 001 — equipe institucional em desktop e mobile", { timeout: 180_000 }, async () => {
+test("TEAM — posicionamento profissional em desktop e mobile", { timeout: 180_000 }, async () => {
   await mkdir(evidenceDir, { recursive: true });
   const app = startService("npm", ["start", "--", "-p", String(APP_PORT)]);
   const driver = startService("chromedriver", [`--port=${DRIVER_PORT}`]);
