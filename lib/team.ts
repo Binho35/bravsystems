@@ -1,0 +1,160 @@
+export type TeamMember = {
+  slug: string;
+  name: string;
+  role: string;
+  specialty: string;
+  description: string;
+  initials: string;
+  kind: "human" | "ai";
+  portraitSrc: string | null;
+  portraitStatus: "approved" | "pending";
+};
+
+export const founder: TeamMember = {
+  slug: "robson",
+  name: "Robson",
+  role: "Founder & CEO",
+  specialty: "Direção estratégica e decisão final",
+  description: "Lidera a visão da BravSystems, define prioridades e mantém a decisão final sobre produto, operação e evolução do portfólio.",
+  initials: "RF",
+  kind: "human",
+  portraitSrc: null,
+  portraitStatus: "pending",
+};
+
+export const aiAgents: TeamMember[] = [
+  {
+    slug: "argos",
+    name: "Argos",
+    role: "Head of Technology Operations & Portfolio",
+    specialty: "Governança tecnológica e portfólio",
+    description: "Consolida evidências, riscos, prioridades, prontidão, investimento e evolução transversal dos produtos BravSystems.",
+    initials: "AR",
+    kind: "ai",
+    portraitSrc: null,
+    portraitStatus: "pending",
+  },
+  {
+    slug: "atlas",
+    name: "Atlas",
+    role: "BravOS Core",
+    specialty: "Arquitetura, backend e integridade transacional",
+    description: "Atua no núcleo técnico do BravOS, preservando regras de negócio, segurança de domínio e consistência operacional.",
+    initials: "AT",
+    kind: "ai",
+    portraitSrc: null,
+    portraitStatus: "pending",
+  },
+  {
+    slug: "forge",
+    name: "Forge",
+    role: "BravOS Operations",
+    specialty: "Operação, experiência de uso e mobile",
+    description: "Transforma capacidades do BravOS em fluxos operacionais claros para salão, atendimento, cozinha e uso em campo.",
+    initials: "FG",
+    kind: "ai",
+    portraitSrc: null,
+    portraitStatus: "pending",
+  },
+  {
+    slug: "sentry",
+    name: "Sentry",
+    role: "BravOS Quality & Release",
+    specialty: "Qualidade, segurança e release",
+    description: "Protege a linha de entrega com testes, gates de qualidade, segurança, CI/CD e critérios de liberação.",
+    initials: "SE",
+    kind: "ai",
+    portraitSrc: null,
+    portraitStatus: "pending",
+  },
+  {
+    slug: "scout",
+    name: "Scout",
+    role: "Intelligence & Audit",
+    specialty: "Auditoria independente, pesquisa e open source",
+    description: "Investiga arquitetura, riscos, referências técnicas e alternativas de mercado em modo independente e orientado por evidências.",
+    initials: "SC",
+    kind: "ai",
+    portraitSrc: null,
+    portraitStatus: "pending",
+  },
+  {
+    slug: "pulse",
+    name: "Pulse",
+    role: "BravMsg",
+    specialty: "Comunicação, atendimento e relacionamento",
+    description: "Evolui a frente BravMsg para organizar contatos, campanhas, atendimento e relacionamento com rastreabilidade.",
+    initials: "PU",
+    kind: "ai",
+    portraitSrc: null,
+    portraitStatus: "pending",
+  },
+  {
+    slug: "nexus",
+    name: "Nexus",
+    role: "BravHAS",
+    specialty: "Administração, financeiro e pessoas",
+    description: "Cuida da evolução do BravHAS como centro administrativo para financeiro, RH, DP, documentos e rotinas de gestão.",
+    initials: "NX",
+    kind: "ai",
+    portraitSrc: null,
+    portraitStatus: "pending",
+  },
+  {
+    slug: "orion",
+    name: "Orion",
+    role: "BravHOS",
+    specialty: "RH, DP e gestão de pessoas",
+    description: "Atua na vertical especializada de pessoas, jornada do colaborador, recrutamento, desempenho e processos de RH e DP.",
+    initials: "OR",
+    kind: "ai",
+    portraitSrc: null,
+    portraitStatus: "pending",
+  },
+  {
+    slug: "sofia",
+    name: "Sofia",
+    role: "BravAcademy",
+    specialty: "Aprendizagem corporativa e universidade white label",
+    description: "Evolui cursos, trilhas, avaliações, progresso e certificação para experiências corporativas de aprendizagem.",
+    initials: "SO",
+    kind: "ai",
+    portraitSrc: null,
+    portraitStatus: "pending",
+  },
+  {
+    slug: "vega",
+    name: "Vega",
+    role: "BravVideo",
+    specialty: "Audiovisual corporativo e IA generativa",
+    description: "Estrutura a produção audiovisual com apresentadores virtuais, composição, identidade visual, qualidade e controle de custos.",
+    initials: "VE",
+    kind: "ai",
+    portraitSrc: null,
+    portraitStatus: "pending",
+  },
+  {
+    slug: "lira",
+    name: "Lira",
+    role: "Brand & Social",
+    specialty: "Direção criativa, marca e conteúdo social",
+    description: "Conecta posicionamento, narrativa, identidade e direção criativa para conteúdos institucionais e sociais da BravSystems.",
+    initials: "LI",
+    kind: "ai",
+    portraitSrc: null,
+    portraitStatus: "pending",
+  },
+  {
+    slug: "marco",
+    name: "Marco",
+    role: "Site & Commercial",
+    specialty: "Experiência digital, posicionamento e conversão",
+    description: "Cuida do site institucional, apresentação comercial, navegação, conteúdo, credibilidade e conversão digital da BravSystems.",
+    initials: "MA",
+    kind: "ai",
+    portraitSrc: null,
+    portraitStatus: "pending",
+  },
+];
+
+export const team = [founder, ...aiAgents];
