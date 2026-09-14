@@ -72,25 +72,26 @@ async function runViewport(width, height, label) {
 
     const top = await execute(id, `
       const links = [...document.querySelectorAll('a[href]')].map(a => a.href);
-      const bodyText = document.body.textContent || '';
       const sectionTitle = [...document.querySelectorAll('h2')].map(el => el.textContent?.trim()).find(text => text === 'Especialistas com papéis claros no ecossistema.') || '';
-      const transparency = document.querySelector('[data-team-transparency]')?.textContent || '';
+      const transparencyBlocks = [...document.querySelectorAll('[data-team-transparency]')];
+      const transparency = transparencyBlocks[0]?.innerText || '';
+      const specialists = [...document.querySelectorAll('[data-team-member]')].map(card => ({
+        slug: card.getAttribute('data-team-member'),
+        name: card.querySelector('h2')?.textContent?.trim() || '',
+        text: card.innerText || '',
+      }));
       return {
         title: document.title,
         h1: document.querySelector('h1')?.textContent?.trim() || '',
         overflowX: document.documentElement.scrollWidth > window.innerWidth,
         hasHeader: Boolean(document.querySelector('header')),
         hasFooter: Boolean(document.querySelector('footer')),
-        founder: document.querySelector('[data-team-founder]')?.textContent || '',
-        specialists: [...document.querySelectorAll('[data-team-member]')].map(card => ({
-          slug: card.getAttribute('data-team-member'),
-          name: card.querySelector('h2')?.textContent?.trim() || '',
-          text: card.textContent || '',
-        })),
+        founder: document.querySelector('[data-team-founder]')?.innerText || '',
+        specialists,
         sectionTitle,
         transparency,
-        repeatedAiBadge: bodyText.includes('Agente de IA BravSystems'),
-        disclosureCount: bodyText.split(${JSON.stringify(disclosure)}).length - 1,
+        transparencyBlocks: transparencyBlocks.length,
+        repeatedAiBadge: specialists.some(card => card.text.includes('Agente de IA BravSystems')),
         technicalLink: links.some(href => href.includes('.vercel.app') || href.includes('hostingersite.com') || href.includes('-git-')),
         pendingPortraits: document.querySelectorAll('[data-portrait-status="pending"]').length,
       };
@@ -106,7 +107,7 @@ async function runViewport(width, height, label) {
     assert.ok(top.founder.includes("Founder & CEO"), `${label}: cargo Founder ausente`);
     assert.equal(top.specialists.length, 12, `${label}: quantidade de especialistas incorreta`);
     assert.equal(top.repeatedAiBadge, false, `${label}: selo repetido de IA ainda visível`);
-    assert.equal(top.disclosureCount, 1, `${label}: transparência sobre IA deve aparecer uma única vez`);
+    assert.equal(top.transparencyBlocks, 1, `${label}: deve existir um único bloco Como trabalhamos`);
     assert.ok(top.transparency.includes(disclosure), `${label}: bloco Como trabalhamos não contém transparência institucional`);
     assert.deepEqual(top.specialists.map((agent) => agent.slug), ["argos", "atlas", "forge", "sentry", "scout", "pulse", "nexus", "orion", "sofia", "vega", "lira", "marco"]);
     assert.deepEqual(top.specialists.map((agent) => agent.name), ["Argos", "Atlas", "Forge", "Sentry", "Scout", "Pulse", "Nexus", "Orion", "Sofia", "Vega", "Lira", "Marco"]);
@@ -131,7 +132,7 @@ async function runViewport(width, height, label) {
     await new Promise((resolve) => setTimeout(resolve, 150));
     await capture(id, `${label}-13-equipe-como-trabalhamos`);
 
-    console.log(`TEAM_${label}_RESULT=${JSON.stringify({ viewport: { width, height }, specialists: top.specialists.length, founder: true, singleAiDisclosure: top.disclosureCount === 1, repeatedAiBadge: top.repeatedAiBadge, overflowX: top.overflowX, technicalLink: top.technicalLink })}`);
+    console.log(`TEAM_${label}_RESULT=${JSON.stringify({ viewport: { width, height }, specialists: top.specialists.length, founder: true, singleAiDisclosure: top.transparencyBlocks === 1, repeatedAiBadge: top.repeatedAiBadge, overflowX: top.overflowX, technicalLink: top.technicalLink })}`);
   } finally {
     await wd("DELETE", `/session/${id}`).catch(() => {});
   }
