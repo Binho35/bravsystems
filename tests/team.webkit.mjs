@@ -25,31 +25,6 @@ async function waitFor(url, attempts = 90) {
   throw new Error(`Timeout aguardando ${url}`);
 }
 
-async function waitForPortrait(page, slug, label) {
-  const card = page.locator(`[data-team-member="${slug}"]`);
-  await card.scrollIntoViewIfNeeded();
-  await page.waitForFunction(
-    (memberSlug) => {
-      const cardNode = document.querySelector(`[data-team-member="${memberSlug}"]`);
-      const img = cardNode?.querySelector("img");
-      return Boolean(img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0);
-    },
-    slug,
-    { timeout: 5000 },
-  );
-  const state = await card.locator("img").evaluate((img) => ({
-    complete: img.complete,
-    width: img.naturalWidth,
-    height: img.naturalHeight,
-    src: img.currentSrc || img.getAttribute("src") || "",
-  }));
-  assert.equal(state.complete, true, `${label}: ${slug} incompleto`);
-  assert.ok(state.width >= 1200 && state.height >= 1200, `${label}: ${slug} resolução ${state.width}x${state.height}`);
-  assert.ok(state.src.includes(`/team/${slug}.jpg`), `${label}: ${slug} src incorreto`);
-  assert.equal(await card.locator('[data-portrait-status="pending"]').count(), 0, `${label}: ${slug} com placeholder`);
-  return card;
-}
-
 async function runViewport(browser, width, height, label) {
   const page = await browser.newPage({ viewport: { width, height } });
   const consoleErrors = [];
@@ -65,7 +40,22 @@ async function runViewport(browser, width, height, label) {
     assert.equal(overflow, false, `${label}: overflow horizontal`);
 
     for (const slug of approvedSlugs) {
-      await waitForPortrait(page, slug, label);
+      const card = page.locator(`[data-team-member="${slug}"]`);
+      await card.scrollIntoViewIfNeeded();
+      await page.waitForFunction((memberSlug) => {
+        const img = document.querySelector(`[data-team-member="${memberSlug}"] img`);
+        return Boolean(img && img.complete && img.naturalWidth >= 1200 && img.naturalHeight >= 1200);
+      }, slug, { timeout: 5000 });
+      const state = await card.locator("img").evaluate((img) => ({
+        complete: img.complete,
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+        src: img.currentSrc || img.getAttribute("src") || "",
+      }));
+      assert.equal(state.complete, true, `${label}: ${slug} incompleto`);
+      assert.ok(state.width >= 1200 && state.height >= 1200, `${label}: ${slug} resolução ${state.width}x${state.height}`);
+      assert.ok(state.src.includes(`/team/${slug}.jpg`), `${label}: ${slug} src incorreto`);
+      assert.equal(await card.locator('[data-portrait-status="pending"]').count(), 0, `${label}: ${slug} com placeholder`);
     }
 
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
@@ -91,7 +81,9 @@ async function runViewport(browser, width, height, label) {
 
     await page.locator("header details summary").click();
     for (const slug of ["lira", "marco"]) {
-      await waitForPortrait(page, slug, label);
+      const card = page.locator(`[data-team-member="${slug}"]`);
+      await card.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(350);
       await page.screenshot({ path: new URL(`${label}-${slug}.png`, evidenceDir).pathname });
     }
 
