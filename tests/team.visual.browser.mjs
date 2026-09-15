@@ -44,6 +44,23 @@ async function capture(id, label) {
   assert.ok(typeof png === "string" && png.length > 1000, `${label}: screenshot não gerado`);
   await writeFile(new URL(`${label}.png`, evidenceDir), Buffer.from(png, "base64"));
 }
+async function portraitState(id, slug) {
+  await execute(id, `document.querySelector('[data-team-member="${slug}"]')?.scrollIntoView({block:'center', behavior:'instant'}); return true;`);
+  for (let attempt = 0; attempt < 40; attempt += 1) {
+    const state = await execute(id, `
+      const card = document.querySelector('[data-team-member="${slug}"]');
+      const img = card?.querySelector('img');
+      return {found:!!img, complete:!!img?.complete, w:img?.naturalWidth||0, h:img?.naturalHeight||0, src:img?.currentSrc||img?.getAttribute('src')||'', pending:!!card?.querySelector('[data-portrait-status="pending"]')};
+    `);
+    if (state.found && state.complete && state.w > 0 && state.h > 0) return state;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  return execute(id, `
+    const card = document.querySelector('[data-team-member="${slug}"]');
+    const img = card?.querySelector('img');
+    return {found:!!img, complete:!!img?.complete, w:img?.naturalWidth||0, h:img?.naturalHeight||0, src:img?.currentSrc||img?.getAttribute('src')||'', pending:!!card?.querySelector('[data-portrait-status="pending"]')};
+  `);
+}
 
 async function runViewport(width, height, label) {
   const session = await wd("POST", "/session", {
@@ -55,20 +72,11 @@ async function runViewport(width, height, label) {
     await wd("POST", `/session/${id}/url`, { url: `${appBase}/equipe` });
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    const pageState = await execute(id, `return {
-      overflow: document.documentElement.scrollWidth > window.innerWidth,
-      width: window.innerWidth,
-      errors: [],
-    };`);
+    const pageState = await execute(id, `return { overflow: document.documentElement.scrollWidth > window.innerWidth, width: window.innerWidth };`);
     assert.equal(pageState.overflow, false, `${label}: overflow horizontal`);
 
     for (const slug of approvedSlugs) {
-      const state = await execute(id, `
-        const card = document.querySelector('[data-team-member="${slug}"]');
-        card?.scrollIntoView({block:'center', behavior:'instant'});
-        const img = card?.querySelector('img');
-        return {found:!!img, complete:!!img?.complete, w:img?.naturalWidth||0, h:img?.naturalHeight||0, src:img?.currentSrc||img?.getAttribute('src')||'', pending:!!card?.querySelector('[data-portrait-status="pending"]')};
-      `);
+      const state = await portraitState(id, slug);
       assert.equal(state.found, true, `${label}: ${slug} sem img`);
       assert.equal(state.complete, true, `${label}: ${slug} incompleto`);
       assert.ok(state.w >= 1200 && state.h >= 1200, `${label}: ${slug} resolução natural insuficiente ${state.w}x${state.h}`);
@@ -96,11 +104,11 @@ async function runViewport(width, height, label) {
         assert.ok(item.top >= 0 && item.bottom <= menu.innerHeight + 0.5, `${label}: item ${item.text} cortado verticalmente`);
       }
       await capture(id, `${label}-menu-aberto`);
+      await execute(id, `document.querySelector('header details').open = false; return true;`);
     }
 
     for (const slug of ["lira", "marco"]) {
-      await execute(id, `document.querySelector('[data-team-member="${slug}"]')?.scrollIntoView({block:'center', behavior:'instant'}); return true;`);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await portraitState(id, slug);
       await capture(id, `${label}-${slug}`);
     }
   } finally {
