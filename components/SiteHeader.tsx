@@ -15,10 +15,10 @@ export function SiteHeader() {
     <>
       <header className="fixed inset-x-0 top-0 z-50 border-b border-[#dbe7ef] bg-white/95 shadow-sm backdrop-blur-xl">
         <div className="mx-auto flex min-h-[68px] max-w-[1400px] items-center px-4 sm:min-h-[76px] sm:px-6 lg:px-10">
-          <Link href="/#inicio" className="flex items-center gap-2.5 rounded-lg sm:gap-3" aria-label="BravSystems — início">
-            <Image src="/bravsystems-logo.png" alt="BravSystems" width={64} height={64} priority className="h-[54px] w-[54px] object-contain sm:h-[60px] sm:w-[60px]" />
-            <div className="block">
-              <div className="text-[15px] font-black tracking-[-.025em] text-[#092846] sm:text-base">BravSystems</div>
+          <Link href="/#inicio" className="flex min-w-0 items-center gap-2.5 rounded-lg sm:gap-3" aria-label="BravSystems — início">
+            <Image src="/bravsystems-logo.png" alt="BravSystems" width={64} height={64} priority className="h-[54px] w-[54px] shrink-0 object-contain sm:h-[60px] sm:w-[60px]" />
+            <div className="min-w-0">
+              <div className="truncate text-[15px] font-black tracking-[-.025em] text-[#092846] sm:text-base">BravSystems</div>
               <div className="mt-0.5 hidden text-[9px] font-extrabold uppercase tracking-[.16em] text-[#6e8597] sm:block">Ecossistema SaaS B2B</div>
             </div>
           </Link>
@@ -40,11 +40,11 @@ export function SiteHeader() {
             </Link>
           </div>
 
-          <details className="relative ml-2 xl:hidden">
+          <details className="relative ml-auto shrink-0 xl:hidden" data-mobile-menu>
             <summary className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-xl border border-[#d6e2eb] bg-white text-lg font-bold text-[#154b7a] [&::-webkit-details-marker]:hidden" aria-label="Abrir menu de navegação">
               ☰
             </summary>
-            <nav className="absolute right-0 top-[3.25rem] w-[min(19rem,calc(100vw-2rem))] rounded-2xl border border-[#dce6ed] bg-white p-2 shadow-2xl" aria-label="Navegação responsiva">
+            <nav className="absolute right-0 top-[3.25rem] z-[70] max-h-[calc(100dvh-5.5rem)] w-[calc(100vw-2rem)] max-w-[19rem] overflow-y-auto overscroll-contain rounded-2xl border border-[#dce6ed] bg-white p-2 shadow-2xl" aria-label="Navegação responsiva" data-mobile-menu-panel>
               {navigation.map(([label, href]) => (
                 <Link key={href} href={href} className="block rounded-xl px-4 py-3 text-sm font-semibold text-[#334155] hover:bg-[#eef5fa]">
                   {label}
