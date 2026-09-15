@@ -75,7 +75,7 @@ test("Oito retratos aprovados são vinculados e somente cinco perfis permanecem 
   const page = await read("app/equipe/page.tsx");
 
   for (const slug of approvedPortraits) {
-    assert.ok(team.includes(`portraitSrc: "/team/${slug}.webp"`), `${slug}: portraitSrc aprovado ausente`);
+    assert.ok(team.includes(`portraitSrc: "/team/${slug}.jpg"`), `${slug}: portraitSrc aprovado ausente`);
   }
 
   assert.equal(team.split('portraitStatus: "approved",').length - 1, 8, "devem existir exatamente oito retratos aprovados");

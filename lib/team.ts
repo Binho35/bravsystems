@@ -42,7 +42,7 @@ export const aiAgents: TeamMember[] = [
     description: "Estrutura o núcleo técnico do BravOS, preservando regras de negócio, segurança de domínio e consistência operacional.",
     initials: "AT",
     kind: "ai",
-    portraitSrc: "/team/atlas.webp",
+    portraitSrc: "/team/atlas.jpg",
     portraitStatus: "approved",
   },
   {
@@ -53,7 +53,7 @@ export const aiAgents: TeamMember[] = [
     description: "Transforma capacidades do BravOS em fluxos claros para salão, atendimento, cozinha e uso operacional em campo.",
     initials: "FG",
     kind: "ai",
-    portraitSrc: "/team/forge.webp",
+    portraitSrc: "/team/forge.jpg",
     portraitStatus: "approved",
   },
   {
@@ -64,7 +64,7 @@ export const aiAgents: TeamMember[] = [
     description: "Protege a linha de entrega com testes, gates de qualidade, segurança, CI/CD e critérios de liberação.",
     initials: "SE",
     kind: "ai",
-    portraitSrc: "/team/sentry.webp",
+    portraitSrc: "/team/sentry.jpg",
     portraitStatus: "approved",
   },
   {
@@ -108,7 +108,7 @@ export const aiAgents: TeamMember[] = [
     description: "Evolui a vertical especializada de pessoas, jornada do colaborador, recrutamento, desempenho e processos de RH e DP.",
     initials: "OR",
     kind: "ai",
-    portraitSrc: "/team/orion.webp",
+    portraitSrc: "/team/orion.jpg",
     portraitStatus: "approved",
   },
   {
@@ -119,7 +119,7 @@ export const aiAgents: TeamMember[] = [
     description: "Evolui cursos, trilhas, avaliações, progresso e certificação para experiências corporativas de aprendizagem.",
     initials: "SO",
     kind: "ai",
-    portraitSrc: "/team/sofia.webp",
+    portraitSrc: "/team/sofia.jpg",
     portraitStatus: "approved",
   },
   {
@@ -130,7 +130,7 @@ export const aiAgents: TeamMember[] = [
     description: "Estrutura produção audiovisual com apresentadores virtuais, composição, identidade visual, qualidade e controle de custos.",
     initials: "VE",
     kind: "ai",
-    portraitSrc: "/team/vega.webp",
+    portraitSrc: "/team/vega.jpg",
     portraitStatus: "approved",
   },
   {
@@ -141,7 +141,7 @@ export const aiAgents: TeamMember[] = [
     description: "Conecta posicionamento, narrativa, identidade e distribuição para conteúdos institucionais e sociais da BravSystems.",
     initials: "LI",
     kind: "ai",
-    portraitSrc: "/team/lira.webp",
+    portraitSrc: "/team/lira.jpg",
     portraitStatus: "approved",
   },
   {
@@ -152,7 +152,7 @@ export const aiAgents: TeamMember[] = [
     description: "Cuida do site institucional, apresentação comercial, navegação, conteúdo, credibilidade e conversão digital da BravSystems.",
     initials: "MA",
     kind: "ai",
-    portraitSrc: "/team/marco.webp",
+    portraitSrc: "/team/marco.jpg",
     portraitStatus: "approved",
   },
 ];

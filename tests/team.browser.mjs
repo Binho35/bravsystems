@@ -67,6 +67,7 @@ async function waitForPortrait(id, slug, expectedPath, timeoutMs = 6000) {
         imageFound: Boolean(image),
         complete: Boolean(image?.complete),
         naturalWidth: image?.naturalWidth || 0,
+        naturalHeight: image?.naturalHeight || 0,
         src: image?.getAttribute('src') || '',
         currentSrc: image?.currentSrc || '',
         pending: Boolean(card?.querySelector('[data-portrait-status="pending"]')),
@@ -78,6 +79,7 @@ async function waitForPortrait(id, slug, expectedPath, timeoutMs = 6000) {
       state.imageFound &&
       state.complete &&
       state.naturalWidth > 0 &&
+      state.naturalHeight > 0 &&
       !state.pending &&
       (state.src.includes(expectedPath) || state.currentSrc.includes(expectedPath))
     ) {
@@ -95,6 +97,7 @@ async function waitForPortrait(id, slug, expectedPath, timeoutMs = 6000) {
       imageFound: Boolean(image),
       complete: Boolean(image?.complete),
       naturalWidth: image?.naturalWidth || 0,
+      naturalHeight: image?.naturalHeight || 0,
       src: image?.getAttribute('src') || '',
       currentSrc: image?.currentSrc || '',
       pending: Boolean(card?.querySelector('[data-portrait-status="pending"]')),
@@ -124,7 +127,7 @@ async function runViewport(width, height, label) {
 
     const loadedPortraits = {};
     for (const slug of approvedSlugs) {
-      loadedPortraits[slug] = await waitForPortrait(id, slug, `/team/${slug}.webp`);
+      loadedPortraits[slug] = await waitForPortrait(id, slug, `/team/${slug}.jpg`);
     }
 
     await execute(id, `window.scrollTo({ top: 0, behavior: 'instant' }); return true;`);
@@ -141,7 +144,7 @@ async function runViewport(width, height, label) {
           name: card.querySelector('h2')?.textContent?.trim() || '',
           text: card.innerText || '',
           hasPortrait: Boolean(image),
-          imageLoaded: image ? image.complete && image.naturalWidth > 0 : false,
+          imageLoaded: image ? image.complete && image.naturalWidth > 0 && image.naturalHeight > 0 : false,
           imageSrc: image?.getAttribute('src') || '',
           imageCurrentSrc: image?.currentSrc || '',
           pending: Boolean(card.querySelector('[data-portrait-status="pending"]')),
@@ -188,10 +191,12 @@ async function runViewport(width, height, label) {
       assert.ok(agent?.imageLoaded, `${label}: ${slug} com imagem não carregada após polling`);
       assert.equal(agent?.pending, false, `${label}: ${slug} ainda marcado como pendente`);
       assert.ok(
-        agent?.imageSrc.includes(`/team/${slug}.webp`) || agent?.imageCurrentSrc.includes(`/team/${slug}.webp`),
+        agent?.imageSrc.includes(`/team/${slug}.jpg`) || agent?.imageCurrentSrc.includes(`/team/${slug}.jpg`),
         `${label}: ${slug} com src inesperado`,
       );
+      assert.ok(loadedPortraits[slug]?.complete, `${label}: ${slug} imagem não completou carregamento`);
       assert.ok(loadedPortraits[slug]?.naturalWidth > 0, `${label}: ${slug} sem largura natural válida`);
+      assert.ok(loadedPortraits[slug]?.naturalHeight > 0, `${label}: ${slug} sem altura natural válida`);
     }
 
     for (const slug of pendingSlugs) {
