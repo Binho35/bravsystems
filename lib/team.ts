@@ -42,7 +42,7 @@ export const aiAgents: TeamMember[] = [
     description: "Estrutura o núcleo técnico do BravOS, preservando regras de negócio, segurança de domínio e consistência operacional.",
     initials: "AT",
     kind: "ai",
-    portraitSrc: "/team/atlas.jpg",
+    portraitSrc: "/team/sentry.jpg",
     portraitStatus: "approved",
   },
   {
@@ -64,7 +64,7 @@ export const aiAgents: TeamMember[] = [
     description: "Protege a linha de entrega com testes, gates de qualidade, segurança, CI/CD e critérios de liberação.",
     initials: "SE",
     kind: "ai",
-    portraitSrc: "/team/sentry.jpg",
+    portraitSrc: "/team/atlas.jpg",
     portraitStatus: "approved",
   },
   {
