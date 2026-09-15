@@ -1,0 +1,46 @@
+name: Materialize P0 Team Portraits
+
+on:
+  push:
+    branches: [fix/team-portraits-visible-003]
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: fix/team-portraits-visible-003
+      - name: Download approved high-resolution JPEGs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/team
+          curl -fL 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/3c995152-ed10-40b7-b104-4d60f2140650.jpg?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNTg0YTRiMzk3Zjk5N2EzMCIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTYyNTUyOX0.3YZgcjWCm1qwfWG2ueRrZG4z5J9RaNhjIH51qTblQ10' -o public/team/atlas.jpg
+          curl -fL 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/ba39b16b-b455-4b91-9e78-4d183057cbea.jpg?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiYWIzMTkwNWI1ZTc4YzUxZSIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTY0NjU1NX0.p2qFjSaV27rZNX1j2n4aTSN47W6_DcSSPd8PYUPg_Ho' -o public/team/forge.jpg
+          curl -fL 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/cde9a7c8-0672-492c-82a9-cf092546089c.jpg?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMTU0YWI2ZDJmMzNiZjQyYSIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTY0MzYwMn0.3_JWGZ3pzF6T_p6jxS85uWsuPmF0cR84u4m7JhXmMsI' -o public/team/sentry.jpg
+          curl -fL 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/631f3bd8-d8ea-4b23-a840-3a8258a8d70d.jpg?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiOWVmNGQ4ZTRjMzM0ZTI2OCIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTYyNzIzNn0.0i-pBFFBxId2WfudHCizOzq_fIk6PB30OrJcW2uaGD8' -o public/team/orion.jpg
+          curl -fL 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/86c6ee22-65a8-41ad-9eb1-59c1a52cf1f4.jpg?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNjQyZjViNjI0YjM4NWIwNiIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTYwMjc4Nn0.UlACIVvjsoeVtFCtLd7f-h3HKOpqXYzHzutlsqmMjeE' -o public/team/sofia.jpg
+          curl -fL 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/00da306d-3d08-4752-ad52-a8a3ad22c217.jpg?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNDk5ZDkzOGZkYjEwNzBjNSIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTU3ODg5NX0.ZUCeyRmr7ZEEg3YVRKL4BvNyGSMf70lnBu2QHKL6VvY' -o public/team/vega.jpg
+          curl -fL 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/50c17bcb-0ba9-4813-af34-036000afad16.jpg?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiYmZjYzYwNjE2MTJjODFkNiIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTY1MDI3M30.WjsecOAiZorEIsBp7DJuidV8nQOBfFHmsEBG3VRlA2k' -o public/team/lira.jpg
+          curl -fL 'https://d2jqrm6oza8nb6.cloudfront.net/datasets/24b5a7ff-7722-44d7-b88c-6cbfcf7a9266.jpg?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiZWY0Mzc1MmMyZWEyZGU4ZCIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTYzNDczMn0.IulZ2yDxuM1g9in_wQ1az8ZeYDiBRvwymcxKlXeri7M' -o public/team/marco.jpg
+          for file in public/team/{atlas,forge,sentry,orion,sofia,vega,lira,marco}.jpg; do
+            test "$(stat -c%s "$file")" -gt 100000
+            file "$file" | grep -q 'JPEG image data'
+          done
+      - name: Commit materialized assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/team/atlas.jpg public/team/forge.jpg public/team/sentry.jpg public/team/orion.jpg public/team/sofia.jpg public/team/vega.jpg public/team/lira.jpg public/team/marco.jpg
+          git diff --cached --quiet && exit 0
+          git commit -m 'fix: materializa retratos P0 em alta resolução'
+          git push origin HEAD:fix/team-portraits-visible-003
