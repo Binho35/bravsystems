@@ -39,7 +39,7 @@ function Portrait({ member, index = 0 }: { member: TeamMember; index?: number })
         alt={`Retrato institucional de ${member.name}`}
         loading="lazy"
         decoding="async"
-        className="absolute inset-0 h-full w-full object-contain object-center"
+        className="absolute inset-0 h-full w-full object-cover object-center"
       />
     );
   }
