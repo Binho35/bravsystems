@@ -13,7 +13,7 @@ permissions:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,6 +30,26 @@ jobs:
         run: npm run lint
       - name: Tests
         run: npm test
+      - name: JPEG full decode gate
+        run: |
+          python3 -m pip install --disable-pip-version-check pillow
+          python3 - <<'PY'
+          from PIL import Image, ImageFile
+          from pathlib import Path
+          ImageFile.LOAD_TRUNCATED_IMAGES = False
+          slugs = ["atlas", "forge", "sentry", "orion", "sofia", "vega", "lira", "marco"]
+          for slug in slugs:
+              path = Path("public/team") / f"{slug}.jpg"
+              data = path.read_bytes()
+              assert len(data) >= 100_000, f"{slug}: arquivo pequeno ({len(data)} bytes)"
+              assert data[:2] == b"\xff\xd8" and data[-2:] == b"\xff\xd9", f"{slug}: assinatura JPEG inválida"
+              with Image.open(path) as image:
+                  image.load()
+                  assert image.format == "JPEG", f"{slug}: formato {image.format}"
+                  assert image.mode == "RGB", f"{slug}: modo {image.mode}"
+                  assert image.width >= 1200 and image.height >= 1200, f"{slug}: resolução {image.size}"
+                  print(f"{slug}: PASS {image.width}x{image.height} RGB {len(data)} bytes")
+          PY
       - name: TypeScript
         run: npx tsc --noEmit
       - name: Build
@@ -38,7 +58,14 @@ jobs:
         run: |
           node --test tests/portal.browser.mjs
           node --test tests/team.browser.mjs
+          node --test tests/team.visual.browser.mjs
           node --test tests/site-hardening.browser.mjs
+      - name: Install Playwright WebKit
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps webkit
+      - name: WebKit team gate
+        run: node --test tests/team.webkit.mjs
       - name: Upload visual evidence
         if: always()
         uses: actions/upload-artifact@v4
