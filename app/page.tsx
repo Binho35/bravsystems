@@ -224,11 +224,11 @@ export default function Home() {
                 <h3 className="mt-4 max-w-xl text-[32px] font-bold leading-[1.06] tracking-[-.045em] sm:mt-5 sm:text-[44px]">Treinamento corporativo com identidade, trilha e evidência.</h3>
                 <p className="mt-4 max-w-xl text-[15px] leading-7 text-[#c0d6e4] sm:mt-5 sm:text-[16px] sm:leading-8">Capacitação, avaliações, progresso e certificação em uma Universidade Corporativa White Label preparada para evoluir sem expor ambiente técnico como acesso final.</p>
 
-                <div className="mt-5 grid grid-cols-5 gap-1.5 sm:mt-7 sm:gap-2" aria-label="Jornada de aprendizagem do BravAcademy">
+                <div className="mt-5 grid grid-cols-2 gap-2 sm:mt-7 sm:grid-cols-5 sm:gap-2" aria-label="Jornada de aprendizagem do BravAcademy">
                   {academyJourney.map((item, index) => (
-                    <div key={item} className="rounded-xl border border-white/10 bg-white/[.06] px-1.5 py-3 text-center sm:rounded-2xl sm:px-3 sm:py-4">
+                    <div key={item} className="min-h-[64px] rounded-xl border border-white/10 bg-white/[.06] px-2 py-3 text-center last:col-span-2 sm:min-h-0 sm:last:col-span-1 sm:rounded-2xl sm:px-3 sm:py-4">
                       <div className="text-[9px] font-black text-[#7fc0e7] sm:text-[10px]">0{index + 1}</div>
-                      <div className="mt-1 truncate text-[10px] font-bold text-white sm:text-xs">{item}</div>
+                      <div className="mt-1 text-[11px] font-bold leading-tight text-white sm:text-xs">{item}</div>
                     </div>
                   ))}
                 </div>

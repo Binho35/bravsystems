@@ -60,12 +60,15 @@ jobs:
           node --test tests/team.browser.mjs
           node --test tests/team.visual.browser.mjs
           node --test tests/site-hardening.browser.mjs
+          node --test tests/academy-journey.browser.mjs
       - name: Install Playwright WebKit
         run: |
           npm install --no-save --package-lock=false playwright@1.55.0
           npx playwright install --with-deps webkit
       - name: WebKit team gate
-        run: node --test tests/team.webkit.mjs
+        run: |
+          node --test tests/team.webkit.mjs
+          node --test tests/site-audit.webkit.mjs
       - name: Upload visual evidence
         if: always()
         uses: actions/upload-artifact@v4
