@@ -40,20 +40,20 @@ export function SiteHeader() {
             </Link>
           </div>
 
-          <details className="relative ml-2 xl:hidden">
+          <details className="relative ml-auto isolate xl:hidden">
             <summary className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-xl border border-[#d6e2eb] bg-white text-lg font-bold text-[#154b7a] [&::-webkit-details-marker]:hidden" aria-label="Abrir menu de navegação">
               ☰
             </summary>
-            <nav className="absolute right-0 top-[3.25rem] w-[min(19rem,calc(100vw-2rem))] rounded-2xl border border-[#dce6ed] bg-white p-2 shadow-2xl" aria-label="Navegação responsiva">
+            <nav className="fixed left-4 right-4 top-[72px] z-[60] max-h-[calc(100dvh-88px)] overflow-y-auto overscroll-contain rounded-2xl border border-[#dce6ed] bg-white p-2 shadow-2xl sm:absolute sm:left-auto sm:right-0 sm:top-[3.25rem] sm:w-[min(22rem,calc(100vw-2rem))]" aria-label="Navegação responsiva">
               {navigation.map(([label, href]) => (
-                <Link key={href} href={href} className="block rounded-xl px-4 py-3 text-sm font-semibold text-[#334155] hover:bg-[#eef5fa]">
+                <Link key={href} href={href} className="block break-words rounded-xl px-4 py-3 text-sm font-semibold text-[#334155] hover:bg-[#eef5fa]">
                   {label}
                 </Link>
               ))}
-              <Link href="/#contato" className="mt-2 block rounded-xl border border-[#d4e2eb] px-4 py-3 text-center text-sm font-bold text-[#315b7a]">
+              <Link href="/#contato" className="mt-2 block break-words rounded-xl border border-[#d4e2eb] px-4 py-3 text-center text-sm font-bold text-[#315b7a]">
                 Falar com especialista
               </Link>
-              <Link href="/acessar" className="mt-2 block rounded-xl bg-[#0f4d78] px-4 py-3 text-center text-sm font-extrabold text-white">
+              <Link href="/acessar" className="mt-2 block break-words rounded-xl bg-[#0f4d78] px-4 py-3 text-center text-sm font-extrabold text-white">
                 Entrar / Meus Sistemas
               </Link>
             </nav>
