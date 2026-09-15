@@ -1,0 +1,61 @@
+name: Materialize Site Visual Audit 001
+
+on:
+  push:
+    branches: [fix/site-visual-audit-001]
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: fix/site-visual-audit-001
+      - name: Correct BravAcademy mobile journey
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('app/page.tsx')
+          text = path.read_text()
+          replacements = [
+              (
+                  'className="mt-5 grid grid-cols-5 gap-1.5 sm:mt-7 sm:gap-2" aria-label="Jornada de aprendizagem do BravAcademy"',
+                  'className="mt-5 grid grid-cols-2 gap-2 sm:mt-7 sm:grid-cols-5 sm:gap-2" aria-label="Jornada de aprendizagem do BravAcademy"'
+              ),
+              (
+                  'className="rounded-xl border border-white/10 bg-white/[.06] px-1.5 py-3 text-center sm:rounded-2xl sm:px-3 sm:py-4"',
+                  'className="min-h-[64px] rounded-xl border border-white/10 bg-white/[.06] px-2 py-3 text-center last:col-span-2 sm:min-h-0 sm:last:col-span-1 sm:rounded-2xl sm:px-3 sm:py-4"'
+              ),
+              (
+                  'className="mt-1 truncate text-[10px] font-bold text-white sm:text-xs"',
+                  'className="mt-1 text-[11px] font-bold leading-tight text-white sm:text-xs"'
+              ),
+          ]
+          for old, new in replacements:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'expected exactly one match, got {count}: {old}')
+              text = text.replace(old, new)
+          path.write_text(text)
+          PY
+          grep -F 'grid grid-cols-2 gap-2 sm:mt-7 sm:grid-cols-5' app/page.tsx
+          grep -F 'last:col-span-2 sm:min-h-0 sm:last:col-span-1' app/page.tsx
+          ! grep -F 'mt-1 truncate text-[10px] font-bold text-white sm:text-xs' app/page.tsx
+      - name: Commit correction and remove temporary workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/materialize-site-visual-audit-001.yml
+          git add app/page.tsx
+          git commit -m 'fix: elimina truncamento da jornada BravAcademy no mobile'
+          git push origin HEAD:fix/site-visual-audit-001
