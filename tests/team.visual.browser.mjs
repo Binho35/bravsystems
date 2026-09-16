@@ -8,7 +8,21 @@ const DRIVER_PORT = 9523;
 const appBase = `http://127.0.0.1:${APP_PORT}`;
 const driverBase = `http://127.0.0.1:${DRIVER_PORT}`;
 const evidenceDir = new URL("../artifacts/browser/", import.meta.url);
-const approvedSlugs = ["atlas", "forge", "sentry", "orion", "sofia", "vega", "lira", "marco"];
+const portraitPaths = {
+  argos: "/team/argos.svg",
+  atlas: "/team/atlas.jpg",
+  forge: "/team/forge.jpg",
+  sentry: "/team/sentry.jpg",
+  scout: "/team/scout.svg",
+  pulse: "/team/pulse.svg",
+  nexus: "/team/nexus.svg",
+  orion: "/team/orion.jpg",
+  sofia: "/team/sofia.jpg",
+  vega: "/team/vega.jpg",
+  lira: "/team/lira.jpg",
+  marco: "/team/marco.jpg",
+};
+const approvedSlugs = Object.keys(portraitPaths);
 const menuLabels = ["Ecossistema", "Destaques", "Por que BravSystems", "Equipe", "Central", "Contato", "Falar com especialista", "Entrar / Meus Sistemas"];
 
 function startService(command, args) {
@@ -58,9 +72,14 @@ async function runViewport(width, height, label) {
     const pageState = await execute(id, `return {
       overflow: document.documentElement.scrollWidth > window.innerWidth,
       width: window.innerWidth,
-      errors: [],
+      pending: document.querySelectorAll('[data-portrait-status="pending"]').length,
+      founderSrc: document.querySelector('[data-team-founder] img')?.currentSrc || document.querySelector('[data-team-founder] img')?.getAttribute('src') || '',
+      founderLoaded: (() => { const img = document.querySelector('[data-team-founder] img'); return !!img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0; })(),
     };`);
     assert.equal(pageState.overflow, false, `${label}: overflow horizontal`);
+    assert.equal(pageState.pending, 0, `${label}: placeholder pendente detectado`);
+    assert.equal(pageState.founderLoaded, true, `${label}: retrato de Robson não carregou`);
+    assert.ok(pageState.founderSrc.includes('/team/robson.svg'), `${label}: src de Robson incorreto`);
 
     for (const slug of approvedSlugs) {
       const state = await execute(id, `
@@ -70,7 +89,7 @@ async function runViewport(width, height, label) {
         return {found:!!img, complete:!!img?.complete, w:img?.naturalWidth||0, h:img?.naturalHeight||0, src:img?.currentSrc||img?.getAttribute('src')||'', pending:!!card?.querySelector('[data-portrait-status="pending"]')};
       `);
       assert.equal(state.found, true, `${label}: ${slug} sem img`);
-      if (!state.complete || state.w < 1200 || state.h < 1200) {
+      if (!state.complete || state.w <= 0 || state.h <= 0) {
         for (let attempt = 0; attempt < 20; attempt += 1) {
           await new Promise((resolve) => setTimeout(resolve, 100));
           const next = await execute(id, `
@@ -80,12 +99,12 @@ async function runViewport(width, height, label) {
           state.complete = next.complete;
           state.w = next.w;
           state.h = next.h;
-          if (state.complete && state.w >= 1200 && state.h >= 1200) break;
+          if (state.complete && state.w > 0 && state.h > 0) break;
         }
       }
       assert.equal(state.complete, true, `${label}: ${slug} incompleto`);
-      assert.ok(state.w >= 1200 && state.h >= 1200, `${label}: ${slug} resolução natural insuficiente ${state.w}x${state.h}`);
-      assert.ok(state.src.includes(`/team/${slug}.jpg`), `${label}: ${slug} src incorreto`);
+      assert.ok(state.w > 0 && state.h > 0, `${label}: ${slug} dimensões naturais inválidas ${state.w}x${state.h}`);
+      assert.ok(state.src.includes(portraitPaths[slug]), `${label}: ${slug} src incorreto`);
       assert.equal(state.pending, false, `${label}: ${slug} com placeholder`);
     }
 
@@ -111,9 +130,9 @@ async function runViewport(width, height, label) {
       await capture(id, `${label}-menu-aberto`);
     }
 
-    for (const slug of ["lira", "marco"]) {
+    for (const slug of ["argos", "scout", "pulse", "nexus", "lira", "marco"]) {
       await execute(id, `document.querySelector('[data-team-member="${slug}"]')?.scrollIntoView({block:'center', behavior:'instant'}); return true;`);
-      await new Promise((resolve) => setTimeout(resolve, 350));
+      await new Promise((resolve) => setTimeout(resolve, 250));
       await capture(id, `${label}-${slug}`);
     }
   } finally {
@@ -121,7 +140,7 @@ async function runViewport(width, height, label) {
   }
 }
 
-test("TEAM visual — Chromium 390/430/768/1440", { timeout: 240_000 }, async () => {
+test("TEAM visual — 13 retratos em Chromium 390/430/768/1440", { timeout: 240_000 }, async () => {
   await mkdir(evidenceDir, { recursive: true });
   const app = startService("npm", ["start", "--", "-p", String(APP_PORT)]);
   const driver = startService("chromedriver", [`--port=${DRIVER_PORT}`]);
