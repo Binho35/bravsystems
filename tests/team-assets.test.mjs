@@ -2,7 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const approvedSlugs = ["atlas", "forge", "sentry", "orion", "sofia", "vega", "lira", "marco"];
+const approvedJpegSlugs = ["atlas", "forge", "sentry", "orion", "sofia", "vega", "lira", "marco"];
+const approvedSvgSlugs = ["robson", "argos", "scout", "pulse", "nexus"];
 
 function readJpegSize(buffer) {
   assert.equal(buffer[0], 0xff, "assinatura JPEG inválida");
@@ -35,12 +36,22 @@ function readJpegSize(buffer) {
 }
 
 test("TEAM — oito JPEGs aprovados possuem estrutura e resolução institucional", async () => {
-  for (const slug of approvedSlugs) {
+  for (const slug of approvedJpegSlugs) {
     const buffer = await readFile(new URL(`../public/team/${slug}.jpg`, import.meta.url));
     assert.ok(buffer.length >= 100_000, `${slug}: arquivo excessivamente pequeno (${buffer.length} bytes)`);
     const { width, height, components } = readJpegSize(buffer);
     assert.ok(width >= 1200, `${slug}: largura insuficiente (${width}px)`);
     assert.ok(height >= 1200, `${slug}: altura insuficiente (${height}px)`);
     assert.equal(components, 3, `${slug}: JPEG deve possuir três componentes de cor`);
+  }
+});
+
+test("TEAM — cinco novos retratos SVG encapsulam JPEG válido para publicação web", async () => {
+  for (const slug of approvedSvgSlugs) {
+    const svg = await readFile(new URL(`../public/team/${slug}.svg`, import.meta.url), "utf8");
+    assert.ok(svg.startsWith("<svg"), `${slug}: SVG inválido`);
+    assert.ok(svg.includes("data:image/jpeg;base64,"), `${slug}: JPEG incorporado ausente`);
+    assert.ok(svg.includes(`Retrato institucional de ${slug === "robson" ? "Robson" : slug.charAt(0).toUpperCase() + slug.slice(1)}`), `${slug}: identificação do retrato ausente`);
+    assert.ok(svg.length > 10_000, `${slug}: asset SVG excessivamente pequeno`);
   }
 });

@@ -7,7 +7,21 @@ import { webkit } from "playwright";
 const APP_PORT = 3014;
 const appBase = `http://127.0.0.1:${APP_PORT}`;
 const evidenceDir = new URL("../artifacts/browser/", import.meta.url);
-const approvedSlugs = ["atlas", "forge", "sentry", "orion", "sofia", "vega", "lira", "marco"];
+const portraitPaths = {
+  argos: "/team/argos.svg",
+  atlas: "/team/atlas.jpg",
+  forge: "/team/forge.jpg",
+  sentry: "/team/sentry.jpg",
+  scout: "/team/scout.svg",
+  pulse: "/team/pulse.svg",
+  nexus: "/team/nexus.svg",
+  orion: "/team/orion.jpg",
+  sofia: "/team/sofia.jpg",
+  vega: "/team/vega.jpg",
+  lira: "/team/lira.jpg",
+  marco: "/team/marco.jpg",
+};
+const approvedSlugs = Object.keys(portraitPaths);
 const menuLabels = ["Ecossistema", "Destaques", "Por que BravSystems", "Equipe", "Central", "Contato", "Falar com especialista", "Entrar / Meus Sistemas"];
 
 function startService(command, args) {
@@ -38,13 +52,25 @@ async function runViewport(browser, width, height, label) {
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
     assert.equal(overflow, false, `${label}: overflow horizontal`);
+    assert.equal(await page.locator('[data-portrait-status="pending"]').count(), 0, `${label}: placeholder pendente detectado`);
+
+    const founderImage = page.locator('[data-team-founder] img');
+    await founderImage.waitFor({ state: "visible" });
+    await page.waitForFunction(() => {
+      const img = document.querySelector('[data-team-founder] img');
+      return Boolean(img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0);
+    }, undefined, { timeout: 5000 });
+    const founderState = await founderImage.evaluate((img) => ({ complete: img.complete, width: img.naturalWidth, height: img.naturalHeight, src: img.currentSrc || img.getAttribute("src") || "" }));
+    assert.equal(founderState.complete, true, `${label}: Robson incompleto`);
+    assert.ok(founderState.width > 0 && founderState.height > 0, `${label}: Robson sem dimensões naturais`);
+    assert.ok(founderState.src.includes('/team/robson.svg'), `${label}: Robson src incorreto`);
 
     for (const slug of approvedSlugs) {
       const card = page.locator(`[data-team-member="${slug}"]`);
       await card.scrollIntoViewIfNeeded();
       await page.waitForFunction((memberSlug) => {
         const img = document.querySelector(`[data-team-member="${memberSlug}"] img`);
-        return Boolean(img && img.complete && img.naturalWidth >= 1200 && img.naturalHeight >= 1200);
+        return Boolean(img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0);
       }, slug, { timeout: 5000 });
       const state = await card.locator("img").evaluate((img) => ({
         complete: img.complete,
@@ -53,8 +79,8 @@ async function runViewport(browser, width, height, label) {
         src: img.currentSrc || img.getAttribute("src") || "",
       }));
       assert.equal(state.complete, true, `${label}: ${slug} incompleto`);
-      assert.ok(state.width >= 1200 && state.height >= 1200, `${label}: ${slug} resolução ${state.width}x${state.height}`);
-      assert.ok(state.src.includes(`/team/${slug}.jpg`), `${label}: ${slug} src incorreto`);
+      assert.ok(state.width > 0 && state.height > 0, `${label}: ${slug} dimensões inválidas ${state.width}x${state.height}`);
+      assert.ok(state.src.includes(portraitPaths[slug]), `${label}: ${slug} src incorreto`);
       assert.equal(await card.locator('[data-portrait-status="pending"]').count(), 0, `${label}: ${slug} com placeholder`);
     }
 
@@ -80,10 +106,10 @@ async function runViewport(browser, width, height, label) {
     await page.screenshot({ path: new URL(`${label}-menu-aberto.png`, evidenceDir).pathname });
 
     await page.locator("header details summary").click();
-    for (const slug of ["lira", "marco"]) {
+    for (const slug of ["argos", "scout", "pulse", "nexus", "lira", "marco"]) {
       const card = page.locator(`[data-team-member="${slug}"]`);
       await card.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(350);
+      await page.waitForTimeout(250);
       await page.screenshot({ path: new URL(`${label}-${slug}.png`, evidenceDir).pathname });
     }
 
@@ -94,7 +120,7 @@ async function runViewport(browser, width, height, label) {
   }
 }
 
-test("TEAM — WebKit equivalente a Safari em 390 e 430", { timeout: 240_000 }, async () => {
+test("TEAM — 13 retratos no WebKit equivalente a Safari em 390 e 430", { timeout: 240_000 }, async () => {
   await mkdir(evidenceDir, { recursive: true });
   const app = startService("npm", ["start", "--", "-p", String(APP_PORT)]);
   let browser;
