@@ -18,8 +18,8 @@ export const founder: TeamMember = {
   description: "Lidera a visão da BravSystems, define prioridades e mantém a decisão final sobre produto, operação e evolução do portfólio.",
   initials: "RF",
   kind: "human",
-  portraitSrc: null,
-  portraitStatus: "pending",
+  portraitSrc: "/team/robson.svg",
+  portraitStatus: "approved",
 };
 
 export const aiAgents: TeamMember[] = [
@@ -31,8 +31,8 @@ export const aiAgents: TeamMember[] = [
     description: "Consolida evidências, riscos, prioridades, prontidão, investimento e evolução transversal dos produtos BravSystems.",
     initials: "AR",
     kind: "ai",
-    portraitSrc: null,
-    portraitStatus: "pending",
+    portraitSrc: "/team/argos.svg",
+    portraitStatus: "approved",
   },
   {
     slug: "atlas",
@@ -75,8 +75,8 @@ export const aiAgents: TeamMember[] = [
     description: "Investiga arquitetura, riscos, referências técnicas e alternativas de mercado com independência e evidências.",
     initials: "SC",
     kind: "ai",
-    portraitSrc: null,
-    portraitStatus: "pending",
+    portraitSrc: "/team/scout.svg",
+    portraitStatus: "approved",
   },
   {
     slug: "pulse",
@@ -86,8 +86,8 @@ export const aiAgents: TeamMember[] = [
     description: "Evolui a plataforma BravMsg para organizar contatos, campanhas, atendimento e relacionamento com rastreabilidade.",
     initials: "PU",
     kind: "ai",
-    portraitSrc: null,
-    portraitStatus: "pending",
+    portraitSrc: "/team/pulse.svg",
+    portraitStatus: "approved",
   },
   {
     slug: "nexus",
@@ -97,8 +97,8 @@ export const aiAgents: TeamMember[] = [
     description: "Evolui o BravHAS como centro administrativo para financeiro, RH, DP, documentos e rotinas de gestão.",
     initials: "NX",
     kind: "ai",
-    portraitSrc: null,
-    portraitStatus: "pending",
+    portraitSrc: "/team/nexus.svg",
+    portraitStatus: "approved",
   },
   {
     slug: "orion",
