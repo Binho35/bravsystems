@@ -56,6 +56,10 @@ async function runViewport(browser, width, height, label) {
 
     const founderImage = page.locator('[data-team-founder] img');
     await founderImage.waitFor({ state: "visible" });
+    await page.waitForFunction(() => {
+      const img = document.querySelector('[data-team-founder] img');
+      return Boolean(img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0);
+    }, undefined, { timeout: 5000 });
     const founderState = await founderImage.evaluate((img) => ({ complete: img.complete, width: img.naturalWidth, height: img.naturalHeight, src: img.currentSrc || img.getAttribute("src") || "" }));
     assert.equal(founderState.complete, true, `${label}: Robson incompleto`);
     assert.ok(founderState.width > 0 && founderState.height > 0, `${label}: Robson sem dimensões naturais`);
