@@ -19,8 +19,21 @@ const expectedRoles = [
   ["Marco", "Web Experience & Institutional Brand"],
 ];
 
-const approvedPortraits = ["atlas", "forge", "sentry", "orion", "sofia", "vega", "lira", "marco"];
-const pendingPortraits = ["robson", "argos", "scout", "pulse", "nexus"];
+const approvedPortraits = {
+  robson: "/team/robson.svg",
+  argos: "/team/argos.svg",
+  atlas: "/team/atlas.jpg",
+  forge: "/team/forge.jpg",
+  sentry: "/team/sentry.jpg",
+  scout: "/team/scout.svg",
+  pulse: "/team/pulse.svg",
+  nexus: "/team/nexus.svg",
+  orion: "/team/orion.jpg",
+  sofia: "/team/sofia.jpg",
+  vega: "/team/vega.jpg",
+  lira: "/team/lira.jpg",
+  marco: "/team/marco.jpg",
+};
 
 test("TEAM posiciona Robson e especialistas pelas funções profissionais", async () => {
   const team = await read("lib/team.ts");
@@ -70,24 +83,17 @@ test("TEAM integra Equipe à Home, navegação, rodapé e sitemap", async () => 
   assert.ok(sitemap.includes('`${base}/equipe`'));
 });
 
-test("Oito retratos aprovados são vinculados e somente cinco perfis permanecem pendentes", async () => {
+test("Treze retratos aprovados são vinculados e nenhum perfil permanece pendente", async () => {
   const team = await read("lib/team.ts");
-  const page = await read("app/equipe/page.tsx");
 
-  for (const slug of approvedPortraits) {
-    assert.ok(team.includes(`portraitSrc: "/team/${slug}.jpg"`), `${slug}: portraitSrc aprovado ausente`);
+  for (const [slug, portraitPath] of Object.entries(approvedPortraits)) {
+    assert.ok(team.includes(`slug: "${slug}"`), `${slug}: perfil ausente`);
+    assert.ok(team.includes(`portraitSrc: "${portraitPath}"`), `${slug}: portraitSrc aprovado ausente`);
   }
 
-  assert.equal(team.split('portraitStatus: "approved",').length - 1, 8, "devem existir exatamente oito retratos aprovados");
-  assert.equal(team.split('portraitSrc: null,').length - 1, 5, "devem existir exatamente cinco retratos pendentes");
-  assert.equal(team.split('portraitStatus: "pending",').length - 1, 5, "devem existir exatamente cinco status pendentes");
-
-  for (const slug of pendingPortraits) {
-    assert.ok(team.includes(`slug: "${slug}"`), `${slug}: perfil pendente ausente`);
-  }
-
-  assert.ok(page.includes("data-portrait-status"));
-  assert.ok(page.includes("Identidade visual institucional provisória"));
+  assert.equal(team.split('portraitStatus: "approved",').length - 1, 13, "devem existir exatamente treze retratos aprovados");
+  assert.equal(team.split('portraitSrc: null,').length - 1, 0, "não deve existir retrato pendente");
+  assert.equal(team.split('portraitStatus: "pending",').length - 1, 0, "não deve existir status pendente");
 });
 
 test("SEO da Equipe usa template global sem duplicar a marca", async () => {
