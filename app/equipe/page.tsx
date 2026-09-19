@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -34,12 +35,13 @@ const portraitTones = [
 function Portrait({ member, index = 0 }: { member: TeamMember; index?: number }) {
   if (member.portraitSrc) {
     return (
-      <img
+      <Image
         src={member.portraitSrc}
         alt={`Retrato institucional de ${member.name}`}
-        loading="lazy"
-        decoding="async"
-        className="absolute inset-0 h-full w-full object-contain object-center"
+        fill
+        sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+        className="object-contain object-center"
+        unoptimized
       />
     );
   }
