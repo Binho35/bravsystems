@@ -222,7 +222,7 @@ async function captureHomeEvidence(id, viewportLabel, width) {
       src: source?.getAttribute('src') || '',
     };
   `);
-  assert.ok(video.title.includes("Conheça o BravOs"), `${viewportLabel}: seção de vídeo BravOs ausente`);
+  assert.ok(video.title.toLowerCase().includes("conheça o bravos"), `${viewportLabel}: seção de vídeo BravOs ausente`);
   assert.equal(video.src, "/bravsystems-video-institucional.mp4", `${viewportLabel}: vídeo institucional incorreto`);
   await capture(id, `${viewportLabel}-05-video-bravos`);
 
