@@ -12,12 +12,13 @@ test("Home preserva a direção visual aprovada da BravSystems", async () => {
     "Tecnologia e gestão para empresas",
     "Tecnologia que transforma",
     "gestão em evolução.",
-    "Conheça nossas soluções",
-    "Conheça nossos serviços",
-    "Arquitetura moderna",
-    "Segurança",
-    "Escalabilidade",
+    "Quero falar sobre minha empresa",
+    "Ver soluções",
+    "Menos retrabalho",
+    "Mais controle",
+    "Decisões com clareza",
     "Uma empresa criada para construir o futuro da gestão.",
+    "Escolha pelo problema que você quer resolver.",
   ]) {
     assert.ok(page.includes(text), `${text} ausente`);
   }

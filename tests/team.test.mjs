@@ -32,9 +32,12 @@ test("Home e página Equipe comunicam a regra Robson + Harpia", async () => {
   const sitemap = await read("app/sitemap.ts");
 
   assert.ok(page.includes("Robson e Harpia."));
-  assert.ok(page.includes("representação institucional: Robson + Harpia"));
-  assert.ok(section.includes("Robson e Harpia. A identidade por trás de todo o ecossistema."));
+  assert.ok(page.includes("Liderança humana e uma identidade de marca forte"));
+  assert.ok(section.includes("Estratégia humana. Identidade forte. Soluções construídas para problemas reais."));
   assert.ok(section.includes('data-team-member={member.slug}'));
+  assert.ok(section.includes("Falar sobre minha empresa"));
+  assert.equal(section.includes('bg-[#082844]'), false, "Harpia não deve voltar ao bloco azul na Home");
+  assert.equal(page.includes('bg-[#082844]'), false, "Harpia não deve voltar ao bloco azul na página Equipe");
   assert.ok(home.includes("<TeamSection />"));
   assert.ok(footer.includes('href="/equipe"'));
   assert.ok(sitemap.includes('${base}/equipe'));
@@ -59,4 +62,10 @@ test("SEO da Equipe usa Robson e Harpia sem duplicar template", async () => {
   assert.ok(page.includes('title: "Equipe",'));
   assert.ok(page.includes('canonical: "/equipe"'));
   assert.ok(page.includes('title: "Robson e Harpia | BravSystems"'));
+});
+
+test("Harpia institucional usa superfície clara também nas páginas de produto", async () => {
+  const signature = await read("components/InstitutionalSignature.tsx");
+  assert.ok(signature.includes('bg-white'));
+  assert.equal(signature.includes('bg-[#082844]'), false, "assinatura da Harpia não deve usar fundo azul escuro");
 });

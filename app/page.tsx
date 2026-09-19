@@ -36,6 +36,25 @@ const managementServices = [
 
 const academyJourney = ["Cursos", "Trilhas", "Avaliações", "Progresso", "Certificação"] as const;
 
+const commercialOutcomes = [
+  {
+    title: "Menos retrabalho",
+    description: "Organize processos e reduza controles paralelos, tarefas duplicadas e informação espalhada.",
+  },
+  {
+    title: "Mais controle",
+    description: "Centralize o que importa para acompanhar a operação com mais clareza e previsibilidade.",
+  },
+  {
+    title: "Decisões melhores",
+    description: "Transforme rotina e dados em informação útil para decidir mais rápido e com mais segurança.",
+  },
+  {
+    title: "Crescimento organizado",
+    description: "Estruture a gestão para crescer sem multiplicar desorganização, dependências e gargalos.",
+  },
+] as const;
+
 const pillars = [
   {
     number: "01",
@@ -86,20 +105,20 @@ export default function Home() {
             </h1>
 
             <p className="mt-7 max-w-[760px] text-[16px] leading-7 text-[#5a7390] sm:text-[19px] sm:leading-8">
-              A BravSystems desenvolve soluções digitais e oferece serviços de gestão para empresas que querem organizar processos, ganhar eficiência e construir uma operação preparada para crescer.
+              Tecnologia própria e gestão aplicada para empresas que precisam reduzir retrabalho, ganhar controle e crescer com uma operação mais organizada.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a href="#solucoes" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#0b4683] px-7 text-sm font-extrabold text-white shadow-lg shadow-[#0b4683]/15 transition hover:-translate-y-0.5 hover:bg-[#082f5d]">
-                Conheça nossas soluções
+              <a href="#contato" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#0b4683] px-7 text-sm font-extrabold text-white shadow-lg shadow-[#0b4683]/15 transition hover:-translate-y-0.5 hover:bg-[#082f5d]">
+                Quero falar sobre minha empresa
               </a>
-              <a href="#gestao" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#bdd5e5] bg-white/55 px-7 text-sm font-extrabold text-[#15517f] transition hover:border-[#7faeca] hover:bg-white/80">
-                Conheça nossos serviços
+              <a href="#solucoes" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#bdd5e5] bg-white/55 px-7 text-sm font-extrabold text-[#15517f] transition hover:border-[#7faeca] hover:bg-white/80">
+                Ver soluções
               </a>
             </div>
 
             <div className="mt-9 flex flex-wrap gap-x-8 gap-y-3 text-sm font-semibold text-[#4d6f8e]">
-              {["Arquitetura moderna", "Segurança", "Escalabilidade"].map((item) => (
+              {["Menos retrabalho", "Mais controle", "Decisões com clareza"].map((item) => (
                 <span key={item} className="inline-flex items-center gap-2">
                   <span className="text-lg font-black text-[#2563eb]" aria-hidden="true">✓</span>
                   {item}
@@ -123,11 +142,24 @@ export default function Home() {
           </div>
           <div className="max-w-2xl lg:justify-self-end">
             <p className="text-[15px] leading-7 text-[#5a7390] sm:text-[17px] sm:leading-8">
-              Unimos tecnologia própria e experiência administrativa para transformar problemas reais de operação em sistemas, processos e decisões mais claras.
+              Antes de falar em sistema, entendemos onde a operação perde tempo, controle ou previsibilidade. A tecnologia entra para resolver esse problema — não para criar mais complexidade.
             </p>
             <p className="mt-4 text-[15px] leading-7 text-[#5a7390]">
-              O nosso ecossistema nasce da prática: cada produto evolui com governança técnica, validação real e responsabilidade sobre o que está ou não pronto para uso.
+              O ecossistema BravSystems nasce da prática: produtos próprios, gestão aplicada e evolução contínua para transformar rotina em uma operação mais simples de acompanhar e mais preparada para crescer.
             </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-[#e2e8f0] bg-white py-10 sm:py-12" aria-label="Resultados de negócio">
+        <div className="mx-auto max-w-[1280px] px-5 sm:px-8">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {commercialOutcomes.map((outcome) => (
+              <article key={outcome.title} className="rounded-2xl border border-[#e2e8f0] bg-[#fbfdfe] p-5">
+                <h3 className="text-lg font-black tracking-[-.025em] text-[#0b2947]">{outcome.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-[#61788d]">{outcome.description}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
@@ -137,10 +169,10 @@ export default function Home() {
           <div className="max-w-4xl">
             <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#377df0]">Nossas soluções</div>
             <h2 className="mt-3 text-[36px] font-black leading-[1.04] tracking-[-.045em] text-[#0b2947] sm:text-5xl">
-              Tecnologia para diferentes necessidades de gestão.
+              Escolha pelo problema que você quer resolver.
             </h2>
             <p className="mt-4 max-w-3xl text-[15px] leading-7 text-[#61788d] sm:text-[16px] sm:leading-8">
-              Um ecossistema de produtos próprios para operação, administração, pessoas, comunicação, aprendizagem e conteúdo corporativo.
+              Operação, administração, pessoas, comunicação, aprendizagem e conteúdo: cada produto nasce para atacar um gargalo específico de gestão.
             </p>
           </div>
 
@@ -158,7 +190,7 @@ export default function Home() {
                 <p className="mt-5 text-[15px] leading-7 text-[#61788d]">{bravos.description}</p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <Link href="/bravos" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#0b4683] px-5 text-sm font-extrabold text-white">
-                    Conhecer BravOs →
+                    Ver como o BravOs pode ajudar →
                   </Link>
                   <a href="#conheca-bravos" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#bfd4e3] bg-white px-5 text-sm font-bold text-[#315b7a]">
                     Ver apresentação
@@ -183,7 +215,7 @@ export default function Home() {
                 </div>
                 <p className="mt-4 text-sm leading-6 text-[#61788d]">{product.description}</p>
                 <div className="mt-auto border-t border-[#e0e9ef] pt-5">
-                  <Link href={`/${product.slug}`} className="text-sm font-extrabold text-[#0b4683]">Conhecer {product.name} →</Link>
+                  <Link href={`/${product.slug}`} className="text-sm font-extrabold text-[#0b4683]">Ver como {product.name} pode ajudar →</Link>
                 </div>
               </article>
             ))}
@@ -242,6 +274,15 @@ export default function Home() {
                 </div>
               </article>
             ))}
+          </div>
+          <div className="mt-8 rounded-2xl border border-[#d3e2eb] bg-white p-5 sm:flex sm:items-center sm:justify-between sm:gap-6">
+            <div>
+              <h3 className="text-xl font-black tracking-[-.025em] text-[#0b2947]">Sua empresa não precisa de mais uma planilha. Precisa de uma gestão que funcione.</h3>
+              <p className="mt-2 text-sm leading-6 text-[#61788d]">Conte onde a operação está travando e avaliamos juntos o melhor caminho.</p>
+            </div>
+            <a href="#contato" className="mt-4 inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-[#0b4683] px-5 text-sm font-extrabold text-white sm:mt-0">
+              Quero organizar minha operação →
+            </a>
           </div>
         </div>
       </section>
@@ -306,12 +347,12 @@ export default function Home() {
       <section id="contato" className="bg-[#e9f3f8] py-14 sm:py-20">
         <div className="mx-auto grid max-w-[1280px] items-start gap-8 px-5 sm:px-8 lg:grid-cols-[.8fr_1.2fr]">
           <div className="lg:sticky lg:top-28">
-            <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#377df0]">Contato</div>
+            <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#377df0]">Vamos conversar</div>
             <h2 className="mt-3 text-[36px] font-black leading-[1.04] tracking-[-.045em] text-[#0b2947] sm:text-5xl">
-              Tecnologia e gestão para fazer sua empresa evoluir.
+              Onde sua empresa está perdendo tempo, controle ou previsibilidade?
             </h2>
             <p className="mt-4 text-[15px] leading-7 text-[#61788d] sm:text-[16px] sm:leading-8">
-              Conte a necessidade da sua operação. A conversa começa pelo problema real e pela melhor combinação entre produto, processo e gestão.
+              Conte o cenário. A BravSystems entende o problema primeiro e só depois propõe a melhor combinação entre tecnologia, processo e gestão.
             </p>
             <div className="mt-6 rounded-2xl border border-[#c3d8e5] bg-white/75 p-5 text-sm leading-7 text-[#45647d]">
               <strong className="block text-[#0b4683]">BravSystems</strong>

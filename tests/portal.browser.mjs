@@ -136,7 +136,7 @@ async function captureHomeEvidence(id, viewportLabel, width) {
   if (width <= 640) {
     const mobile = await execute(id, `
       const summary = document.querySelector('header summary');
-      const primary = document.querySelector('#inicio a[href="#solucoes"]');
+      const primary = document.querySelector('#inicio a[href="#contato"]');
       const title = document.querySelector('#inicio h1');
       const summaryRect = summary?.getBoundingClientRect();
       const primaryRect = primary?.getBoundingClientRect();
@@ -155,16 +155,16 @@ async function captureHomeEvidence(id, viewportLabel, width) {
     const body = document.querySelector('#inicio')?.innerText || '';
     return {
       hasEyebrow: body.toLowerCase().includes('tecnologia e gestão para empresas'),
-      hasSolutions: body.includes('Conheça nossas soluções'),
-      hasServices: body.includes('Conheça nossos serviços'),
-      hasProof: ['Arquitetura moderna','Segurança','Escalabilidade'].every(item => body.includes(item)),
+      hasConversation: body.includes('Quero falar sobre minha empresa'),
+      hasSolutions: body.includes('Ver soluções'),
+      hasProof: ['Menos retrabalho','Mais controle','Decisões com clareza'].every(item => body.includes(item)),
       hasLegacyPortfolio: document.body.innerText.includes('Portfólio governado'),
     };
   `);
   assert.equal(hero.hasEyebrow, true, `${viewportLabel}: eyebrow aprovado ausente`);
+  assert.equal(hero.hasConversation, true, `${viewportLabel}: CTA comercial principal ausente`);
   assert.equal(hero.hasSolutions, true, `${viewportLabel}: CTA soluções ausente`);
-  assert.equal(hero.hasServices, true, `${viewportLabel}: CTA serviços ausente`);
-  assert.equal(hero.hasProof, true, `${viewportLabel}: provas do hero incompletas`);
+  assert.equal(hero.hasProof, true, `${viewportLabel}: benefícios comerciais do hero incompletos`);
   assert.equal(hero.hasLegacyPortfolio, false, `${viewportLabel}: card de portfólio antigo retornou ao hero`);
   await capture(id, `${viewportLabel}-01-home`);
 
