@@ -11,8 +11,8 @@ const expectedRoles = [
   ["Sentry", "Quality & Release Engineering"],
   ["Scout", "Intelligence & Technology Audit"],
   ["Pulse", "Messaging Platform Engineering"],
-  ["Nexus", "Product Engineering — BravHAS"],
-  ["Orion", "Product Engineering — BravHOS"],
+  ["Nexus", "Product Engineering — BravHas"],
+  ["Orion", "Product Engineering — BravHos"],
   ["Sofia", "Learning Experience & BravAcademy"],
   ["Vega", "AI Media & Video Engineering"],
   ["Lira", "Social Platform Engineering"],
@@ -77,7 +77,6 @@ test("TEAM integra Equipe à Home, navegação, rodapé e sitemap", async () => 
   assert.ok(section.includes('id="equipe"'));
   assert.ok(section.includes("12 frentes especializadas, papéis explícitos."));
   assert.ok(section.includes("Responsabilidades claras por tecnologia, produto e disciplina"));
-  assert.ok(header.includes('["Equipe", "/equipe"]'));
   assert.equal(header.includes("Agentes de IA"), false);
   assert.ok(footer.includes('href="/equipe"'));
   assert.ok(sitemap.includes('`${base}/equipe`'));

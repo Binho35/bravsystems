@@ -2,65 +2,62 @@ import Image from "next/image";
 import Link from "next/link";
 
 const navigation = [
-  ["Ecossistema", "/#produtos"],
-  ["Destaques", "/#destaques"],
-  ["Por que BravSystems", "/#por-que-bravsystems"],
-  ["Equipe", "/equipe"],
-  ["Central", "/acessar"],
+  ["Empresa", "/#empresa"],
+  ["Soluções", "/#solucoes"],
+  ["Gestão", "/#gestao"],
+  ["Nossa visão", "/#visao"],
   ["Contato", "/#contato"],
 ] as const;
 
 export function SiteHeader() {
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-[#dbe7ef] bg-white/95 shadow-sm backdrop-blur-xl">
-        <div className="mx-auto flex min-h-[68px] max-w-[1400px] items-center px-4 sm:min-h-[76px] sm:px-6 lg:px-10">
-          <Link href="/#inicio" className="flex items-center gap-2.5 rounded-lg sm:gap-3" aria-label="BravSystems — início">
-            <Image src="/bravsystems-logo.png" alt="BravSystems" width={64} height={64} priority className="h-[54px] w-[54px] object-contain sm:h-[60px] sm:w-[60px]" />
-            <div className="block">
-              <div className="text-[15px] font-black tracking-[-.025em] text-[#092846] sm:text-base">BravSystems</div>
-              <div className="mt-0.5 hidden text-[9px] font-extrabold uppercase tracking-[.16em] text-[#6e8597] sm:block">Ecossistema SaaS B2B</div>
-            </div>
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-[#d7e6f0]/70 bg-[#eef6fb]/95 backdrop-blur-xl">
+        <div className="mx-auto flex min-h-[78px] max-w-[1440px] items-center px-4 sm:min-h-[92px] sm:px-8 lg:px-10">
+          <Link href="/#inicio" className="flex shrink-0 items-center rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb]/40" aria-label="BravSystems — início">
+            <Image
+              src="/bravsystems-logo.png"
+              alt="BravSystems — Technology & Management"
+              width={92}
+              height={92}
+              priority
+              className="h-[66px] w-[66px] object-contain mix-blend-multiply sm:h-[80px] sm:w-[80px]"
+            />
           </Link>
 
-          <nav className="ml-auto hidden items-center gap-4 text-sm font-semibold text-[#4e6679] xl:flex 2xl:gap-5" aria-label="Navegação principal">
+          <nav className="ml-auto hidden items-center gap-8 text-[15px] font-semibold text-[#163b62] lg:flex xl:gap-11" aria-label="Navegação principal">
             {navigation.map(([label, href]) => (
-              <Link key={href} href={href} className="rounded-md transition hover:text-[#0f4d78]">
+              <Link key={href} href={href} className="rounded-md px-1 py-2 transition hover:text-[#2563eb] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb]/30">
                 {label}
               </Link>
             ))}
           </nav>
 
-          <div className="ml-auto hidden items-center gap-2 sm:flex xl:ml-5 2xl:ml-6">
-            <Link href="/#contato" className="hidden rounded-full border border-[#c3d7e4] bg-white px-4 py-2.5 text-sm font-bold text-[#315b7a] transition hover:border-[#0f4d78] hover:text-[#092846] lg:inline-flex">
-              Falar com especialista
-            </Link>
-            <Link href="/acessar" className="rounded-full bg-[#0f4d78] px-4 py-2.5 text-sm font-extrabold text-white shadow-lg shadow-[#0f4d78]/15 transition hover:bg-[#092846]">
-              Meus Sistemas
-            </Link>
-          </div>
+          <Link href="/#contato" className="ml-auto hidden min-h-12 items-center justify-center rounded-full bg-[#0b4683] px-7 text-sm font-extrabold text-white shadow-lg shadow-[#0b4683]/15 transition hover:-translate-y-0.5 hover:bg-[#082f5d] lg:ml-12 lg:inline-flex">
+            Fale conosco
+          </Link>
 
-          <details className="relative ml-auto isolate xl:hidden">
-            <summary className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-xl border border-[#d6e2eb] bg-white text-lg font-bold text-[#154b7a] [&::-webkit-details-marker]:hidden" aria-label="Abrir menu de navegação">
+          <details className="relative ml-auto lg:hidden">
+            <summary className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-xl border border-[#bed5e5] bg-white/65 text-xl font-bold text-[#154b7a] shadow-sm [&::-webkit-details-marker]:hidden" aria-label="Abrir menu de navegação">
               ☰
             </summary>
-            <nav className="fixed left-4 right-4 top-[72px] z-[60] max-h-[calc(100dvh-88px)] overflow-y-auto overscroll-contain rounded-2xl border border-[#dce6ed] bg-white p-2 shadow-2xl sm:absolute sm:left-auto sm:right-0 sm:top-[3.25rem] sm:w-[min(22rem,calc(100vw-2rem))]" aria-label="Navegação responsiva">
+            <nav className="fixed left-4 right-4 top-[82px] z-[60] max-h-[calc(100dvh-98px)] overflow-y-auto rounded-2xl border border-[#cfdfeb] bg-[#f7fbfe] p-2 shadow-2xl sm:absolute sm:left-auto sm:right-0 sm:top-14 sm:w-72" aria-label="Navegação responsiva">
               {navigation.map(([label, href]) => (
-                <Link key={href} href={href} className="block break-words rounded-xl px-4 py-3 text-sm font-semibold text-[#334155] hover:bg-[#eef5fa]">
+                <Link key={href} href={href} className="block rounded-xl px-4 py-3 text-sm font-semibold text-[#234d70] hover:bg-[#e8f2f8]">
                   {label}
                 </Link>
               ))}
-              <Link href="/#contato" className="mt-2 block break-words rounded-xl border border-[#d4e2eb] px-4 py-3 text-center text-sm font-bold text-[#315b7a]">
-                Falar com especialista
+              <Link href="/#contato" className="mt-2 block rounded-xl bg-[#0b4683] px-4 py-3 text-center text-sm font-extrabold text-white">
+                Fale conosco
               </Link>
-              <Link href="/acessar" className="mt-2 block break-words rounded-xl bg-[#0f4d78] px-4 py-3 text-center text-sm font-extrabold text-white">
-                Entrar / Meus Sistemas
+              <Link href="/acessar" className="mt-2 block rounded-xl border border-[#c9dce8] px-4 py-3 text-center text-sm font-bold text-[#154b7a]">
+                Meus Sistemas
               </Link>
             </nav>
           </details>
         </div>
       </header>
-      <div className="h-[68px] sm:h-[76px]" aria-hidden="true" />
+      <div className="h-[78px] bg-[#eef6fb] sm:h-[92px]" aria-hidden="true" />
     </>
   );
 }

@@ -39,15 +39,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const productVideo = getProductVideo(product.slug);
   const access = getProductAccess(product);
   const showAccessStatus = product.status.toLocaleUpperCase("pt-BR") !== access.status;
-  const isBravHAS = product.slug === "bravhas";
-  const heroEyebrow = isBravHAS ? "ADMINISTRAÇÃO CENTRAL" : product.category;
-  const heroDescription = isBravHAS
-    ? "O BravHAS centraliza rotinas administrativas, RH, DP, documentos e indicadores em um único ambiente para dar clareza à operação, reduzir retrabalho e acelerar decisões."
+  const isBravHas = product.slug === "bravhas";
+  const heroEyebrow = isBravHas ? "ADMINISTRAÇÃO CENTRAL" : product.category;
+  const heroDescription = isBravHas
+    ? "O BravHas centraliza rotinas administrativas, RH, DP, documentos e indicadores em um único ambiente para dar clareza à operação, reduzir retrabalho e acelerar decisões."
     : product.description;
-  const accessGovernanceTitle = isBravHAS
+  const accessGovernanceTitle = isBravHas
     ? "Ambiente controlado. Acesso liberado apenas para usuários autorizados."
     : "Acesse o ambiente oficial quando ele estiver liberado.";
-  const accessGovernanceText = isBravHAS
+  const accessGovernanceText = isBravHas
     ? "A liberação pública não está prevista nesta etapa. A Central preserva a governança de acesso sem expor endereços técnicos."
     : "A BravSystems centraliza os acessos em um único portal e não publica ambientes de Preview como produção.";
 
@@ -80,7 +80,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <p className="mt-6 max-w-3xl text-[18px] leading-8 text-[#5f7185]">{heroDescription}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <a href="#contato" className="inline-flex h-12 items-center justify-center rounded-xl bg-[#154b7a] px-6 font-bold text-white">{product.cta}</a>
-            {isBravHAS ? (
+            {isBravHas ? (
               <a href="#visao-geral" className="inline-flex h-12 items-center justify-center rounded-xl border border-[#bdd3e2] bg-white px-6 font-bold text-[#154b7a]">Ver visão geral</a>
             ) : (
               <>
@@ -96,7 +96,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </div>
       </section>
 
-      <section id={isBravHAS ? "visao-geral" : undefined} className="bg-white py-20">
+      <section id={isBravHas ? "visao-geral" : undefined} className="bg-white py-20">
         <div className="mx-auto grid max-w-[1200px] gap-8 px-6 lg:grid-cols-2">
           <InfoBlock eyebrow="A dor" title="O problema que queremos reduzir" items={product.pain} />
           <InfoBlock eyebrow="Benefícios" title="O resultado que orienta a solução" items={product.benefits} />

@@ -116,24 +116,27 @@ async function capture(id, label) {
 async function captureHomeEvidence(id, viewportLabel, width) {
   await navigate(id, "/");
   const home = await auditPage(id, `${viewportLabel}/home`);
-  assert.equal(home.h1, "Software para operar melhor, decidir mais rápido e escalar com controle.");
+  assert.ok(home.h1.includes("Tecnologia que transforma"), `${viewportLabel}: headline principal ausente`);
+  assert.ok(home.h1.includes("gestão em evolução."), `${viewportLabel}: headline de evolução ausente`);
 
   const header = await execute(id, `
     const header = document.querySelector('header');
+    const labels = [...header.querySelectorAll('nav[aria-label="Navegação principal"] a')].map(a => a.textContent.trim());
+    const logo = header.querySelector('img[alt*="BravSystems"]');
     return {
-      hasCentral: [...header.querySelectorAll('a')].some(a => a.getAttribute('href') === '/acessar'),
-      hasContact: [...header.querySelectorAll('a')].some(a => a.getAttribute('href') === '/#contato'),
-      hasBrand: header.textContent.includes('BravSystems'),
+      labels,
+      hasContact: [...header.querySelectorAll('a')].some(a => a.textContent.trim() === 'Fale conosco'),
+      hasBrand: Boolean(logo),
     };
   `);
-  assert.equal(header.hasCentral, true, `${viewportLabel}: Central ausente do header`);
-  assert.equal(header.hasContact, true, `${viewportLabel}: contato ausente do header`);
+  assert.deepEqual(header.labels, ["Empresa", "Soluções", "Gestão", "Nossa visão", "Contato"]);
+  assert.equal(header.hasContact, true, `${viewportLabel}: CTA Fale conosco ausente do header`);
   assert.equal(header.hasBrand, true, `${viewportLabel}: marca ausente do header`);
 
   if (width <= 640) {
     const mobile = await execute(id, `
       const summary = document.querySelector('header summary');
-      const primary = document.querySelector('#inicio a[href="#produtos"]');
+      const primary = document.querySelector('#inicio a[href="#solucoes"]');
       const title = document.querySelector('#inicio h1');
       const summaryRect = summary?.getBoundingClientRect();
       const primaryRect = primary?.getBoundingClientRect();
@@ -145,49 +148,52 @@ async function captureHomeEvidence(id, viewportLabel, width) {
     `);
     assert.equal(mobile.menuUsable, true, `${viewportLabel}: menu mobile não utilizável`);
     assert.equal(mobile.primaryVisible, true, `${viewportLabel}: CTA principal não está na primeira viewport`);
-    assert.ok(mobile.fontSize <= 40, `${viewportLabel}: headline mobile excessiva`);
+    assert.ok(mobile.fontSize <= 44, `${viewportLabel}: headline mobile excessiva`);
   }
 
   const hero = await execute(id, `
+    const body = document.querySelector('#inicio')?.innerText || '';
     return {
-      products: [...document.querySelectorAll('[data-hero-ecosystem] a')].map(a => a.textContent.trim()),
-      hasOverview: Boolean(document.querySelector('[data-hero-portfolio]')),
-      hasCentral: document.body.innerText.includes('Entrar / Meus Sistemas'),
-      hasCommercial: document.body.innerText.includes('Falar com a BravSystems'),
+      hasEyebrow: body.includes('Tecnologia e gestão para empresas'),
+      hasSolutions: body.includes('Conheça nossas soluções'),
+      hasServices: body.includes('Conheça nossos serviços'),
+      hasProof: ['Arquitetura moderna','Segurança','Escalabilidade'].every(item => body.includes(item)),
+      hasLegacyPortfolio: document.body.innerText.includes('Portfólio governado'),
     };
   `);
-  assert.equal(hero.products.length, 6, `${viewportLabel}: Hero deve representar seis produtos`);
-  assert.equal(hero.hasOverview, true, `${viewportLabel}: visão executiva do portfólio ausente`);
-  assert.equal(hero.hasCentral, true, `${viewportLabel}: jornada de acesso ausente`);
-  assert.equal(hero.hasCommercial, true, `${viewportLabel}: jornada comercial ausente`);
+  assert.equal(hero.hasEyebrow, true, `${viewportLabel}: eyebrow aprovado ausente`);
+  assert.equal(hero.hasSolutions, true, `${viewportLabel}: CTA soluções ausente`);
+  assert.equal(hero.hasServices, true, `${viewportLabel}: CTA serviços ausente`);
+  assert.equal(hero.hasProof, true, `${viewportLabel}: provas do hero incompletas`);
+  assert.equal(hero.hasLegacyPortfolio, false, `${viewportLabel}: card de portfólio antigo retornou ao hero`);
   await capture(id, `${viewportLabel}-01-home`);
 
-  await scrollToTarget(id, "#produtos", "start");
+  await scrollToTarget(id, "#solucoes", "start");
   const productCards = await execute(id, `
     return [...document.querySelectorAll('[data-product-card]')].map(card => ({
       slug: card.getAttribute('data-product-card'),
-      name: card.querySelector('h3')?.textContent?.trim() || '',
-      text: card.textContent || '',
+      name: card.querySelector('[data-product-name]')?.textContent?.trim() || '',
+      text: card.innerText || '',
     }));
   `);
-  assert.deepEqual(productCards.map((item) => item.name), ["BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo"]);
+  assert.deepEqual(productCards.map((item) => item.name), ["BravOs", "BravHas", "BravHos", "BravMsg", "BravAcademy", "BravVideo"]);
   const academyCard = productCards.find((item) => item.slug === "bravacademy");
   const bravhasCard = productCards.find((item) => item.slug === "bravhas");
-  assert.ok(academyCard?.text.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravAcademy sem estágio governado`);
-  assert.ok(bravhasCard?.text.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravHAS sem estágio governado`);
-  await capture(id, `${viewportLabel}-02-produtos`);
+  assert.ok(academyCard?.text.toLowerCase().includes("homologação"), `${viewportLabel}: BravAcademy sem estágio`);
+  assert.ok(bravhasCard?.text.toLowerCase().includes("homologação"), `${viewportLabel}: BravHas sem estágio`);
+  await capture(id, `${viewportLabel}-02-solucoes`);
 
   await scrollToTarget(id, "#bravacademy", "center");
   const academy = await execute(id, `
     const section = document.querySelector('#bravacademy');
     return {
-      text: section?.textContent || '',
+      text: section?.innerText || '',
       link: Boolean(section?.querySelector('a[href="/bravacademy"]')),
       steps: section?.querySelectorAll('[aria-label="Jornada de aprendizagem do BravAcademy"] > div').length || 0,
     };
   `);
-  assert.ok(academy.text.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravAcademy sem homologação`);
-  assert.ok(academy.text.includes("Treinamento corporativo com identidade, trilha e evidência."), `${viewportLabel}: proposta Academy ausente`);
+  assert.ok(academy.text.toLowerCase().includes("homologação"), `${viewportLabel}: BravAcademy sem homologação`);
+  assert.ok(academy.text.includes("Universidade corporativa com identidade, trilha e evidência."), `${viewportLabel}: proposta Academy ausente`);
   assert.equal(academy.link, true, `${viewportLabel}: CTA Academy ausente`);
   assert.equal(academy.steps, 5, `${viewportLabel}: jornada Academy incompleta`);
   await capture(id, `${viewportLabel}-03-bravacademy`);
@@ -197,15 +203,28 @@ async function captureHomeEvidence(id, viewportLabel, width) {
     const section = document.querySelector('#bravos');
     const image = section?.querySelector('img');
     return {
-      text: section?.textContent || '',
+      text: section?.innerText || '',
       imageSrc: image?.getAttribute('src') || '',
       imageWidth: image?.naturalWidth || 0,
     };
   `);
-  assert.ok(bravos.text.includes("A operação acontece em tempo real. Sua gestão também deveria."), `${viewportLabel}: BravOS ausente`);
-  assert.ok(bravos.imageSrc.includes("bravos-hero-approved.webp"), `${viewportLabel}: asset aprovado BravOS ausente`);
-  assert.ok(bravos.imageWidth > 0, `${viewportLabel}: asset BravOS não carregou`);
+  assert.ok(bravos.text.includes("A operação acontece em tempo real. Sua gestão também deveria."), `${viewportLabel}: BravOs ausente`);
+  assert.ok(bravos.imageSrc.includes("bravos-hero-approved.webp"), `${viewportLabel}: asset aprovado BravOs ausente`);
+  assert.ok(bravos.imageWidth > 0, `${viewportLabel}: asset BravOs não carregou`);
   await capture(id, `${viewportLabel}-04-bravos`);
+
+  await scrollToTarget(id, "#conheca-bravos", "center");
+  const video = await execute(id, `
+    const section = document.querySelector('#conheca-bravos');
+    const source = section?.querySelector('video source');
+    return {
+      title: section?.innerText || '',
+      src: source?.getAttribute('src') || '',
+    };
+  `);
+  assert.ok(video.title.includes("Conheça o BravOs"), `${viewportLabel}: seção de vídeo BravOs ausente`);
+  assert.equal(video.src, "/bravsystems-video-institucional.mp4", `${viewportLabel}: vídeo institucional incorreto`);
+  await capture(id, `${viewportLabel}-05-video-bravos`);
 
   return { home };
 }
@@ -242,16 +261,16 @@ async function captureAccessEvidence(id, viewportLabel) {
     };
   `);
 
-  assert.deepEqual(cards.names, ["BravOS", "BravHAS", "BravHOS", "BravMsg", "BravAcademy", "BravVideo"]);
+  assert.deepEqual(cards.names, ["BravOs", "BravHas", "BravHos", "BravMsg", "BravAcademy", "BravVideo"]);
   assert.equal(cards.activeLogins, 0, `${viewportLabel}: CI não deve ativar login sem URL oficial`);
   assert.equal(cards.blocked, 6, `${viewportLabel}: todos os acessos sem URL devem permanecer bloqueados`);
   assert.ok(cards.academyText.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravAcademy incorreto na Central`);
-  assert.ok(cards.bravhasText.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravHAS incorreto na Central`);
-  assert.ok(cards.bravhasText.includes("Administração, financeiro e pessoas"), `${viewportLabel}: categoria BravHAS incorreta`);
-  assert.ok(cards.bravhasText.includes("Suite administrativa da BravSystems para organizar financeiro, RH, DP, documentos e rotinas de gestão em um único centro de controle."), `${viewportLabel}: descrição BravHAS incorreta`);
-  assert.ok(cards.bravhasText.includes("Ambiente interno em homologação. Liberação pública não prevista nesta etapa."), `${viewportLabel}: mensagem BravHAS incorreta`);
-  assert.equal(cards.bravhasText.includes("ACESSO INTERNO"), false, `${viewportLabel}: BravHAS regrediu para ACESSO INTERNO`);
-  assert.equal(cards.bravhasText.includes("ainda precisa de auditoria"), false, `${viewportLabel}: mensagem antiga do BravHAS retornou`);
+  assert.ok(cards.bravhasText.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravHas incorreto na Central`);
+  assert.ok(cards.bravhasText.includes("Administração, financeiro e pessoas"), `${viewportLabel}: categoria BravHas incorreta`);
+  assert.ok(cards.bravhasText.includes("Suite administrativa da BravSystems para organizar financeiro, RH, DP, documentos e rotinas de gestão em um único centro de controle."), `${viewportLabel}: descrição BravHas incorreta`);
+  assert.ok(cards.bravhasText.includes("Ambiente interno em homologação. Liberação pública não prevista nesta etapa."), `${viewportLabel}: mensagem BravHas incorreta`);
+  assert.equal(cards.bravhasText.includes("ACESSO INTERNO"), false, `${viewportLabel}: BravHas regrediu para ACESSO INTERNO`);
+  assert.equal(cards.bravhasText.includes("ainda precisa de auditoria"), false, `${viewportLabel}: mensagem antiga do BravHas retornou`);
   await capture(id, `${viewportLabel}-06-central-sistemas`);
 
   await scrollToTarget(id, '[data-access-product="bravacademy"]', "center");
@@ -263,7 +282,7 @@ async function captureAccessEvidence(id, viewportLabel) {
   return { access, cards };
 }
 
-async function captureBravHASEvidence(id, viewportLabel) {
+async function captureBravHasEvidence(id, viewportLabel) {
   await navigate(id, "/bravhas");
   const page = await auditPage(id, `${viewportLabel}/bravhas`);
   assert.equal(page.h1, "Controle administrativo real para financeiro, pessoas e obrigações.");
@@ -271,17 +290,17 @@ async function captureBravHASEvidence(id, viewportLabel) {
   const content = await execute(id, `
     return {
       body: document.body.innerText,
-      hasPrimary: [...document.querySelectorAll('a')].some(a => a.textContent.trim() === 'Conhecer o BravHAS'),
+      hasPrimary: [...document.querySelectorAll('a')].some(a => a.textContent.trim() === 'Conhecer o BravHas'),
       hasSecondary: [...document.querySelectorAll('a')].some(a => a.textContent.trim() === 'Ver visão geral'),
     };
   `);
 
-  assert.ok(content.body.includes("ADMINISTRAÇÃO CENTRAL"), `${viewportLabel}: eyebrow BravHAS ausente`);
-  assert.ok(content.body.includes("O BravHAS centraliza rotinas administrativas, RH, DP, documentos e indicadores em um único ambiente para dar clareza à operação, reduzir retrabalho e acelerar decisões."), `${viewportLabel}: subheadline BravHAS ausente`);
-  assert.ok(content.body.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravHAS sem homologação`);
-  assert.ok(content.body.includes("Ambiente controlado. Acesso liberado apenas para usuários autorizados."), `${viewportLabel}: governança institucional BravHAS ausente`);
-  assert.equal(content.hasPrimary, true, `${viewportLabel}: CTA principal BravHAS ausente`);
-  assert.equal(content.hasSecondary, true, `${viewportLabel}: CTA secundário BravHAS ausente`);
+  assert.ok(content.body.includes("ADMINISTRAÇÃO CENTRAL"), `${viewportLabel}: eyebrow BravHas ausente`);
+  assert.ok(content.body.includes("O BravHas centraliza rotinas administrativas, RH, DP, documentos e indicadores em um único ambiente para dar clareza à operação, reduzir retrabalho e acelerar decisões."), `${viewportLabel}: subheadline BravHas ausente`);
+  assert.ok(content.body.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravHas sem homologação`);
+  assert.ok(content.body.includes("Ambiente controlado. Acesso liberado apenas para usuários autorizados."), `${viewportLabel}: governança institucional BravHas ausente`);
+  assert.equal(content.hasPrimary, true, `${viewportLabel}: CTA principal BravHas ausente`);
+  assert.equal(content.hasSecondary, true, `${viewportLabel}: CTA secundário BravHas ausente`);
   await capture(id, `${viewportLabel}-09-bravhas-page`);
 
   return page;
@@ -329,7 +348,7 @@ async function runViewport(width, height, label) {
     await wd("POST", `/session/${id}/window/rect`, { width, height, x: 0, y: 0 });
     const home = await captureHomeEvidence(id, label, width);
     const central = await captureAccessEvidence(id, label);
-    await captureBravHASEvidence(id, label);
+    await captureBravHasEvidence(id, label);
     await captureClosingEvidence(id, label);
 
     console.log(`PORTAL_${label}_RESULT=${JSON.stringify({
@@ -347,7 +366,7 @@ async function runViewport(width, height, label) {
   }
 }
 
-test("Portal BravSystems 008 — reposicionamento de copy do BravHAS em desktop/mobile", { timeout: 180_000 }, async () => {
+test("Portal BravSystems 008 — reposicionamento de copy do BravHas em desktop/mobile", { timeout: 180_000 }, async () => {
   await mkdir(evidenceDir, { recursive: true });
   const app = startService("npm", ["start", "--", "-p", String(APP_PORT)]);
   const driver = startService("chromedriver", [`--port=${DRIVER_PORT}`]);

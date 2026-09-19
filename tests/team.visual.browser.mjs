@@ -23,7 +23,7 @@ const portraitPaths = {
   marco: "/team/marco.jpg",
 };
 const approvedSlugs = Object.keys(portraitPaths);
-const menuLabels = ["Ecossistema", "Destaques", "Por que BravSystems", "Equipe", "Central", "Contato", "Falar com especialista", "Entrar / Meus Sistemas"];
+const menuLabels = ["Empresa", "Soluções", "Gestão", "Nossa visão", "Contato", "Fale conosco", "Meus Sistemas"];
 
 function startService(command, args) {
   return spawn(command, args, { stdio: "ignore", env: process.env, detached: true });
