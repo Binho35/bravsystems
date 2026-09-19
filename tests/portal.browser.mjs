@@ -290,7 +290,7 @@ async function captureBravHasEvidence(id, viewportLabel) {
   const content = await execute(id, `
     return {
       body: document.body.innerText,
-      hasPrimary: [...document.querySelectorAll('a')].some(a => a.textContent.trim() === 'Conhecer o BravHas'),
+      hasPrimary: [...document.querySelectorAll('a')].some(a => a.textContent.trim() === 'Quero uma demonstração do BravHas'),
       hasSecondary: [...document.querySelectorAll('a')].some(a => a.textContent.trim() === 'Ver visão geral'),
     };
   `);
