@@ -176,7 +176,7 @@ async function captureHomeEvidence(id, viewportLabel, width) {
       text: card.innerText || '',
     }));
   `);
-  assert.deepEqual(productCards.map((item) => item.name), ["BravOs", "BravHas", "BravHos", "BravMsg", "BravAcademy", "BravVideo"]);
+  assert.deepEqual(productCards.map((item) => item.name), ["BravOs", "BravHas", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"]);
   const academyCard = productCards.find((item) => item.slug === "bravacademy");
   const bravhasCard = productCards.find((item) => item.slug === "bravhas");
   assert.ok(academyCard?.text.toLowerCase().includes("homologação"), `${viewportLabel}: BravAcademy sem estágio`);
@@ -261,7 +261,7 @@ async function captureAccessEvidence(id, viewportLabel) {
     };
   `);
 
-  assert.deepEqual(cards.names, ["BravOs", "BravHas", "BravHos", "BravMsg", "BravAcademy", "BravVideo"]);
+  assert.deepEqual(cards.names, ["BravOs", "BravHas", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"]);
   assert.equal(cards.activeLogins, 0, `${viewportLabel}: CI não deve ativar login sem URL oficial`);
   assert.equal(cards.blocked, 6, `${viewportLabel}: todos os acessos sem URL devem permanecer bloqueados`);
   assert.ok(cards.academyText.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravAcademy incorreto na Central`);

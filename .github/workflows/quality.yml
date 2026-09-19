@@ -30,26 +30,29 @@ jobs:
         run: npm run lint
       - name: Tests
         run: npm test
-      - name: JPEG full decode gate
+      - name: Institutional asset gate
         run: |
           python3 -m pip install --disable-pip-version-check pillow
-          python3 - <<'PY'
-          from PIL import Image, ImageFile
+          python3 - <<'PY_ASSET'
+          from PIL import Image
           from pathlib import Path
-          ImageFile.LOAD_TRUNCATED_IMAGES = False
-          slugs = ["atlas", "forge", "sentry", "orion", "sofia", "vega", "lira", "marco"]
-          for slug in slugs:
-              path = Path("public/team") / f"{slug}.jpg"
-              data = path.read_bytes()
-              assert len(data) >= 100_000, f"{slug}: arquivo pequeno ({len(data)} bytes)"
-              assert data[:2] == b"\xff\xd8" and data[-2:] == b"\xff\xd9", f"{slug}: assinatura JPEG inválida"
-              with Image.open(path) as image:
-                  image.load()
-                  assert image.format == "JPEG", f"{slug}: formato {image.format}"
-                  assert image.mode == "RGB", f"{slug}: modo {image.mode}"
-                  assert image.width >= 1200 and image.height >= 1200, f"{slug}: resolução {image.size}"
-                  print(f"{slug}: PASS {image.width}x{image.height} RGB {len(data)} bytes")
-          PY
+
+          team_dir = Path("public/team")
+          files = sorted(path.name for path in team_dir.iterdir() if path.is_file())
+          assert files == ["robson.svg"], f"assets públicos de equipe inesperados: {files}"
+
+          robson = (team_dir / "robson.svg").read_text()
+          assert "Retrato institucional de Robson" in robson
+          assert "data:image/jpeg;base64," in robson
+
+          logo = Path("public/bravsystems-logo.png")
+          with Image.open(logo) as image:
+              image.load()
+              assert image.format == "PNG"
+              assert image.width == 1254 and image.height == 1254
+              assert image.mode in {"RGB", "RGBA"}
+              print(f"Harpia/logo: PASS {image.width}x{image.height} {image.mode}")
+          PY_ASSET
       - name: TypeScript
         run: npx tsc --noEmit
       - name: Build

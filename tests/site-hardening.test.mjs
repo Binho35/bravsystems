@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-test("status públicos dos seis produtos ficam alinhados ao catálogo governado", async () => {
+test("status públicos dos sete produtos ficam alinhados ao catálogo governado", async () => {
   const products = await read("lib/products.ts");
   const access = await read("lib/product-access.ts");
 
@@ -13,6 +13,7 @@ test("status públicos dos seis produtos ficam alinhados ao catálogo governado"
     ["bravhas", "Em homologação", "EM HOMOLOGAÇÃO"],
     ["bravhos", "Em desenvolvimento", "EM DESENVOLVIMENTO"],
     ["bravmsg", "Em desenvolvimento", "EM DESENVOLVIMENTO"],
+    ["bravsocial", "Em homologação", "EM HOMOLOGAÇÃO"],
     ["bravacademy", "Em homologação", "EM HOMOLOGAÇÃO"],
     ["bravvideo", "Em desenvolvimento", "EM DESENVOLVIMENTO"],
   ]) {

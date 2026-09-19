@@ -19,7 +19,7 @@ const RATE_LIMIT_MAX_REQUESTS = 5;
 const MAX_PAYLOAD_BYTES = 16_384;
 const rateLimitStore = new Map<string, RateLimitEntry>();
 const allowedInterests = new Set([
-  "BravOs", "BravHas", "BravHos", "BravMsg", "BravAcademy", "BravVideo",
+  "BravOs", "BravHas", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo",
   "BravOS", "BravHAS", "BravHOS",
   "Serviços administrativos", "Parceria", "Outro",
 ]);

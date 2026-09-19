@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { InstitutionalSignature } from "@/components/InstitutionalSignature";
 import { LeadForm } from "@/components/LeadForm";
 import { ProductVideoDialog } from "@/components/ProductVideoDialog";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -132,6 +133,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <Link href="/acessar" className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-xl bg-white px-6 font-extrabold text-[#0f4d78]">Ir para a Central de Acesso →</Link>
         </div>
       </section>
+
+      <InstitutionalSignature productName={product.name} />
 
       <section id="contato" className="bg-[#dfeef7] py-20">
         <div className="mx-auto grid max-w-[1200px] items-start gap-10 px-6 lg:grid-cols-[.8fr_1.2fr]">

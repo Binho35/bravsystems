@@ -45,7 +45,7 @@ test("Header usa a navegação aprovada e mantém a Central fora da navegação 
   assert.ok(header.includes("Meus Sistemas"));
 });
 
-test("Home mantém seis soluções e BravOs recebe destaque principal", async () => {
+test("Home mantém sete soluções e BravOs recebe destaque principal", async () => {
   const page = await read("app/page.tsx");
   const products = await read("lib/products.ts");
 
@@ -54,7 +54,7 @@ test("Home mantém seis soluções e BravOs recebe destaque principal", async ()
   assert.ok(page.includes("A operação acontece em tempo real. Sua gestão também deveria."));
   assert.ok(page.includes("/bravos-hero-approved.webp"));
 
-  for (const name of ["BravOs", "BravHas", "BravHos", "BravMsg", "BravAcademy", "BravVideo"]) {
+  for (const name of ["BravOs", "BravHas", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"]) {
     assert.ok(products.includes(`name: "${name}"`), `${name} ausente ou grafia incorreta`);
   }
 });

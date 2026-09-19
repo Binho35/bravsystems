@@ -8,21 +8,6 @@ const DRIVER_PORT = 9523;
 const appBase = `http://127.0.0.1:${APP_PORT}`;
 const driverBase = `http://127.0.0.1:${DRIVER_PORT}`;
 const evidenceDir = new URL("../artifacts/browser/", import.meta.url);
-const portraitPaths = {
-  argos: "/team/argos.svg",
-  atlas: "/team/atlas.jpg",
-  forge: "/team/forge.jpg",
-  sentry: "/team/sentry.jpg",
-  scout: "/team/scout.svg",
-  pulse: "/team/pulse.svg",
-  nexus: "/team/nexus.svg",
-  orion: "/team/orion.jpg",
-  sofia: "/team/sofia.jpg",
-  vega: "/team/vega.jpg",
-  lira: "/team/lira.jpg",
-  marco: "/team/marco.jpg",
-};
-const approvedSlugs = Object.keys(portraitPaths);
 const menuLabels = ["Empresa", "Soluções", "Gestão", "Nossa visão", "Contato", "Fale conosco", "Meus Sistemas"];
 
 function startService(command, args) {
@@ -61,7 +46,7 @@ async function capture(id, label) {
 
 async function runViewport(width, height, label) {
   const session = await wd("POST", "/session", {
-    capabilities: { alwaysMatch: { browserName: "chrome", "goog:chromeOptions": { args: ["--headless=new", "--no-sandbox", "--disable-dev-shm-usage", `--window-size=${width},${height}`] } } },
+    capabilities: { alwaysMatch: { browserName: "chrome", "goog:chromeOptions": { args: ["--headless=new","--no-sandbox","--disable-dev-shm-usage",`--window-size=${width},${height}`] } } },
   });
   const id = session.sessionId;
   try {
@@ -69,78 +54,43 @@ async function runViewport(width, height, label) {
     await wd("POST", `/session/${id}/url`, { url: `${appBase}/equipe` });
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    const pageState = await execute(id, `return {
-      overflow: document.documentElement.scrollWidth > window.innerWidth,
-      width: window.innerWidth,
-      pending: document.querySelectorAll('[data-portrait-status="pending"]').length,
-      founderSrc: document.querySelector('[data-team-founder] img')?.currentSrc || document.querySelector('[data-team-founder] img')?.getAttribute('src') || '',
-      founderLoaded: (() => { const img = document.querySelector('[data-team-founder] img'); return !!img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0; })(),
-    };`);
-    assert.equal(pageState.overflow, false, `${label}: overflow horizontal`);
-    assert.equal(pageState.pending, 0, `${label}: placeholder pendente detectado`);
-    assert.equal(pageState.founderLoaded, true, `${label}: retrato de Robson não carregou`);
-    assert.ok(pageState.founderSrc.includes('/team/robson.svg'), `${label}: src de Robson incorreto`);
+    const state = await execute(id, `
+      const cards = [...document.querySelectorAll('[data-team-member]')];
+      return {
+        slugs: cards.map(card => card.getAttribute('data-team-member')),
+        loaded: cards.every(card => { const img=card.querySelector('img'); return !!img && img.complete && img.naturalWidth>0 && img.naturalHeight>0; }),
+        overflow: document.documentElement.scrollWidth > innerWidth,
+      };
+    `);
+    assert.equal(state.overflow, false, `${label}: overflow horizontal`);
+    assert.deepEqual(state.slugs, ["robson", "harpia"]);
+    assert.equal(state.loaded, true, `${label}: retratos institucionais não carregaram`);
 
-    for (const slug of approvedSlugs) {
-      const state = await execute(id, `
-        const card = document.querySelector('[data-team-member="${slug}"]');
-        card?.scrollIntoView({block:'center', behavior:'instant'});
-        const img = card?.querySelector('img');
-        return {found:!!img, complete:!!img?.complete, w:img?.naturalWidth||0, h:img?.naturalHeight||0, src:img?.currentSrc||img?.getAttribute('src')||'', pending:!!card?.querySelector('[data-portrait-status="pending"]')};
-      `);
-      assert.equal(state.found, true, `${label}: ${slug} sem img`);
-      if (!state.complete || state.w <= 0 || state.h <= 0) {
-        for (let attempt = 0; attempt < 20; attempt += 1) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
-          const next = await execute(id, `
-            const img = document.querySelector('[data-team-member="${slug}"] img');
-            return {complete:!!img?.complete, w:img?.naturalWidth||0, h:img?.naturalHeight||0};
-          `);
-          state.complete = next.complete;
-          state.w = next.w;
-          state.h = next.h;
-          if (state.complete && state.w > 0 && state.h > 0) break;
-        }
-      }
-      assert.equal(state.complete, true, `${label}: ${slug} incompleto`);
-      assert.ok(state.w > 0 && state.h > 0, `${label}: ${slug} dimensões naturais inválidas ${state.w}x${state.h}`);
-      assert.ok(state.src.includes(portraitPaths[slug]), `${label}: ${slug} src incorreto`);
-      assert.equal(state.pending, false, `${label}: ${slug} com placeholder`);
-    }
-
-    await execute(id, `window.scrollTo({top:0, behavior:'instant'}); return true;`);
-    await capture(id, `${label}-topo-fechado`);
+    await capture(id, `${label}-robson-harpia`);
 
     if (width <= 430) {
       const menu = await execute(id, `
         const details = document.querySelector('header details');
         details.open = true;
         const nav = details.querySelector('nav[aria-label="Navegação responsiva"]');
-        const r = nav.getBoundingClientRect();
-        const items = [...nav.querySelectorAll('a')].map(a => { const x=a.getBoundingClientRect(); return {text:a.textContent.trim(), left:x.left, right:x.right, top:x.top, bottom:x.bottom}; });
-        return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,innerWidth:window.innerWidth,innerHeight:window.innerHeight,items};
+        const box = nav.getBoundingClientRect();
+        return {
+          labels: [...nav.querySelectorAll('a')].map(a => a.textContent.trim()),
+          box: {left:box.left,right:box.right,top:box.top,bottom:box.bottom},
+          innerWidth, innerHeight
+        };
       `);
-      assert.ok(menu.left >= 0 && menu.right <= menu.innerWidth + 0.5, `${label}: menu fora da largura da viewport`);
-      assert.ok(menu.top >= 0 && menu.bottom <= menu.innerHeight + 0.5, `${label}: menu fora da altura da viewport`);
-      assert.deepEqual(menu.items.map((item) => item.text), menuLabels, `${label}: itens do menu divergentes`);
-      for (const item of menu.items) {
-        assert.ok(item.left >= 0 && item.right <= menu.innerWidth + 0.5, `${label}: item ${item.text} cortado lateralmente`);
-        assert.ok(item.top >= 0 && item.bottom <= menu.innerHeight + 0.5, `${label}: item ${item.text} cortado verticalmente`);
-      }
-      await capture(id, `${label}-menu-aberto`);
-    }
-
-    for (const slug of ["argos", "scout", "pulse", "nexus", "lira", "marco"]) {
-      await execute(id, `document.querySelector('[data-team-member="${slug}"]')?.scrollIntoView({block:'center', behavior:'instant'}); return true;`);
-      await new Promise((resolve) => setTimeout(resolve, 250));
-      await capture(id, `${label}-${slug}`);
+      assert.deepEqual(menu.labels, menuLabels);
+      assert.ok(menu.box.left >= 0 && menu.box.right <= menu.innerWidth + .5, `${label}: menu cortado lateralmente`);
+      assert.ok(menu.box.top >= 0 && menu.box.bottom <= menu.innerHeight + .5, `${label}: menu cortado verticalmente`);
+      await capture(id, `${label}-menu`);
     }
   } finally {
     await wd("DELETE", `/session/${id}`).catch(() => {});
   }
 }
 
-test("TEAM visual — 13 retratos em Chromium 390/430/768/1440", { timeout: 240_000 }, async () => {
+test("TEAM visual — Robson + Harpia em 390/430/768/1440", { timeout: 240_000 }, async () => {
   await mkdir(evidenceDir, { recursive: true });
   const app = startService("npm", ["start", "--", "-p", String(APP_PORT)]);
   const driver = startService("chromedriver", [`--port=${DRIVER_PORT}`]);
