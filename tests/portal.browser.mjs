@@ -154,7 +154,7 @@ async function captureHomeEvidence(id, viewportLabel, width) {
   const hero = await execute(id, `
     const body = document.querySelector('#inicio')?.innerText || '';
     return {
-      hasEyebrow: body.includes('Tecnologia e gestão para empresas'),
+      hasEyebrow: body.toLowerCase().includes('tecnologia e gestão para empresas'),
       hasSolutions: body.includes('Conheça nossas soluções'),
       hasServices: body.includes('Conheça nossos serviços'),
       hasProof: ['Arquitetura moderna','Segurança','Escalabilidade'].every(item => body.includes(item)),
