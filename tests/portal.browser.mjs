@@ -166,6 +166,19 @@ async function captureHomeEvidence(id, viewportLabel, width) {
   assert.equal(hero.hasSolutions, true, `${viewportLabel}: CTA soluções ausente`);
   assert.equal(hero.hasProof, true, `${viewportLabel}: benefícios comerciais do hero incompletos`);
   assert.equal(hero.hasLegacyPortfolio, false, `${viewportLabel}: card de portfólio antigo retornou ao hero`);
+
+  const productNameCase = await execute(id, `
+    return [...document.querySelectorAll('[data-product-name]')].map((element) => ({
+      text: element.textContent?.trim() || '',
+      transform: getComputedStyle(element).textTransform,
+    }));
+  `);
+  const canonicalProductNames = ["BravOs", "BravHas", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"];
+  for (const item of productNameCase) {
+    assert.ok(canonicalProductNames.includes(item.text), `${viewportLabel}: nome de produto fora do padrão: ${item.text}`);
+    assert.notEqual(item.transform, "uppercase", `${viewportLabel}: ${item.text} foi transformado visualmente para uppercase`);
+  }
+
   await capture(id, `${viewportLabel}-01-home`);
 
   await scrollToTarget(id, "#solucoes", "start");

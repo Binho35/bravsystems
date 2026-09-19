@@ -181,7 +181,7 @@ export default function Home() {
             <div className="grid lg:grid-cols-[.88fr_1.12fr]">
               <div className="p-6 sm:p-8 lg:p-10">
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-xs font-extrabold uppercase tracking-[.16em] text-[#2563eb]"><span data-product-name>BravOs</span> • Restaurantes</span>
+                  <span className="text-xs font-extrabold tracking-[.16em] text-[#2563eb]"><span data-product-name>BravOs</span><span className="uppercase"> • Restaurantes</span></span>
                   <span className={`rounded-full border px-3 py-1 text-[10px] font-extrabold uppercase ${statusStyle[bravos.status]}`}>{bravos.status}</span>
                 </div>
                 <h3 className="mt-5 text-[34px] font-black leading-[1.03] tracking-[-.045em] text-[#0b2947] sm:text-[46px]">
@@ -227,7 +227,7 @@ export default function Home() {
       <section id="conheca-bravos" className="border-y border-[#d4e3ed] bg-[#eaf4fa] py-14 sm:py-20">
         <div className="mx-auto grid max-w-[1280px] gap-8 px-5 sm:px-8 lg:grid-cols-[.72fr_1.28fr] lg:items-center">
           <div>
-            <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#377df0]">Conheça o BravOs</div>
+            <div className="text-xs font-extrabold tracking-[.18em] text-[#377df0]">Conheça o <span data-product-name>BravOs</span></div>
             <h2 className="mt-3 text-[36px] font-black leading-[1.04] tracking-[-.045em] text-[#0b2947] sm:text-5xl">
               Veja como tecnologia e operação se conectam.
             </h2>
@@ -291,7 +291,7 @@ export default function Home() {
         <div className="mx-auto max-w-[1280px] px-5 sm:px-8">
           <div className="grid gap-7 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
             <div>
-              <div className="flex flex-wrap items-center gap-3"><span className="text-xs font-extrabold uppercase tracking-[.18em] text-[#377df0]">BravAcademy</span><span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[10px] font-extrabold uppercase text-amber-700">Em homologação</span></div>
+              <div className="flex flex-wrap items-center gap-3"><span data-product-name className="text-xs font-extrabold tracking-[.18em] text-[#377df0]">BravAcademy</span><span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[10px] font-extrabold uppercase text-amber-700">Em homologação</span></div>
               <h2 className="mt-3 text-[36px] font-black leading-[1.04] tracking-[-.045em] text-[#0b2947] sm:text-5xl">
                 Universidade corporativa com identidade, trilha e evidência.
               </h2>
