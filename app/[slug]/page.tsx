@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { InstitutionalSignature } from "@/components/InstitutionalSignature";
 import { LeadForm } from "@/components/LeadForm";
 import { ProductVideoDialog } from "@/components/ProductVideoDialog";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -39,15 +40,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const productVideo = getProductVideo(product.slug);
   const access = getProductAccess(product);
   const showAccessStatus = product.status.toLocaleUpperCase("pt-BR") !== access.status;
-  const isBravHAS = product.slug === "bravhas";
-  const heroEyebrow = isBravHAS ? "ADMINISTRAÇÃO CENTRAL" : product.category;
-  const heroDescription = isBravHAS
-    ? "O BravHAS centraliza rotinas administrativas, RH, DP, documentos e indicadores em um único ambiente para dar clareza à operação, reduzir retrabalho e acelerar decisões."
+  const isBravHas = product.slug === "bravhas";
+  const heroEyebrow = isBravHas ? "ADMINISTRAÇÃO CENTRAL" : product.category;
+  const heroDescription = isBravHas
+    ? "O BravHas centraliza rotinas administrativas, RH, DP, documentos e indicadores em um único ambiente para dar clareza à operação, reduzir retrabalho e acelerar decisões."
     : product.description;
-  const accessGovernanceTitle = isBravHAS
+  const accessGovernanceTitle = isBravHas
     ? "Ambiente controlado. Acesso liberado apenas para usuários autorizados."
     : "Acesse o ambiente oficial quando ele estiver liberado.";
-  const accessGovernanceText = isBravHAS
+  const accessGovernanceText = isBravHas
     ? "A liberação pública não está prevista nesta etapa. A Central preserva a governança de acesso sem expor endereços técnicos."
     : "A BravSystems centraliza os acessos em um único portal e não publica ambientes de Preview como produção.";
 
@@ -79,8 +80,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <h1 className="mt-7 max-w-4xl text-5xl font-bold tracking-[-.05em] sm:text-6xl">{product.headline}</h1>
           <p className="mt-6 max-w-3xl text-[18px] leading-8 text-[#5f7185]">{heroDescription}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <a href="#contato" className="inline-flex h-12 items-center justify-center rounded-xl bg-[#154b7a] px-6 font-bold text-white">{product.cta}</a>
-            {isBravHAS ? (
+            <a href="#contato" className="inline-flex h-12 items-center justify-center rounded-xl bg-[#154b7a] px-6 font-bold text-white">Quero uma demonstração do {product.name}</a>
+            {isBravHas ? (
               <a href="#visao-geral" className="inline-flex h-12 items-center justify-center rounded-xl border border-[#bdd3e2] bg-white px-6 font-bold text-[#154b7a]">Ver visão geral</a>
             ) : (
               <>
@@ -96,7 +97,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </div>
       </section>
 
-      <section id={isBravHAS ? "visao-geral" : undefined} className="bg-white py-20">
+      <section id={isBravHas ? "visao-geral" : undefined} className="bg-white py-20">
         <div className="mx-auto grid max-w-[1200px] gap-8 px-6 lg:grid-cols-2">
           <InfoBlock eyebrow="A dor" title="O problema que queremos reduzir" items={product.pain} />
           <InfoBlock eyebrow="Benefícios" title="O resultado que orienta a solução" items={product.benefits} />
@@ -105,16 +106,16 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
       <section className="border-y border-[#d9e6ef] bg-[#eef5fa] py-20">
         <div className="mx-auto grid max-w-[1200px] gap-8 px-6 lg:grid-cols-[1.15fr_.85fr]">
-          <InfoBlock eyebrow="Capacidades" title="O escopo que podemos comunicar hoje" items={product.capabilities} />
-          <InfoBlock eyebrow="Público" title="Para quem faz sentido conversar" items={product.audience} />
+          <InfoBlock eyebrow="O que entrega" title="O que a solução organiza na prática" items={product.capabilities} />
+          <InfoBlock eyebrow="Para quem serve" title="Empresas que mais se beneficiam desta solução" items={product.audience} />
         </div>
       </section>
 
       <section className="bg-white py-20">
         <div className="mx-auto max-w-[1200px] px-6">
           <div className="rounded-3xl border border-amber-200 bg-amber-50 p-8">
-            <div className="text-xs font-extrabold uppercase tracking-[.16em] text-amber-800">Transparência de maturidade</div>
-            <h2 className="mt-3 text-3xl font-bold">Limitações e condições atuais</h2>
+            <div className="text-xs font-extrabold uppercase tracking-[.16em] text-amber-800">O que considerar nesta fase</div>
+            <h2 className="mt-3 text-3xl font-bold">Condições atuais da solução</h2>
             <ul className="mt-6 grid gap-3 text-[15px] leading-7 text-[#5f5a48]">
               {product.limitations.map((item) => <li key={item} className="flex gap-3"><span>•</span><span>{item}</span></li>)}
             </ul>
@@ -133,12 +134,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </div>
       </section>
 
+      <InstitutionalSignature productName={product.name} />
+
       <section id="contato" className="bg-[#dfeef7] py-20">
         <div className="mx-auto grid max-w-[1200px] items-start gap-10 px-6 lg:grid-cols-[.8fr_1.2fr]">
           <div>
-            <div className="text-xs font-bold uppercase tracking-[.18em] text-[#2563eb]">Demonstração contextual</div>
-            <h2 className="mt-3 text-4xl font-bold tracking-[-.04em]">Vamos conversar sobre {product.name}.</h2>
-            <p className="mt-5 text-[17px] leading-8 text-[#64748b]">O formulário já está contextualizado com esta solução. Conte a principal dor para direcionarmos a apresentação.</p>
+            <div className="text-xs font-bold uppercase tracking-[.18em] text-[#2563eb]">Conversa comercial</div>
+            <h2 className="mt-3 text-4xl font-bold tracking-[-.04em]">Veja como {product.name} pode ajudar sua operação.</h2>
+            <p className="mt-5 text-[17px] leading-8 text-[#64748b]">Conte o principal gargalo da sua empresa. A apresentação será direcionada ao seu cenário, sem demonstração genérica.</p>
           </div>
           <LeadForm defaultInterest={product.name} />
         </div>

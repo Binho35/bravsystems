@@ -36,9 +36,9 @@ export const metadata: Metadata = {
     default: "BravSystems | Plataformas SaaS para Operação e Gestão",
     template: "%s | BravSystems",
   },
-  description: "Conheça o ecossistema SaaS da BravSystems: BravOS, BravHAS, BravHOS, BravMsg, BravAcademy e BravVideo. Soluções para operação, gestão, pessoas, comunicação, aprendizagem e conteúdo corporativo.",
+  description: "Conheça o ecossistema SaaS da BravSystems: BravOs, BravHas, BravHos, BravMsg, BravAcademy e BravVideo. Soluções para operação, gestão, pessoas, comunicação, aprendizagem e conteúdo corporativo.",
   keywords: [
-    "BravSystems", "BravOS", "BravAcademy", "BravMsg", "BravHAS", "BravHOS", "BravVideo",
+    "BravSystems", "BravOs", "BravAcademy", "BravMsg", "BravHas", "BravHos", "BravVideo",
     "SaaS brasileiro", "software empresarial", "software para restaurantes", "gestão de restaurantes",
     "gestão administrativa", "RH e DP", "universidade corporativa white label", "comunicação empresarial",
     "produção audiovisual corporativa", "tecnologia para gestão",

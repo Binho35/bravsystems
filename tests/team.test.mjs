@@ -3,107 +3,69 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
+const forbidden = ["Argos", "Atlas", "Forge", "Sentry", "Scout", "Pulse", "Nexus", "Orion", "Sofia", "Vega", "Lira", "Marco"];
 
-const expectedRoles = [
-  ["Argos", "Head of Technology Operations & Portfolio"],
-  ["Atlas", "Core Architecture & Backend"],
-  ["Forge", "Operations & Product Experience"],
-  ["Sentry", "Quality & Release Engineering"],
-  ["Scout", "Intelligence & Technology Audit"],
-  ["Pulse", "Messaging Platform Engineering"],
-  ["Nexus", "Product Engineering — BravHAS"],
-  ["Orion", "Product Engineering — BravHOS"],
-  ["Sofia", "Learning Experience & BravAcademy"],
-  ["Vega", "AI Media & Video Engineering"],
-  ["Lira", "Social Platform Engineering"],
-  ["Marco", "Web Experience & Institutional Brand"],
-];
-
-const approvedPortraits = {
-  robson: "/team/robson.svg",
-  argos: "/team/argos.svg",
-  atlas: "/team/atlas.jpg",
-  forge: "/team/forge.jpg",
-  sentry: "/team/sentry.jpg",
-  scout: "/team/scout.svg",
-  pulse: "/team/pulse.svg",
-  nexus: "/team/nexus.svg",
-  orion: "/team/orion.jpg",
-  sofia: "/team/sofia.jpg",
-  vega: "/team/vega.jpg",
-  lira: "/team/lira.jpg",
-  marco: "/team/marco.jpg",
-};
-
-test("TEAM posiciona Robson e especialistas pelas funções profissionais", async () => {
+test("Equipe pública contém somente Robson e Harpia", async () => {
   const team = await read("lib/team.ts");
   const page = await read("app/equipe/page.tsx");
+  const section = await read("components/TeamSection.tsx");
 
   assert.ok(team.includes('name: "Robson"'));
   assert.ok(team.includes('role: "Founder & CEO"'));
-  assert.ok(page.includes("Especialistas com papéis claros no ecossistema."));
-  assert.ok(page.includes("Cada especialista atua em uma frente definida de tecnologia, produto, qualidade, operações e experiência digital da BravSystems."));
+  assert.ok(team.includes('name: "Harpia"'));
+  assert.ok(team.includes('role: "Mascote oficial da BravSystems"'));
+  assert.ok(team.includes('portraitSrc: "/bravsystems-logo.png"'));
+  assert.ok(team.includes("export const team = [founder, harpia] as const"));
 
-  for (const [name, role] of expectedRoles) {
-    assert.ok(team.includes(`name: "${name}"`), `${name} ausente da equipe`);
-    assert.ok(team.includes(`role: "${role}"`), `${name}: função pública incorreta`);
+  for (const name of forbidden) {
+    assert.equal(team.includes(`name: "${name}"`), false, `${name} não pode permanecer na equipe pública`);
+    assert.equal(page.includes(name), false, `${name} não pode aparecer na página de equipe`);
+    assert.equal(section.includes(name), false, `${name} não pode aparecer na Home`);
   }
-
-  assert.equal(team.includes('name: "Scott"'), false, "Scout/Scott deve permanecer identidade única");
 });
 
-test("Transparência sobre IA aparece uma única vez e não como selo individual", async () => {
+test("Home e página Equipe comunicam a regra Robson + Harpia", async () => {
   const page = await read("app/equipe/page.tsx");
   const section = await read("components/TeamSection.tsx");
-  const disclosure = "A BravSystems opera com liderança humana e uma estrutura de agentes especializados apoiados por inteligência artificial.";
-
-  assert.equal(page.includes("Agente de IA BravSystems"), false);
-  assert.equal(section.includes("Agente de IA BravSystems"), false);
-  assert.equal(section.includes("Agentes de IA BravSystems"), false);
-  assert.equal(section.includes("Transparência de IA"), false);
-  assert.equal(page.split(disclosure).length - 1, 1);
-  assert.ok(page.includes("data-team-transparency"));
-});
-
-test("TEAM integra Equipe à Home, navegação, rodapé e sitemap", async () => {
   const home = await read("app/page.tsx");
-  const section = await read("components/TeamSection.tsx");
-  const header = await read("components/SiteHeader.tsx");
   const footer = await read("components/SiteFooter.tsx");
   const sitemap = await read("app/sitemap.ts");
 
-  assert.ok(home.includes('import { TeamSection } from "@/components/TeamSection"'));
+  assert.ok(page.includes("Robson e Harpia."));
+  assert.ok(page.includes("Liderança humana e uma identidade de marca forte"));
+  assert.ok(section.includes("Estratégia humana. Identidade forte. Soluções construídas para problemas reais."));
+  assert.ok(section.includes('data-team-member={member.slug}'));
+  assert.ok(section.includes("Falar sobre minha empresa"));
+  assert.equal(section.includes('bg-[#082844]'), false, "Harpia não deve voltar ao bloco azul na Home");
+  assert.equal(page.includes('bg-[#082844]'), false, "Harpia não deve voltar ao bloco azul na página Equipe");
   assert.ok(home.includes("<TeamSection />"));
-  assert.ok(section.includes('id="equipe"'));
-  assert.ok(section.includes("12 frentes especializadas, papéis explícitos."));
-  assert.ok(section.includes("Responsabilidades claras por tecnologia, produto e disciplina"));
-  assert.ok(header.includes('["Equipe", "/equipe"]'));
-  assert.equal(header.includes("Agentes de IA"), false);
   assert.ok(footer.includes('href="/equipe"'));
-  assert.ok(sitemap.includes('`${base}/equipe`'));
+  assert.ok(sitemap.includes('${base}/equipe'));
 });
 
-test("Treze retratos aprovados são vinculados e nenhum perfil permanece pendente", async () => {
-  const team = await read("lib/team.ts");
+test("Páginas de todos os produtos carregam assinatura institucional", async () => {
+  const productPage = await read("app/[slug]/page.tsx");
+  const signature = await read("components/InstitutionalSignature.tsx");
 
-  for (const [slug, portraitPath] of Object.entries(approvedPortraits)) {
-    assert.ok(team.includes(`slug: "${slug}"`), `${slug}: perfil ausente`);
-    assert.ok(team.includes(`portraitSrc: "${portraitPath}"`), `${slug}: portraitSrc aprovado ausente`);
-  }
-
-  assert.equal(team.split('portraitStatus: "approved",').length - 1, 13, "devem existir exatamente treze retratos aprovados");
-  assert.equal(team.split('portraitSrc: null,').length - 1, 0, "não deve existir retrato pendente");
-  assert.equal(team.split('portraitStatus: "pending",').length - 1, 0, "não deve existir status pendente");
+  assert.ok(productPage.includes("<InstitutionalSignature productName={product.name} />"));
+  assert.ok(signature.includes("Founder & CEO"));
+  assert.ok(signature.includes("Mascote oficial"));
+  assert.ok(signature.includes("Harpia"));
+  assert.ok(signature.includes("Robson"));
 });
 
-test("SEO da Equipe usa template global sem duplicar a marca", async () => {
+test("SEO da Equipe usa Robson e Harpia sem duplicar template", async () => {
   const page = await read("app/equipe/page.tsx");
   const layout = await read("app/layout.tsx");
 
   assert.ok(layout.includes('template: "%s | BravSystems"'));
   assert.ok(page.includes('title: "Equipe",'));
-  assert.equal(page.includes('title: "Equipe | BravSystems",\n  description:'), false);
   assert.ok(page.includes('canonical: "/equipe"'));
-  assert.ok(page.includes('twitter: {'));
-  assert.ok(page.includes('title: "Equipe | BravSystems"'));
+  assert.ok(page.includes('title: "Robson e Harpia | BravSystems"'));
+});
+
+test("Harpia institucional usa superfície clara também nas páginas de produto", async () => {
+  const signature = await read("components/InstitutionalSignature.tsx");
+  assert.ok(signature.includes('bg-white'));
+  assert.equal(signature.includes('bg-[#082844]'), false, "assinatura da Harpia não deve usar fundo azul escuro");
 });

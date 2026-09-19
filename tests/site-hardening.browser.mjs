@@ -112,7 +112,7 @@ test("SITE HARDENING — navegação tablet, status, redirect legal e 404", { ti
         };
       `);
       assert.equal(menu.visible, true, "tablet: menu não abriu");
-      for (const label of ["Ecossistema", "Equipe", "Central", "Contato"]) assert.ok(menu.labels.includes(label), `tablet: ${label} ausente`);
+      for (const label of ["Empresa", "Soluções", "Gestão", "Nossa visão", "Contato", "Fale conosco", "Meus Sistemas"]) assert.ok(menu.labels.includes(label), `tablet: ${label} ausente`);
       await capture(id, "TABLET_768x1024-13-header-menu");
 
       await wd("POST", `/session/${id}/url`, { url: `${appBase}/bravvideo` });

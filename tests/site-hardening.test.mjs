@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-test("status públicos dos seis produtos ficam alinhados ao catálogo governado", async () => {
+test("status públicos dos sete produtos ficam alinhados ao catálogo governado", async () => {
   const products = await read("lib/products.ts");
   const access = await read("lib/product-access.ts");
 
@@ -13,6 +13,7 @@ test("status públicos dos seis produtos ficam alinhados ao catálogo governado"
     ["bravhas", "Em homologação", "EM HOMOLOGAÇÃO"],
     ["bravhos", "Em desenvolvimento", "EM DESENVOLVIMENTO"],
     ["bravmsg", "Em desenvolvimento", "EM DESENVOLVIMENTO"],
+    ["bravsocial", "Em homologação", "EM HOMOLOGAÇÃO"],
     ["bravacademy", "Em homologação", "EM HOMOLOGAÇÃO"],
     ["bravvideo", "Em desenvolvimento", "EM DESENVOLVIMENTO"],
   ]) {
@@ -44,11 +45,11 @@ test("Política de Privacidade tem uma única rota canônica e metadata própria
 test("navegação responsiva permanece disponível em tablet", async () => {
   const header = await read("components/SiteHeader.tsx");
 
-  assert.ok(header.includes('xl:hidden'));
+  assert.ok(header.includes('lg:hidden'));
   assert.ok(header.includes('h-11 w-11'));
   assert.ok(header.includes('aria-label="Abrir menu de navegação"'));
   assert.ok(header.includes('lg:inline-flex'));
-  assert.ok(header.includes('top-[3.25rem]'));
+  assert.ok(header.includes('sm:top-14'));
   assert.equal(header.includes('sm:hidden'), false);
 });
 

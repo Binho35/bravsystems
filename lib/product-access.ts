@@ -22,6 +22,7 @@ const configuredUrls: Record<string, string | undefined> = {
   bravhas: process.env.NEXT_PUBLIC_BRAVHAS_APP_URL,
   bravhos: process.env.NEXT_PUBLIC_BRAVHOS_APP_URL,
   bravmsg: process.env.NEXT_PUBLIC_BRAVMSG_APP_URL,
+  bravsocial: process.env.NEXT_PUBLIC_BRAVSOCIAL_APP_URL,
   bravacademy: process.env.NEXT_PUBLIC_BRAVACADEMY_APP_URL,
   bravvideo: process.env.NEXT_PUBLIC_BRAVVIDEO_APP_URL,
 };
@@ -31,6 +32,7 @@ const governedState: Record<string, { status: ProductAccessStatus; environmentNo
   bravacademy: { status: "EM HOMOLOGAÇÃO", environmentNote: "Ambiente de homologação operacional; hostname temporário não é publicado como acesso de cliente." },
   bravhos: { status: "EM DESENVOLVIMENTO", environmentNote: "Preview web em preparação." },
   bravmsg: { status: "EM DESENVOLVIMENTO", environmentNote: "Ambiente web ainda não liberado para acesso público." },
+  bravsocial: { status: "EM HOMOLOGAÇÃO", environmentNote: "Preview técnico homologado; integrações sociais reais ainda dependem de ativos externos." },
   bravhas: { status: "EM HOMOLOGAÇÃO", environmentNote: "Ambiente interno em homologação. Liberação pública não prevista nesta etapa." },
   bravvideo: { status: "EM DESENVOLVIMENTO", environmentNote: "Ambiente de desenvolvimento; acesso público ainda não homologado." },
 };

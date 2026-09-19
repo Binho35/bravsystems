@@ -63,7 +63,7 @@ export function ProductVideoDialog({ video }: { video: ProductVideo }) {
             ) : (
               <div className="aspect-[512/910] max-h-[72vh] w-full max-w-[360px] rounded-2xl border border-white/15 bg-[#0b2947] p-8 text-center text-white shadow-2xl">
                 <div className="flex h-full flex-col items-center justify-center">
-                  <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#8dc4e5]">{video.productName}</div>
+                  <div data-product-name className="text-xs font-extrabold tracking-[.18em] text-[#8dc4e5]">{video.productName}</div>
                   <div className="mt-4 text-3xl font-bold">Apresentação em vídeo</div>
                   <p className="mt-5 text-sm leading-6 text-[#c3d7e4]">Esta apresentação ainda não foi disponibilizada neste ambiente.</p>
                 </div>

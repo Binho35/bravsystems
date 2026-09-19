@@ -8,43 +8,26 @@ const DRIVER_PORT = 9521;
 const appBase = `http://127.0.0.1:${APP_PORT}`;
 const driverBase = `http://127.0.0.1:${DRIVER_PORT}`;
 const evidenceDir = new URL("../artifacts/browser/", import.meta.url);
-const disclosure = "A BravSystems opera com liderança humana e uma estrutura de agentes especializados apoiados por inteligência artificial.";
-const portraitPaths = {
-  argos: "/team/argos.svg",
-  atlas: "/team/atlas.jpg",
-  forge: "/team/forge.jpg",
-  sentry: "/team/sentry.jpg",
-  scout: "/team/scout.svg",
-  pulse: "/team/pulse.svg",
-  nexus: "/team/nexus.svg",
-  orion: "/team/orion.jpg",
-  sofia: "/team/sofia.jpg",
-  vega: "/team/vega.jpg",
-  lira: "/team/lira.jpg",
-  marco: "/team/marco.jpg",
-};
-const approvedSlugs = Object.keys(portraitPaths);
+const expected = [
+  { slug: "robson", name: "Robson", src: "/team/robson.svg" },
+  { slug: "harpia", name: "Harpia", src: "/bravsystems-logo.png" },
+];
+const forbidden = ["Argos","Atlas","Forge","Sentry","Scout","Pulse","Nexus","Orion","Sofia","Vega","Lira","Marco"];
 
 function startService(command, args) {
   return spawn(command, args, { stdio: "ignore", env: process.env, detached: true });
 }
-
 function stopService(child) {
   if (!child?.pid) return;
   try { process.kill(-child.pid, "SIGTERM"); } catch { try { child.kill("SIGTERM"); } catch {} }
 }
-
 async function waitFor(url, attempts = 90) {
   for (let i = 0; i < attempts; i += 1) {
-    try {
-      const response = await fetch(url);
-      if (response.ok) return;
-    } catch {}
+    try { const response = await fetch(url); if (response.ok) return; } catch {}
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
   throw new Error(`Timeout aguardando ${url}`);
 }
-
 async function wd(method, path, body) {
   const response = await fetch(`${driverBase}${path}`, {
     method,
@@ -56,177 +39,66 @@ async function wd(method, path, body) {
   if (!response.ok || parsed.value?.error) throw new Error(`${method} ${path}: ${text}`);
   return parsed.value;
 }
-
 async function execute(id, script) {
   return wd("POST", `/session/${id}/execute/sync`, { script, args: [] });
 }
-
 async function capture(id, label) {
   const png = await wd("GET", `/session/${id}/screenshot`);
   assert.ok(typeof png === "string" && png.length > 1000, `${label}: screenshot não gerado`);
   await writeFile(new URL(`${label}.png`, evidenceDir), Buffer.from(png, "base64"));
 }
 
-async function waitForPortrait(id, slug, expectedPath, timeoutMs = 6000) {
-  const started = Date.now();
-
-  while (Date.now() - started < timeoutMs) {
-    const state = await execute(id, `
-      const card = document.querySelector('[data-team-member="${slug}"]');
-      card?.scrollIntoView({ block: 'center', behavior: 'instant' });
-      const image = card?.querySelector('img');
-      return {
-        cardFound: Boolean(card),
-        imageFound: Boolean(image),
-        complete: Boolean(image?.complete),
-        naturalWidth: image?.naturalWidth || 0,
-        naturalHeight: image?.naturalHeight || 0,
-        src: image?.getAttribute('src') || '',
-        currentSrc: image?.currentSrc || '',
-        pending: Boolean(card?.querySelector('[data-portrait-status="pending"]')),
-      };
-    `);
-
-    if (
-      state.cardFound &&
-      state.imageFound &&
-      state.complete &&
-      state.naturalWidth > 0 &&
-      state.naturalHeight > 0 &&
-      !state.pending &&
-      (state.src.includes(expectedPath) || state.currentSrc.includes(expectedPath))
-    ) {
-      return state;
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }
-
-  throw new Error(`${slug}: retrato não carregou dentro de ${timeoutMs}ms`);
-}
-
 async function runViewport(width, height, label) {
   const session = await wd("POST", "/session", {
-    capabilities: {
-      alwaysMatch: {
-        browserName: "chrome",
-        "goog:chromeOptions": {
-          args: ["--headless=new", "--no-sandbox", "--disable-dev-shm-usage", "--force-device-scale-factor=1", `--window-size=${width},${height}`],
-        },
-      },
-    },
+    capabilities: { alwaysMatch: { browserName: "chrome", "goog:chromeOptions": { args: ["--headless=new","--no-sandbox","--disable-dev-shm-usage",`--window-size=${width},${height}`] } } },
   });
-
   const id = session.sessionId;
   try {
     await wd("POST", `/session/${id}/window/rect`, { width, height, x: 0, y: 0 });
     await wd("POST", `/session/${id}/url`, { url: `${appBase}/equipe` });
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
-    const loadedPortraits = {};
-    for (const slug of approvedSlugs) {
-      loadedPortraits[slug] = await waitForPortrait(id, slug, portraitPaths[slug]);
-    }
-
-    await execute(id, `window.scrollTo({ top: 0, behavior: 'instant' }); return true;`);
-
-    const top = await execute(id, `
-      const links = [...document.querySelectorAll('a[href]')].map(a => a.href);
-      const sectionTitle = [...document.querySelectorAll('h2')].map(el => el.textContent?.trim()).find(text => text === 'Especialistas com papéis claros no ecossistema.') || '';
-      const transparencyBlocks = [...document.querySelectorAll('[data-team-transparency]')];
-      const transparency = transparencyBlocks[0]?.innerText || '';
-      const founderSection = document.querySelector('[data-team-founder]');
-      const founderImage = founderSection?.querySelector('img');
-      const specialists = [...document.querySelectorAll('[data-team-member]')].map(card => {
-        const image = card.querySelector('img');
+    const state = await execute(id, `
+      const cards = [...document.querySelectorAll('[data-team-member]')].map(card => {
+        const img = card.querySelector('img');
         return {
           slug: card.getAttribute('data-team-member'),
           name: card.querySelector('h2')?.textContent?.trim() || '',
-          text: card.innerText || '',
-          hasPortrait: Boolean(image),
-          imageLoaded: image ? image.complete && image.naturalWidth > 0 && image.naturalHeight > 0 : false,
-          imageSrc: image?.getAttribute('src') || '',
-          imageCurrentSrc: image?.currentSrc || '',
-          pending: Boolean(card.querySelector('[data-portrait-status="pending"]')),
+          src: img?.currentSrc || img?.getAttribute('src') || '',
+          loaded: Boolean(img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0),
         };
       });
       return {
-        title: document.title,
-        h1: document.querySelector('h1')?.textContent?.trim() || '',
-        overflowX: document.documentElement.scrollWidth > window.innerWidth,
-        hasHeader: Boolean(document.querySelector('header')),
-        hasFooter: Boolean(document.querySelector('footer')),
-        founder: founderSection?.innerText || '',
-        founderPending: Boolean(founderSection?.querySelector('[data-portrait-status="pending"]')),
-        founderHasPortrait: Boolean(founderImage),
-        founderImageLoaded: founderImage ? founderImage.complete && founderImage.naturalWidth > 0 && founderImage.naturalHeight > 0 : false,
-        founderSrc: founderImage?.getAttribute('src') || founderImage?.currentSrc || '',
-        specialists,
-        sectionTitle,
-        transparency,
-        transparencyBlocks: transparencyBlocks.length,
-        repeatedAiBadge: specialists.some(card => card.text.includes('Agente de IA BravSystems')),
-        technicalLink: links.some(href => href.includes('.vercel.app') || href.includes('hostingersite.com') || href.includes('-git-')),
-        pendingPortraits: document.querySelectorAll('[data-portrait-status="pending"]').length,
+        cards,
+        body: document.body.innerText,
+        overflow: document.documentElement.scrollWidth > innerWidth,
+        technical: [...document.querySelectorAll('a[href]')].some(a => /\.vercel\.app|hostingersite\.com|-git-/.test(a.href)),
       };
     `);
 
-    assert.equal(top.overflowX, false, `${label}: overflow horizontal`);
-    assert.equal(top.hasHeader, true, `${label}: header ausente`);
-    assert.equal(top.hasFooter, true, `${label}: footer ausente`);
-    assert.equal(top.technicalLink, false, `${label}: hostname técnico exposto`);
-    assert.equal(top.h1, "Uma estrutura especializada para construir, operar e evoluir tecnologia.");
-    assert.equal(top.sectionTitle, "Especialistas com papéis claros no ecossistema.");
-    assert.ok(top.founder.includes("Robson"), `${label}: Founder ausente`);
-    assert.ok(top.founder.includes("Founder & CEO"), `${label}: cargo Founder ausente`);
-    assert.equal(top.founderPending, false, `${label}: Robson ainda marcado como pendente`);
-    assert.equal(top.founderHasPortrait, true, `${label}: Robson sem retrato`);
-    assert.equal(top.founderImageLoaded, true, `${label}: retrato de Robson não carregou`);
-    assert.ok(top.founderSrc.includes("/team/robson.svg"), `${label}: src de Robson inesperado`);
-    assert.equal(top.specialists.length, 12, `${label}: quantidade de especialistas incorreta`);
-    assert.equal(top.repeatedAiBadge, false, `${label}: selo repetido de IA ainda visível`);
-    assert.equal(top.transparencyBlocks, 1, `${label}: deve existir um único bloco Como trabalhamos`);
-    assert.ok(top.transparency.includes(disclosure), `${label}: bloco Como trabalhamos não contém transparência institucional`);
-    assert.deepEqual(top.specialists.map((agent) => agent.slug), ["argos", "atlas", "forge", "sentry", "scout", "pulse", "nexus", "orion", "sofia", "vega", "lira", "marco"]);
-    assert.deepEqual(top.specialists.map((agent) => agent.name), ["Argos", "Atlas", "Forge", "Sentry", "Scout", "Pulse", "Nexus", "Orion", "Sofia", "Vega", "Lira", "Marco"]);
-    assert.equal(top.pendingPortraits, 0, `${label}: não deve haver placeholders pendentes`);
+    assert.equal(state.overflow, false, `${label}: overflow horizontal`);
+    assert.equal(state.technical, false, `${label}: hostname técnico exposto`);
+    assert.equal(state.cards.length, 2, `${label}: equipe deve conter exatamente 2 perfis`);
+    assert.deepEqual(state.cards.map((item) => item.slug), expected.map((item) => item.slug));
+    assert.deepEqual(state.cards.map((item) => item.name), expected.map((item) => item.name));
 
-    for (const slug of approvedSlugs) {
-      const agent = top.specialists.find((item) => item.slug === slug);
-      assert.ok(agent?.hasPortrait, `${label}: ${slug} sem retrato real`);
-      assert.ok(agent?.imageLoaded, `${label}: ${slug} com imagem não carregada após polling`);
-      assert.equal(agent?.pending, false, `${label}: ${slug} ainda marcado como pendente`);
-      assert.ok(
-        agent?.imageSrc.includes(portraitPaths[slug]) || agent?.imageCurrentSrc.includes(portraitPaths[slug]),
-        `${label}: ${slug} com src inesperado`,
-      );
-      assert.ok(loadedPortraits[slug]?.complete, `${label}: ${slug} imagem não completou carregamento`);
-      assert.ok(loadedPortraits[slug]?.naturalWidth > 0, `${label}: ${slug} sem largura natural válida`);
-      assert.ok(loadedPortraits[slug]?.naturalHeight > 0, `${label}: ${slug} sem altura natural válida`);
+    for (const item of expected) {
+      const card = state.cards.find((entry) => entry.slug === item.slug);
+      assert.ok(card?.loaded, `${label}: imagem de ${item.name} não carregou`);
+      assert.ok(card?.src.includes(item.src), `${label}: imagem de ${item.name} incorreta`);
     }
+    for (const name of forbidden) assert.equal(state.body.includes(name), false, `${label}: ${name} ainda está público`);
 
-    await capture(id, `${label}-11-equipe-topo`);
-
-    await execute(id, `
-      const grid = document.querySelector('[data-team-grid]');
-      grid?.scrollIntoView({ block: 'start', behavior: 'instant' });
-      window.scrollBy(0, -90);
-      return true;
-    `);
-    await new Promise((resolve) => setTimeout(resolve, 150));
-    await capture(id, `${label}-12-equipe-especialistas`);
-
-    console.log(`TEAM_${label}_RESULT=${JSON.stringify({ viewport: { width, height }, specialists: top.specialists.length, approvedPortraits: top.specialists.filter(item => item.hasPortrait).length + (top.founderHasPortrait ? 1 : 0), pendingPortraits: top.pendingPortraits, founder: true, singleAiDisclosure: top.transparencyBlocks === 1, overflowX: top.overflowX, technicalLink: top.technicalLink })}`);
+    await capture(id, `${label}-equipe-robson-harpia`);
   } finally {
     await wd("DELETE", `/session/${id}`).catch(() => {});
   }
 }
 
-test("TEAM — treze retratos aprovados em desktop e mobile", { timeout: 180_000 }, async () => {
+test("TEAM — somente Robson e Harpia em desktop e mobile", { timeout: 180_000 }, async () => {
   await mkdir(evidenceDir, { recursive: true });
   const app = startService("npm", ["start", "--", "-p", String(APP_PORT)]);
   const driver = startService("chromedriver", [`--port=${DRIVER_PORT}`]);
-
   try {
     await waitFor(`${appBase}/equipe`);
     await waitFor(`${driverBase}/status`);

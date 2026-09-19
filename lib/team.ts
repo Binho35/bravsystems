@@ -5,156 +5,33 @@ export type TeamMember = {
   specialty: string;
   description: string;
   initials: string;
-  kind: "human" | "ai";
-  portraitSrc: string | null;
-  portraitStatus: "approved" | "pending";
+  kind: "human" | "mascot";
+  portraitSrc: string;
+  portraitStatus: "approved";
 };
 
 export const founder: TeamMember = {
   slug: "robson",
   name: "Robson",
   role: "Founder & CEO",
-  specialty: "Direção estratégica e decisão final",
-  description: "Lidera a visão da BravSystems, define prioridades e mantém a decisão final sobre produto, operação e evolução do portfólio.",
+  specialty: "Visão, estratégia e decisão final",
+  description: "Fundador da BravSystems. Define a visão do negócio, as prioridades do portfólio e a direção final dos produtos e serviços.",
   initials: "RF",
   kind: "human",
   portraitSrc: "/team/robson.svg",
   portraitStatus: "approved",
 };
 
-export const aiAgents: TeamMember[] = [
-  {
-    slug: "argos",
-    name: "Argos",
-    role: "Head of Technology Operations & Portfolio",
-    specialty: "Governança tecnológica e portfólio",
-    description: "Consolida evidências, riscos, prioridades, prontidão, investimento e evolução transversal dos produtos BravSystems.",
-    initials: "AR",
-    kind: "ai",
-    portraitSrc: "/team/argos.svg",
-    portraitStatus: "approved",
-  },
-  {
-    slug: "atlas",
-    name: "Atlas",
-    role: "Core Architecture & Backend",
-    specialty: "Arquitetura central, backend e integridade transacional",
-    description: "Estrutura o núcleo técnico do BravOS, preservando regras de negócio, segurança de domínio e consistência operacional.",
-    initials: "AT",
-    kind: "ai",
-    portraitSrc: "/team/atlas.jpg",
-    portraitStatus: "approved",
-  },
-  {
-    slug: "forge",
-    name: "Forge",
-    role: "Operations & Product Experience",
-    specialty: "Operação, experiência de produto e mobile",
-    description: "Transforma capacidades do BravOS em fluxos claros para salão, atendimento, cozinha e uso operacional em campo.",
-    initials: "FG",
-    kind: "ai",
-    portraitSrc: "/team/forge.jpg",
-    portraitStatus: "approved",
-  },
-  {
-    slug: "sentry",
-    name: "Sentry",
-    role: "Quality & Release Engineering",
-    specialty: "Qualidade, testes, segurança e release",
-    description: "Protege a linha de entrega com testes, gates de qualidade, segurança, CI/CD e critérios de liberação.",
-    initials: "SE",
-    kind: "ai",
-    portraitSrc: "/team/sentry.jpg",
-    portraitStatus: "approved",
-  },
-  {
-    slug: "scout",
-    name: "Scout",
-    role: "Intelligence & Technology Audit",
-    specialty: "Auditoria tecnológica, pesquisa e benchmark",
-    description: "Investiga arquitetura, riscos, referências técnicas e alternativas de mercado com independência e evidências.",
-    initials: "SC",
-    kind: "ai",
-    portraitSrc: "/team/scout.svg",
-    portraitStatus: "approved",
-  },
-  {
-    slug: "pulse",
-    name: "Pulse",
-    role: "Messaging Platform Engineering",
-    specialty: "Mensageria, atendimento e relacionamento",
-    description: "Evolui a plataforma BravMsg para organizar contatos, campanhas, atendimento e relacionamento com rastreabilidade.",
-    initials: "PU",
-    kind: "ai",
-    portraitSrc: "/team/pulse.svg",
-    portraitStatus: "approved",
-  },
-  {
-    slug: "nexus",
-    name: "Nexus",
-    role: "Product Engineering — BravHAS",
-    specialty: "Administração, financeiro e pessoas",
-    description: "Evolui o BravHAS como centro administrativo para financeiro, RH, DP, documentos e rotinas de gestão.",
-    initials: "NX",
-    kind: "ai",
-    portraitSrc: "/team/nexus.svg",
-    portraitStatus: "approved",
-  },
-  {
-    slug: "orion",
-    name: "Orion",
-    role: "Product Engineering — BravHOS",
-    specialty: "RH, DP e gestão de pessoas",
-    description: "Evolui a vertical especializada de pessoas, jornada do colaborador, recrutamento, desempenho e processos de RH e DP.",
-    initials: "OR",
-    kind: "ai",
-    portraitSrc: "/team/orion.jpg",
-    portraitStatus: "approved",
-  },
-  {
-    slug: "sofia",
-    name: "Sofia",
-    role: "Learning Experience & BravAcademy",
-    specialty: "Aprendizagem corporativa e universidade white label",
-    description: "Evolui cursos, trilhas, avaliações, progresso e certificação para experiências corporativas de aprendizagem.",
-    initials: "SO",
-    kind: "ai",
-    portraitSrc: "/team/sofia.jpg",
-    portraitStatus: "approved",
-  },
-  {
-    slug: "vega",
-    name: "Vega",
-    role: "AI Media & Video Engineering",
-    specialty: "Audiovisual corporativo e engenharia de mídia com IA",
-    description: "Estrutura produção audiovisual com apresentadores virtuais, composição, identidade visual, qualidade e controle de custos.",
-    initials: "VE",
-    kind: "ai",
-    portraitSrc: "/team/vega.jpg",
-    portraitStatus: "approved",
-  },
-  {
-    slug: "lira",
-    name: "Lira",
-    role: "Social Platform Engineering",
-    specialty: "Plataformas sociais, marca e distribuição de conteúdo",
-    description: "Conecta posicionamento, narrativa, identidade e distribuição para conteúdos institucionais e sociais da BravSystems.",
-    initials: "LI",
-    kind: "ai",
-    portraitSrc: "/team/lira.jpg",
-    portraitStatus: "approved",
-  },
-  {
-    slug: "marco",
-    name: "Marco",
-    role: "Web Experience & Institutional Brand",
-    specialty: "Experiência web, posicionamento institucional e conversão",
-    description: "Cuida do site institucional, apresentação comercial, navegação, conteúdo, credibilidade e conversão digital da BravSystems.",
-    initials: "MA",
-    kind: "ai",
-    portraitSrc: "/team/marco.jpg",
-    portraitStatus: "approved",
-  },
-];
+export const harpia: TeamMember = {
+  slug: "harpia",
+  name: "Harpia",
+  role: "Mascote oficial da BravSystems",
+  specialty: "Inteligência, tecnologia e identidade da marca",
+  description: "A Harpia representa a inteligência da BravSystems e acompanha Robson como símbolo oficial da marca em todo o ecossistema.",
+  initials: "HA",
+  kind: "mascot",
+  portraitSrc: "/bravsystems-logo.png",
+  portraitStatus: "approved",
+};
 
-export const team = [founder, ...aiAgents];
+export const team = [founder, harpia] as const;
