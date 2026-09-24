@@ -39,9 +39,12 @@ const statusAccent: Record<ProductAccessStatus, string> = {
 
 const initials: Record<string, string> = {
   bravos: "OS",
+  bravclin: "CLIN",
   bravhas: "HAS",
+  "bravsystems-finance": "FIN",
   bravhos: "HOS",
   bravmsg: "MSG",
+  bravsocial: "SOC",
   bravacademy: "ACA",
   bravvideo: "VID",
 };
@@ -130,7 +133,7 @@ export default function AccessPage() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
               <div className="text-xs font-extrabold uppercase tracking-[.18em] text-[#2563eb]">Produtos e ambientes</div>
-              <h2 className="mt-3 text-[32px] font-bold leading-[1.05] tracking-[-.045em] sm:text-5xl">Seis produtos. Um padrão único de acesso.</h2>
+              <h2 className="mt-3 text-[32px] font-bold leading-[1.05] tracking-[-.045em] sm:text-5xl">{productAccessCatalog.length} produtos. Um padrão único de acesso.</h2>
               <p className="mt-3 text-[15px] leading-7 text-[#60758a] sm:mt-4 sm:text-[16px] sm:leading-8">Status, estado do ambiente e próximo passo em uma leitura única. O acesso só aparece com URL oficial autorizada.</p>
             </div>
             <Link href="/#produtos" className="inline-flex min-h-11 items-center justify-center self-start rounded-xl border border-[#c7d9e4] bg-white px-5 text-sm font-extrabold text-[#0f4d78] lg:self-auto">
@@ -140,7 +143,7 @@ export default function AccessPage() {
 
           <div className="mt-6 grid gap-3.5 md:grid-cols-2 xl:grid-cols-3 sm:mt-8" data-access-grid>
             {productAccessCatalog.map((product) => {
-              const highlighted = product.slug === "bravacademy" || product.slug === "bravhas";
+              const highlighted = product.slug === "bravclin" || product.slug === "bravacademy" || product.slug === "bravhas";
               return (
                 <article
                   key={product.slug}
