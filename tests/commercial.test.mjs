@@ -19,6 +19,7 @@ test("Home preserva a direção visual aprovada da BravSystems", async () => {
     "Decisões com clareza",
     "Uma empresa criada para construir o futuro da gestão.",
     "Escolha pelo problema que você quer resolver.",
+    "Nove produtos com função clara dentro do ecossistema.",
   ]) {
     assert.ok(page.includes(text), `${text} ausente`);
   }
@@ -53,10 +54,12 @@ test("Home mantém nove soluções e dá ênfase ao BravClin", async () => {
   assert.ok(page.includes("data-product-grid"));
   assert.ok(page.includes('data-product-card="bravos"'));
   assert.ok(page.includes("Operação em tempo real, gestão no mesmo ritmo."));
-  assert.ok(page.includes("/bravos-hero-approved.webp"));
+  assert.ok(page.includes("data-desktop-hero-panel"));
   assert.ok(page.includes('id="bravclin"'));
   assert.ok(page.includes("Destaque do portfólio"));
-  assert.ok(page.includes("Gestão clínica white label, sem complicar a rotina."));
+  assert.ok(page.includes("lg:grid-cols-[.96fr_1.04fr]"));
+  assert.ok(page.includes("xl:grid-cols-3"));
+  assert.ok(page.includes("Gestão clínica white label para uma operação organizada."));
   assert.ok(page.includes("Falar sobre minha clínica"));
 
   for (const name of ["BravOs", "BravClin", "BravHas", "BravSystems Finance", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"]) {
