@@ -55,7 +55,7 @@ test("Home mantém nove soluções e dá ênfase ao BravClin", async () => {
   assert.ok(page.includes("data-product-card={product.slug}"));
   assert.ok(page.includes("Operação em tempo real, gestão no mesmo ritmo."));
   assert.ok(page.includes("data-desktop-hero-panel"));
-  assert.ok(page.includes('id="bravclin"'));
+  assert.ok(page.includes('product.slug === "bravclin" ? "bravclin"'));
   assert.ok(page.includes("Destaque do portfólio"));
   assert.ok(page.includes("lg:grid-cols-[.96fr_1.04fr]"));
   assert.ok(page.includes("xl:grid-cols-3"));
