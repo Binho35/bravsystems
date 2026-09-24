@@ -11,7 +11,7 @@ export function SiteFooter() {
             <Image src="/bravsystems-logo.png" alt="BravSystems" width={56} height={56} className="h-12 w-12 rounded-xl bg-white object-contain" />
             <strong className="text-lg text-white">BravSystems</strong>
           </div>
-          <p className="mt-4 max-w-sm text-sm leading-7">Empresa brasileira de tecnologia com produtos SaaS próprios para operação, administração, pessoas, comunicação, aprendizagem e conteúdo corporativo.</p>
+          <p className="mt-4 max-w-sm text-sm leading-7">Empresa brasileira de tecnologia com produtos SaaS próprios para clínicas, operação, finanças, administração, pessoas, comunicação, aprendizagem e conteúdo corporativo.</p>
           <p className="mt-4 text-xs font-semibold uppercase tracking-[.12em] text-[#6fa9cc]">Tecnologia com contexto e governança</p>
         </div>
 

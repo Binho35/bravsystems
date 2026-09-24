@@ -46,7 +46,7 @@ test("Header usa a navegação aprovada e mantém a Central fora da navegação 
   assert.ok(header.includes("Meus Sistemas"));
 });
 
-test("Home mantém sete soluções e BravOs recebe destaque principal", async () => {
+test("Home mantém nove soluções e dá ênfase ao BravClin", async () => {
   const page = await read("app/page.tsx");
   const products = await read("lib/products.ts");
 
@@ -54,8 +54,12 @@ test("Home mantém sete soluções e BravOs recebe destaque principal", async ()
   assert.ok(page.includes('data-product-card="bravos"'));
   assert.ok(page.includes("A operação acontece em tempo real. Sua gestão também deveria."));
   assert.ok(page.includes("/bravos-hero-approved.webp"));
+  assert.ok(page.includes('id="bravclin"'));
+  assert.ok(page.includes("Destaque do portfólio"));
+  assert.ok(page.includes("Gestão clínica white label, desenhada para a rotina real."));
+  assert.ok(page.includes("Quero falar sobre minha clínica"));
 
-  for (const name of ["BravOs", "BravHas", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"]) {
+  for (const name of ["BravOs", "BravClin", "BravHas", "BravSystems Finance", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"]) {
     assert.ok(products.includes(`name: "${name}"`), `${name} ausente ou grafia incorreta`);
   }
 });
@@ -144,8 +148,10 @@ test("Formulário comercial permanece endurecido e integrado à Home", async () 
   assert.ok(form.includes('name="website"'));
   assert.ok(form.includes("defaultInterest"));
   assert.ok(home.includes("<LeadForm />"));
+  assert.ok(route.includes('"BravClin"'));
   assert.ok(route.includes('"BravOs"'));
   assert.ok(route.includes('"BravHas"'));
+  assert.ok(route.includes('"BravSystems Finance"'));
   assert.ok(route.includes('"BravHos"'));
 });
 test("Páginas de produto continuam integradas à Central", async () => {
@@ -181,5 +187,15 @@ test("Quality exige cadeia técnica e Browser E2E", async () => {
     "actions/upload-artifact@v4",
   ]) {
     assert.ok(workflow.includes(required), `Quality sem etapa: ${required}`);
+  }
+});
+
+test("Portfólio público exclui explicitamente a intranet Stocco", async () => {
+  const products = await read("lib/products.ts");
+  const home = await read("app/page.tsx");
+  const layout = await read("app/layout.tsx");
+  for (const content of [products, home, layout]) {
+    assert.equal(content.toLowerCase().includes("stocco-intranet"), false);
+    assert.equal(content.toLowerCase().includes("-stocco-intranet"), false);
   }
 });

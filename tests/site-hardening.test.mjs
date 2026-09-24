@@ -4,13 +4,15 @@ import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-test("status públicos dos sete produtos ficam alinhados ao catálogo governado", async () => {
+test("status públicos dos nove produtos ficam alinhados ao catálogo governado", async () => {
   const products = await read("lib/products.ts");
   const access = await read("lib/product-access.ts");
 
   for (const [slug, publicStatus, governedStatus] of [
     ["bravos", "Em homologação", "EM HOMOLOGAÇÃO"],
+    ["bravclin", "Em desenvolvimento", "EM DESENVOLVIMENTO"],
     ["bravhas", "Em homologação", "EM HOMOLOGAÇÃO"],
+    ["bravsystems-finance", "Em desenvolvimento", "EM DESENVOLVIMENTO"],
     ["bravhos", "Em desenvolvimento", "EM DESENVOLVIMENTO"],
     ["bravmsg", "Em desenvolvimento", "EM DESENVOLVIMENTO"],
     ["bravsocial", "Em homologação", "EM HOMOLOGAÇÃO"],
@@ -22,7 +24,8 @@ test("status públicos dos sete produtos ficam alinhados ao catálogo governado"
     const next = products.indexOf("\n  {", start + 1);
     const productBlock = products.slice(start, next === -1 ? undefined : next);
     assert.ok(productBlock.includes(`status: "${publicStatus}"`), `${slug}: status público divergente`);
-    assert.ok(access.includes(`${slug}: { status: "${governedStatus}"`), `${slug}: status governado divergente`);
+    const stateKey = slug.includes("-") ? `"${slug}"` : slug;
+    assert.ok(access.includes(`${stateKey}: { status: "${governedStatus}"`), `${slug}: status governado divergente`);
   }
 
   assert.ok(products.includes('limitations: ["Tecnologia em desenvolvimento"'));
