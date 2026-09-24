@@ -205,13 +205,13 @@ export default function Home() {
                   <div className="border-t border-white/10 bg-white/[.06] p-5 sm:p-6 md:border-l md:border-t-0 lg:p-7">
                     <div className="text-[10px] font-extrabold uppercase tracking-[.15em] text-[#8fd3f2]">Na prática</div>
                     <div className="mt-3 grid gap-2 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2">
-                      {["Agenda + CRM", "Prontuário + evolução", "Estoque + rastreabilidade", "Financeiro + indicadores", "WhatsApp + automações", "Multi-clínica / white label"].map((item) => (
+                      {["Agenda + CRM", "Prontuário + evolução", "Estoque + rastreabilidade", "Financeiro + indicadores"].map((item) => (
                         <div key={item} className="rounded-xl border border-white/10 bg-[#082844]/45 px-3 py-2 text-xs font-bold leading-5 text-[#e5f3fa]">
                           <span className="mr-1.5 text-[#79c8ed]" aria-hidden="true">✓</span>{item}
                         </div>
                       ))}
                     </div>
-                    <p className="mt-3 text-[11px] leading-5 text-[#a9cadc]">Em desenvolvimento, com foco em privacidade, segregação de dados e experiência própria por clínica.</p>
+                    <p className="mt-3 text-[11px] leading-5 text-[#a9cadc]">Em desenvolvimento. WhatsApp, automações e Multi-clínica / white label seguem na evolução do produto.</p>
                   </div>
                 </div>
               </article>
