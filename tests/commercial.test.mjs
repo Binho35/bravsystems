@@ -52,7 +52,7 @@ test("Home mantém nove soluções e dá ênfase ao BravClin", async () => {
   const products = await read("lib/products.ts");
 
   assert.ok(page.includes("data-product-grid"));
-  assert.ok(page.includes('data-product-card="bravos"'));
+  assert.ok(page.includes("data-product-card={product.slug}"));
   assert.ok(page.includes("Operação em tempo real, gestão no mesmo ritmo."));
   assert.ok(page.includes("data-desktop-hero-panel"));
   assert.ok(page.includes('id="bravclin"'));
