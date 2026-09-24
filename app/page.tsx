@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import { LeadForm } from "@/components/LeadForm";
@@ -42,7 +41,7 @@ const productInitials: Record<string, string> = {
 
 export default function Home() {
   const bravclin = products.find((product) => product.slug === "bravclin")!;
-  const bravos = products.find((product) => product.slug === "bravos")!;
+  const portfolioProducts = [bravclin, ...products.filter((product) => product.slug !== "bravclin")];
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-white text-[#0b2947]">
@@ -160,7 +159,7 @@ export default function Home() {
           </div>
 
           <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3" data-product-grid>
-            {products.map((product, index) => {
+            {portfolioProducts.map((product, index) => {
               const highlighted = product.slug === "bravclin";
               return (
                 <article
@@ -191,7 +190,7 @@ export default function Home() {
                   </div>
 
                   <div className="mt-4 text-[11px] font-extrabold uppercase tracking-[.12em] text-[#6f879a]">{product.category}</div>
-                  <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#61788d]">{product.description}</p>
+                  <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#61788d]">{highlighted ? product.headline : product.description}</p>
 
                   <div className="mt-auto flex items-center justify-between gap-3 border-t border-[#e0e9ef] pt-4">
                     <Link href={`/${product.slug}`} className="text-sm font-extrabold text-[#0b4683]">
