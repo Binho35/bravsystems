@@ -173,7 +173,7 @@ async function captureHomeEvidence(id, viewportLabel, width) {
       transform: getComputedStyle(element).textTransform,
     }));
   `);
-  const canonicalProductNames = ["BravOs", "BravHas", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"];
+  const canonicalProductNames = ["BravOs", "BravClin", "BravHas", "BravSystems Finance", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"];
   for (const item of productNameCase) {
     assert.ok(canonicalProductNames.includes(item.text), `${viewportLabel}: nome de produto fora do padrão: ${item.text}`);
     assert.notEqual(item.transform, "uppercase", `${viewportLabel}: ${item.text} foi transformado visualmente para uppercase`);
@@ -189,12 +189,28 @@ async function captureHomeEvidence(id, viewportLabel, width) {
       text: card.innerText || '',
     }));
   `);
-  assert.deepEqual(productCards.map((item) => item.name), ["BravOs", "BravHas", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"]);
+  assert.deepEqual(productCards.map((item) => item.name), ["BravOs", "BravClin", "BravHas", "BravSystems Finance", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"]);
+  const bravclinCard = productCards.find((item) => item.slug === "bravclin");
   const academyCard = productCards.find((item) => item.slug === "bravacademy");
   const bravhasCard = productCards.find((item) => item.slug === "bravhas");
+  assert.ok(bravclinCard?.text.includes("Destaque do portfólio"), `${viewportLabel}: BravClin sem destaque`);
+  assert.ok(bravclinCard?.text.includes("Gestão clínica white label"), `${viewportLabel}: proposta BravClin ausente`);
   assert.ok(academyCard?.text.toLowerCase().includes("homologação"), `${viewportLabel}: BravAcademy sem estágio`);
   assert.ok(bravhasCard?.text.toLowerCase().includes("homologação"), `${viewportLabel}: BravHas sem estágio`);
   await capture(id, `${viewportLabel}-02-solucoes`);
+
+  await scrollToTarget(id, "#bravclin", "center");
+  const bravclinSpotlight = await execute(id, `
+    const section = document.querySelector('#bravclin');
+    return {
+      text: section?.innerText || '',
+      link: Boolean(section?.querySelector('a[href="/bravclin"]')),
+    };
+  `);
+  assert.ok(bravclinSpotlight.text.includes("BravClin"), `${viewportLabel}: destaque BravClin ausente`);
+  assert.ok(bravclinSpotlight.text.includes("Multi-clínica / white label"), `${viewportLabel}: estrutura BravClin incompleta`);
+  assert.equal(bravclinSpotlight.link, true, `${viewportLabel}: CTA BravClin ausente`);
+  await capture(id, `${viewportLabel}-03-bravclin`);
 
   await scrollToTarget(id, "#bravacademy", "center");
   const academy = await execute(id, `
@@ -270,13 +286,17 @@ async function captureAccessEvidence(id, viewportLabel) {
       activeLogins: cards.flatMap(card => [...card.querySelectorAll('a')]).filter(a => /^Acessar Brav/.test(a.textContent.trim())).length,
       blocked: cards.filter(card => card.querySelector('[data-access-blocked]')).length,
       academyText: cards.find(card => card.getAttribute('data-access-product') === 'bravacademy')?.textContent || '',
+      bravclinText: cards.find(card => card.getAttribute('data-access-product') === 'bravclin')?.textContent || '',
+      financeText: cards.find(card => card.getAttribute('data-access-product') === 'bravsystems-finance')?.textContent || '',
       bravhasText: cards.find(card => card.getAttribute('data-access-product') === 'bravhas')?.textContent || '',
     };
   `);
 
-  assert.deepEqual(cards.names, ["BravOs", "BravHas", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"]);
+  assert.deepEqual(cards.names, ["BravOs", "BravClin", "BravHas", "BravSystems Finance", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"]);
   assert.equal(cards.activeLogins, 0, `${viewportLabel}: CI não deve ativar login sem URL oficial`);
-  assert.equal(cards.blocked, 7, `${viewportLabel}: todos os acessos sem URL devem permanecer bloqueados`);
+  assert.equal(cards.blocked, 9, `${viewportLabel}: todos os acessos sem URL devem permanecer bloqueados`);
+  assert.ok(cards.bravclinText.includes("EM DESENVOLVIMENTO"), `${viewportLabel}: BravClin incorreto na Central`);
+  assert.ok(cards.financeText.includes("EM DESENVOLVIMENTO"), `${viewportLabel}: BravSystems Finance incorreto na Central`);
   assert.ok(cards.academyText.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravAcademy incorreto na Central`);
   assert.ok(cards.bravhasText.includes("EM HOMOLOGAÇÃO"), `${viewportLabel}: BravHas incorreto na Central`);
   assert.ok(cards.bravhasText.includes("Administração, financeiro e pessoas"), `${viewportLabel}: categoria BravHas incorreta`);
@@ -371,6 +391,8 @@ async function runViewport(width, height, label) {
       accessProducts: central.cards.names.length,
       activeLoginsInCI: central.cards.activeLogins,
       blockedCtasInCI: central.cards.blocked,
+      bravclinDevelopment: central.cards.bravclinText.includes("EM DESENVOLVIMENTO"),
+      financeDevelopment: central.cards.financeText.includes("EM DESENVOLVIMENTO"),
       bravacademyHomologation: central.cards.academyText.includes("EM HOMOLOGAÇÃO"),
       bravhasHomologation: central.cards.bravhasText.includes("EM HOMOLOGAÇÃO"),
     })}`);
