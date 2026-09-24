@@ -19,7 +19,9 @@ export type ProductAccess = {
 
 const configuredUrls: Record<string, string | undefined> = {
   bravos: process.env.NEXT_PUBLIC_BRAVOS_APP_URL,
+  bravclin: process.env.NEXT_PUBLIC_BRAVCLIN_APP_URL,
   bravhas: process.env.NEXT_PUBLIC_BRAVHAS_APP_URL,
+  "bravsystems-finance": process.env.NEXT_PUBLIC_BRAVSYSTEMS_FINANCE_APP_URL,
   bravhos: process.env.NEXT_PUBLIC_BRAVHOS_APP_URL,
   bravmsg: process.env.NEXT_PUBLIC_BRAVMSG_APP_URL,
   bravsocial: process.env.NEXT_PUBLIC_BRAVSOCIAL_APP_URL,
@@ -29,7 +31,9 @@ const configuredUrls: Record<string, string | undefined> = {
 
 const governedState: Record<string, { status: ProductAccessStatus; environmentNote: string }> = {
   bravos: { status: "EM HOMOLOGAÇÃO", environmentNote: "Preview em homologação; acesso público depende de endereço oficialmente autorizado." },
+  bravclin: { status: "EM DESENVOLVIMENTO", environmentNote: "Projeto em construção; acesso público ainda não liberado." },
   bravacademy: { status: "EM HOMOLOGAÇÃO", environmentNote: "Ambiente de homologação operacional; hostname temporário não é publicado como acesso de cliente." },
+  "bravsystems-finance": { status: "EM DESENVOLVIMENTO", environmentNote: "Dashboard financeiro em evolução; acesso comercial ainda não liberado." },
   bravhos: { status: "EM DESENVOLVIMENTO", environmentNote: "Preview web em preparação." },
   bravmsg: { status: "EM DESENVOLVIMENTO", environmentNote: "Ambiente web ainda não liberado para acesso público." },
   bravsocial: { status: "EM HOMOLOGAÇÃO", environmentNote: "Preview técnico homologado; integrações sociais reais ainda dependem de ativos externos." },
