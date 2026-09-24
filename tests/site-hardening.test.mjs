@@ -24,7 +24,8 @@ test("status públicos dos nove produtos ficam alinhados ao catálogo governado"
     const next = products.indexOf("\n  {", start + 1);
     const productBlock = products.slice(start, next === -1 ? undefined : next);
     assert.ok(productBlock.includes(`status: "${publicStatus}"`), `${slug}: status público divergente`);
-    assert.ok(access.includes(`${slug}: { status: "${governedStatus}"`), `${slug}: status governado divergente`);
+    const stateKey = slug.includes("-") ? `"${slug}"` : slug;
+    assert.ok(access.includes(`${stateKey}: { status: "${governedStatus}"`), `${slug}: status governado divergente`);
   }
 
   assert.ok(products.includes('limitations: ["Tecnologia em desenvolvimento"'));
