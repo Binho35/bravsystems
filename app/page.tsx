@@ -290,6 +290,9 @@ export default function Home() {
             <h2 className="mt-3 text-[32px] font-black leading-[1.05] tracking-[-.04em] text-[#0b2947] sm:text-[42px]">
               Universidade corporativa com identidade, trilha e evidência.
             </h2>
+            <Link href="/bravacademy" className="mt-5 inline-flex text-sm font-extrabold text-[#0b4683] underline decoration-[#9fc3d8] underline-offset-4">
+              Conhecer BravAcademy →
+            </Link>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-5" aria-label="Jornada de aprendizagem do BravAcademy">
             {academyJourney.map((item, index) => (
