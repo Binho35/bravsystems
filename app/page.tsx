@@ -181,28 +181,28 @@ export default function Home() {
             <div className="grid gap-4 lg:grid-cols-3 lg:items-start">
               <article id="bravclin" data-product-card="bravclin" className="overflow-hidden rounded-[24px] border border-[#9fcfe8] bg-gradient-to-br from-[#082844] via-[#0c3d65] to-[#14628f] text-white shadow-xl shadow-[#0b2947]/12 lg:col-span-2">
                 <div className="grid h-full md:grid-cols-[1.12fr_.88fr]">
-                  <div className="p-5 sm:p-6 lg:p-7">
+                  <div className="p-5">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[.13em] text-[#b9e3f7]">Destaque do portfólio</span>
                       <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[9px] font-extrabold uppercase text-white">{bravclin.status}</span>
                     </div>
-                    <div data-product-name className="mt-4 text-xs font-extrabold tracking-[.15em] text-[#8fd3f2]">BravClin</div>
-                    <h3 className="mt-2 max-w-2xl text-[28px] font-black leading-[1.04] tracking-[-.04em] sm:text-[34px] lg:text-[38px]">
+                    <div data-product-name className="mt-3 text-xs font-extrabold tracking-[.15em] text-[#8fd3f2]">BravClin</div>
+                    <h3 className="mt-1.5 max-w-2xl text-[27px] font-black leading-[1.04] tracking-[-.04em] sm:text-[31px] lg:text-[34px]">
                       Gestão clínica white label, sem complicar a rotina.
                     </h3>
-                    <p className="mt-3 max-w-2xl text-sm leading-6 text-[#c7ddea]">
-                      Agenda, CRM, pacientes, prontuário, evolução, estoque e financeiro em uma plataforma preparada para clínicas de estética e saúde.
+                    <p className="mt-2.5 max-w-2xl text-sm leading-6 text-[#c7ddea]">
+                      Agenda, CRM, prontuário, evolução, estoque e financeiro para clínicas de estética e saúde.
                     </p>
-                    <div className="mt-5 flex flex-wrap gap-2">
+                    <div className="mt-4 flex flex-wrap items-center gap-3">
                       <Link href="/bravclin" className="inline-flex min-h-10 items-center justify-center rounded-xl bg-white px-4 text-sm font-extrabold text-[#0b4683]">
                         Conhecer o BravClin →
                       </Link>
-                      <a href="#contato" className="inline-flex min-h-10 items-center justify-center rounded-xl border border-white/25 bg-white/5 px-4 text-sm font-bold text-white">
+                      <a href="#contato" className="text-sm font-bold text-[#d9effa] underline decoration-white/25 underline-offset-4">
                         Falar sobre minha clínica
                       </a>
                     </div>
                   </div>
-                  <div className="border-t border-white/10 bg-white/[.06] p-5 sm:p-6 md:border-l md:border-t-0 lg:p-7">
+                  <div className="border-t border-white/10 bg-white/[.06] p-5 md:border-l md:border-t-0">
                     <div className="text-[10px] font-extrabold uppercase tracking-[.15em] text-[#8fd3f2]">Na prática</div>
                     <div className="mt-3 grid gap-2 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2">
                       {["Agenda + CRM", "Prontuário + evolução", "Estoque + rastreabilidade", "Financeiro + indicadores"].map((item) => (
@@ -211,7 +211,7 @@ export default function Home() {
                         </div>
                       ))}
                     </div>
-                    <p className="mt-3 text-[11px] leading-5 text-[#a9cadc]">Em desenvolvimento. WhatsApp, automações e Multi-clínica / white label seguem na evolução do produto.</p>
+                    <p className="mt-2.5 text-[11px] leading-5 text-[#a9cadc]">WhatsApp, automações e Multi-clínica / white label seguem na evolução do produto.</p>
                   </div>
                 </div>
               </article>
