@@ -178,7 +178,7 @@ export default function Home() {
           </div>
 
           <div className="mt-8" data-product-grid>
-            <div className="grid gap-4 lg:grid-cols-3 lg:items-stretch">
+            <div className="grid gap-4 lg:grid-cols-3 lg:items-start">
               <article id="bravclin" data-product-card="bravclin" className="overflow-hidden rounded-[24px] border border-[#9fcfe8] bg-gradient-to-br from-[#082844] via-[#0c3d65] to-[#14628f] text-white shadow-xl shadow-[#0b2947]/12 lg:col-span-2">
                 <div className="grid h-full md:grid-cols-[1.12fr_.88fr]">
                   <div className="p-5 sm:p-6 lg:p-7">
@@ -217,17 +217,17 @@ export default function Home() {
               </article>
 
               <article id="bravos" data-product-card="bravos" className="flex overflow-hidden rounded-[24px] border border-[#bfd6e5] bg-[#f4f9fc] shadow-lg shadow-[#0b2947]/6">
-                <div className="flex w-full flex-col p-5 sm:p-6">
+                <div className="flex w-full flex-col p-5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-[10px] font-extrabold tracking-[.13em] text-[#2563eb]"><span data-product-name>BravOs</span><span className="uppercase"> • Restaurantes</span></span>
                     <span className={`rounded-full border px-2.5 py-1 text-[9px] font-extrabold uppercase ${statusStyle[bravos.status]}`}>{bravos.status}</span>
                   </div>
-                  <h3 className="mt-3 text-[24px] font-black leading-[1.06] tracking-[-.035em] text-[#0b2947]">
+                  <h3 className="mt-3 text-[22px] font-black leading-[1.08] tracking-[-.035em] text-[#0b2947]">
                     Operação em tempo real, gestão no mesmo ritmo.
                   </h3>
-                  <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#61788d]">{bravos.description}</p>
+                  <p className="mt-3 line-clamp-2 text-sm leading-6 text-[#61788d]">{bravos.description}</p>
                   <div className="mt-4 overflow-hidden rounded-xl border border-[#d6e4ed] bg-[#0b2947] p-2">
-                    <Image src="/bravos-hero-approved.webp" alt="Interface aprovada do BravOs" width={1052} height={715} className="h-[122px] w-full rounded-lg object-contain sm:h-[138px]" priority={false} />
+                    <Image src="/bravos-hero-approved.webp" alt="Interface aprovada do BravOs" width={1052} height={715} className="h-[96px] w-full rounded-lg object-contain sm:h-[108px]" priority={false} />
                   </div>
                   <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
                     <Link href="/bravos" className="text-sm font-extrabold text-[#0b4683]">Conhecer o BravOs →</Link>
