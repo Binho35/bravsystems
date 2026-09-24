@@ -81,7 +81,8 @@ const statusStyle = {
 
 export default function Home() {
   const bravos = products.find((product) => product.slug === "bravos")!;
-  const otherProducts = products.filter((product) => product.slug !== "bravos");
+  const bravclin = products.find((product) => product.slug === "bravclin")!;
+  const otherProducts = products.filter((product) => !["bravos", "bravclin"].includes(product.slug));
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#f4f8fb] text-[#0b2947]">
@@ -172,7 +173,7 @@ export default function Home() {
               Escolha pelo problema que você quer resolver.
             </h2>
             <p className="mt-4 max-w-3xl text-[15px] leading-7 text-[#61788d] sm:text-[16px] sm:leading-8">
-              Operação, administração, pessoas, comunicação, aprendizagem e conteúdo: cada produto nasce para atacar um gargalo específico de gestão.
+              Operação, administração, clínicas, finanças, pessoas, comunicação, aprendizagem e conteúdo: cada produto nasce para atacar um gargalo específico de gestão.
             </p>
           </div>
 
@@ -199,6 +200,43 @@ export default function Home() {
               </div>
               <div className="flex items-center border-t border-[#d6e4ed] bg-[#0b2947] p-4 sm:p-6 lg:border-l lg:border-t-0">
                 <Image src="/bravos-hero-approved.webp" alt="Interface aprovada do BravOs" width={1052} height={715} className="h-auto w-full rounded-2xl object-contain" priority={false} />
+              </div>
+            </div>
+          </article>
+
+          <article id="bravclin" data-product-card="bravclin" className="mt-5 overflow-hidden rounded-[28px] border border-[#9fcfe8] bg-gradient-to-br from-[#082844] via-[#0c3d65] to-[#14628f] text-white shadow-2xl shadow-[#0b2947]/15">
+            <div className="grid gap-0 lg:grid-cols-[1.05fr_.95fr]">
+              <div className="p-6 sm:p-8 lg:p-10">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[.14em] text-[#b9e3f7]">Destaque do portfólio</span>
+                  <span className={`rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-extrabold uppercase text-white`}>{bravclin.status}</span>
+                </div>
+                <div data-product-name className="mt-6 text-sm font-extrabold tracking-[.15em] text-[#8fd3f2]">BravClin</div>
+                <h3 className="mt-3 max-w-3xl text-[36px] font-black leading-[1.02] tracking-[-.045em] sm:text-[50px]">
+                  Gestão clínica white label, desenhada para a rotina real.
+                </h3>
+                <p className="mt-5 max-w-3xl text-[15px] leading-7 text-[#c7ddea] sm:text-[17px] sm:leading-8">
+                  Agenda, CRM, pacientes, prontuário, anamnese, consentimentos, evolução, estoque, financeiro e automações em uma plataforma preparada para clínicas de estética e saúde.
+                </p>
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                  <Link href="/bravclin" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-6 text-sm font-extrabold text-[#0b4683]">
+                    Conhecer o BravClin →
+                  </Link>
+                  <a href="#contato" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/25 bg-white/5 px-6 text-sm font-bold text-white">
+                    Quero falar sobre minha clínica
+                  </a>
+                </div>
+              </div>
+              <div className="border-t border-white/10 bg-white/[.06] p-6 sm:p-8 lg:border-l lg:border-t-0 lg:p-10">
+                <div className="text-[11px] font-extrabold uppercase tracking-[.16em] text-[#8fd3f2]">Estrutura do produto</div>
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {["Agenda e confirmações", "CRM comercial", "Prontuário e evolução", "Anamnese digital", "Estoque e rastreabilidade", "Financeiro e indicadores", "WhatsApp e automações", "Multi-clínica / white label"].map((item) => (
+                    <div key={item} className="rounded-2xl border border-white/10 bg-[#082844]/45 px-4 py-3 text-sm font-bold leading-6 text-[#e5f3fa]">
+                      <span className="mr-2 text-[#79c8ed]" aria-hidden="true">✓</span>{item}
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-5 text-xs leading-6 text-[#a9cadc]">Projeto em construção, com arquitetura orientada a segregação de dados, privacidade e experiência própria por clínica.</p>
               </div>
             </div>
           </article>
