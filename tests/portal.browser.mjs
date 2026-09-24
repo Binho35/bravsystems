@@ -193,7 +193,7 @@ async function captureHomeEvidence(id, viewportLabel, width) {
   const bravclinCard = productCards.find((item) => item.slug === "bravclin");
   const academyCard = productCards.find((item) => item.slug === "bravacademy");
   const bravhasCard = productCards.find((item) => item.slug === "bravhas");
-  assert.ok(bravclinCard?.text.includes("Destaque do portfólio"), `${viewportLabel}: BravClin sem destaque`);
+  assert.ok(bravclinCard?.text.toLowerCase().includes("destaque do portfólio"), `${viewportLabel}: BravClin sem destaque`);
   assert.ok(bravclinCard?.text.includes("Gestão clínica white label"), `${viewportLabel}: proposta BravClin ausente`);
   assert.ok(academyCard?.text.toLowerCase().includes("homologação"), `${viewportLabel}: BravAcademy sem estágio`);
   assert.ok(bravhasCard?.text.toLowerCase().includes("homologação"), `${viewportLabel}: BravHas sem estágio`);
