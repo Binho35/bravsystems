@@ -189,12 +189,21 @@ async function captureHomeEvidence(id, viewportLabel, width) {
       text: card.innerText || '',
     }));
   `);
-  assert.deepEqual(productCards.map((item) => item.name), ["BravOs", "BravClin", "BravHas", "BravSystems Finance", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"]);
+  assert.deepEqual(productCards.map((item) => item.name), ["BravClin", "BravOs", "BravHas", "BravSystems Finance", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"]);
   const bravclinCard = productCards.find((item) => item.slug === "bravclin");
   const academyCard = productCards.find((item) => item.slug === "bravacademy");
   const bravhasCard = productCards.find((item) => item.slug === "bravhas");
   assert.ok(bravclinCard?.text.toLowerCase().includes("destaque do portfólio"), `${viewportLabel}: BravClin sem destaque`);
   assert.ok(bravclinCard?.text.includes("Gestão clínica white label"), `${viewportLabel}: proposta BravClin ausente`);
+  if (width >= 1200) {
+    const proportions = await execute(id, `
+      const clin = document.querySelector('#bravclin')?.getBoundingClientRect();
+      const os = document.querySelector('#bravos')?.getBoundingClientRect();
+      return { bravclinHeight: clin?.height || 0, bravosHeight: os?.height || 0 };
+    `);
+    assert.ok(proportions.bravclinHeight > 0 && proportions.bravclinHeight <= 430, `${viewportLabel}: BravClin voltou a ficar alto demais (${proportions.bravclinHeight}px)`);
+    assert.ok(proportions.bravosHeight > 0 && proportions.bravosHeight <= 430, `${viewportLabel}: BravOs voltou a ficar alto demais (${proportions.bravosHeight}px)`);
+  }
   assert.ok(academyCard?.text.toLowerCase().includes("homologação"), `${viewportLabel}: BravAcademy sem estágio`);
   assert.ok(bravhasCard?.text.toLowerCase().includes("homologação"), `${viewportLabel}: BravHas sem estágio`);
   await capture(id, `${viewportLabel}-02-solucoes`);
@@ -237,7 +246,7 @@ async function captureHomeEvidence(id, viewportLabel, width) {
       imageWidth: image?.naturalWidth || 0,
     };
   `);
-  assert.ok(bravos.text.includes("A operação acontece em tempo real. Sua gestão também deveria."), `${viewportLabel}: BravOs ausente`);
+  assert.ok(bravos.text.includes("Operação em tempo real, gestão no mesmo ritmo."), `${viewportLabel}: BravOs ausente`);
   assert.ok(bravos.imageSrc.includes("bravos-hero-approved.webp"), `${viewportLabel}: asset aprovado BravOs ausente`);
   assert.ok(bravos.imageWidth > 0, `${viewportLabel}: asset BravOs não carregou`);
   await capture(id, `${viewportLabel}-04-bravos`);
