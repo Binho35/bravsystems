@@ -52,12 +52,12 @@ test("Home mantém nove soluções e dá ênfase ao BravClin", async () => {
 
   assert.ok(page.includes("data-product-grid"));
   assert.ok(page.includes('data-product-card="bravos"'));
-  assert.ok(page.includes("A operação acontece em tempo real. Sua gestão também deveria."));
+  assert.ok(page.includes("Operação em tempo real, gestão no mesmo ritmo."));
   assert.ok(page.includes("/bravos-hero-approved.webp"));
   assert.ok(page.includes('id="bravclin"'));
   assert.ok(page.includes("Destaque do portfólio"));
-  assert.ok(page.includes("Gestão clínica white label, desenhada para a rotina real."));
-  assert.ok(page.includes("Quero falar sobre minha clínica"));
+  assert.ok(page.includes("Gestão clínica white label, sem complicar a rotina."));
+  assert.ok(page.includes("Falar sobre minha clínica"));
 
   for (const name of ["BravOs", "BravClin", "BravHas", "BravSystems Finance", "BravHos", "BravMsg", "BravSocial", "BravAcademy", "BravVideo"]) {
     assert.ok(products.includes(`name: "${name}"`), `${name} ausente ou grafia incorreta`);
