@@ -17,7 +17,7 @@ const structuredData = {
       logo: "https://www.bravsystems.com.br/bravsystems-logo.png",
       email: "contato@bravsystems.com.br",
       founder: { "@type": "Person", name: "Robson Fernandes" },
-      description: "Empresa brasileira de tecnologia que desenvolve plataformas SaaS próprias para operação, administração, pessoas, comunicação, aprendizagem e conteúdo corporativo.",
+      description: "Empresa brasileira de tecnologia que desenvolve plataformas SaaS próprias para operação, clínicas, finanças, administração, pessoas, comunicação, aprendizagem e conteúdo corporativo.",
     },
     {
       "@type": "WebSite",
@@ -36,11 +36,11 @@ export const metadata: Metadata = {
     default: "BravSystems | Plataformas SaaS para Operação e Gestão",
     template: "%s | BravSystems",
   },
-  description: "Conheça o ecossistema SaaS da BravSystems: BravOs, BravHas, BravHos, BravMsg, BravAcademy e BravVideo. Soluções para operação, gestão, pessoas, comunicação, aprendizagem e conteúdo corporativo.",
+  description: "Conheça o ecossistema SaaS da BravSystems: BravClin, BravOs, BravHas, BravSystems Finance, BravHos, BravMsg, BravSocial, BravAcademy e BravVideo. Soluções para clínicas, operação, finanças, gestão, pessoas, comunicação, aprendizagem e conteúdo.",
   keywords: [
-    "BravSystems", "BravOs", "BravAcademy", "BravMsg", "BravHas", "BravHos", "BravVideo",
+    "BravSystems", "BravClin", "BravOs", "BravSystems Finance", "BravAcademy", "BravMsg", "BravSocial", "BravHas", "BravHos", "BravVideo",
     "SaaS brasileiro", "software empresarial", "software para restaurantes", "gestão de restaurantes",
-    "gestão administrativa", "RH e DP", "universidade corporativa white label", "comunicação empresarial",
+    "software para clínicas", "gestão de clínicas de estética", "gestão administrativa", "dashboard financeiro", "RH e DP", "universidade corporativa white label", "comunicação empresarial",
     "produção audiovisual corporativa", "tecnologia para gestão",
   ],
   authors: [{ name: "BravSystems" }],
