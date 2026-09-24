@@ -177,87 +177,83 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mt-9" data-product-grid>
-          <article id="bravos" data-product-card="bravos" className="overflow-hidden rounded-[28px] border border-[#bfd6e5] bg-[#f4f9fc] shadow-xl shadow-[#0b2947]/7">
-            <div className="grid lg:grid-cols-[.88fr_1.12fr]">
-              <div className="p-6 sm:p-8 lg:p-10">
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-xs font-extrabold tracking-[.16em] text-[#2563eb]"><span data-product-name>BravOs</span><span className="uppercase"> • Restaurantes</span></span>
-                  <span className={`rounded-full border px-3 py-1 text-[10px] font-extrabold uppercase ${statusStyle[bravos.status]}`}>{bravos.status}</span>
-                </div>
-                <h3 className="mt-5 text-[34px] font-black leading-[1.03] tracking-[-.045em] text-[#0b2947] sm:text-[46px]">
-                  A operação acontece em tempo real. Sua gestão também deveria.
-                </h3>
-                <p className="mt-5 text-[15px] leading-7 text-[#61788d]">{bravos.description}</p>
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <Link href="/bravos" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#0b4683] px-5 text-sm font-extrabold text-white">
-                    Ver como o BravOs pode ajudar →
-                  </Link>
-                  <a href="#conheca-bravos" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#bfd4e3] bg-white px-5 text-sm font-bold text-[#315b7a]">
-                    Ver apresentação
-                  </a>
-                </div>
-              </div>
-              <div className="flex items-center border-t border-[#d6e4ed] bg-[#0b2947] p-4 sm:p-6 lg:border-l lg:border-t-0">
-                <Image src="/bravos-hero-approved.webp" alt="Interface aprovada do BravOs" width={1052} height={715} className="h-auto w-full rounded-2xl object-contain" priority={false} />
-              </div>
-            </div>
-          </article>
-
-          <article id="bravclin" data-product-card="bravclin" className="mt-5 overflow-hidden rounded-[28px] border border-[#9fcfe8] bg-gradient-to-br from-[#082844] via-[#0c3d65] to-[#14628f] text-white shadow-2xl shadow-[#0b2947]/15">
-            <div className="grid gap-0 lg:grid-cols-[1.05fr_.95fr]">
-              <div className="p-6 sm:p-8 lg:p-10">
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[.14em] text-[#b9e3f7]">Destaque do portfólio</span>
-                  <span className={`rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-extrabold uppercase text-white`}>{bravclin.status}</span>
-                </div>
-                <div data-product-name className="mt-6 text-sm font-extrabold tracking-[.15em] text-[#8fd3f2]">BravClin</div>
-                <h3 className="mt-3 max-w-3xl text-[36px] font-black leading-[1.02] tracking-[-.045em] sm:text-[50px]">
-                  Gestão clínica white label, desenhada para a rotina real.
-                </h3>
-                <p className="mt-5 max-w-3xl text-[15px] leading-7 text-[#c7ddea] sm:text-[17px] sm:leading-8">
-                  Agenda, CRM, pacientes, prontuário, anamnese, consentimentos, evolução, estoque, financeiro e automações em uma plataforma preparada para clínicas de estética e saúde.
-                </p>
-                <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                  <Link href="/bravclin" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-6 text-sm font-extrabold text-[#0b4683]">
-                    Conhecer o BravClin →
-                  </Link>
-                  <a href="#contato" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/25 bg-white/5 px-6 text-sm font-bold text-white">
-                    Quero falar sobre minha clínica
-                  </a>
-                </div>
-              </div>
-              <div className="border-t border-white/10 bg-white/[.06] p-6 sm:p-8 lg:border-l lg:border-t-0 lg:p-10">
-                <div className="text-[11px] font-extrabold uppercase tracking-[.16em] text-[#8fd3f2]">Estrutura do produto</div>
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  {["Agenda e confirmações", "CRM comercial", "Prontuário e evolução", "Anamnese digital", "Estoque e rastreabilidade", "Financeiro e indicadores", "WhatsApp e automações", "Multi-clínica / white label"].map((item) => (
-                    <div key={item} className="rounded-2xl border border-white/10 bg-[#082844]/45 px-4 py-3 text-sm font-bold leading-6 text-[#e5f3fa]">
-                      <span className="mr-2 text-[#79c8ed]" aria-hidden="true">✓</span>{item}
+          <div className="mt-8" data-product-grid>
+            <div className="grid gap-4 lg:grid-cols-3 lg:items-stretch">
+              <article id="bravclin" data-product-card="bravclin" className="overflow-hidden rounded-[24px] border border-[#9fcfe8] bg-gradient-to-br from-[#082844] via-[#0c3d65] to-[#14628f] text-white shadow-xl shadow-[#0b2947]/12 lg:col-span-2">
+                <div className="grid h-full md:grid-cols-[1.12fr_.88fr]">
+                  <div className="p-5 sm:p-6 lg:p-7">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[.13em] text-[#b9e3f7]">Destaque do portfólio</span>
+                      <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[9px] font-extrabold uppercase text-white">{bravclin.status}</span>
                     </div>
-                  ))}
-                </div>
-                <p className="mt-5 text-xs leading-6 text-[#a9cadc]">Projeto em construção, com arquitetura orientada a segregação de dados, privacidade e experiência própria por clínica.</p>
-              </div>
-            </div>
-          </article>
-
-          <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {otherProducts.map((product) => (
-              <article key={product.slug} data-product-card={product.slug} className="flex min-h-[300px] flex-col rounded-[24px] border border-[#d7e4ec] bg-[#fbfdfe] p-5 sm:p-6">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-[10px] font-extrabold uppercase tracking-[.13em] text-[#6f879a]">{product.category}</div>
-                    <h3 data-product-name className="mt-2 text-2xl font-black tracking-[-.035em] text-[#0b2947]">{product.name}</h3>
+                    <div data-product-name className="mt-4 text-xs font-extrabold tracking-[.15em] text-[#8fd3f2]">BravClin</div>
+                    <h3 className="mt-2 max-w-2xl text-[28px] font-black leading-[1.04] tracking-[-.04em] sm:text-[34px] lg:text-[38px]">
+                      Gestão clínica white label, sem complicar a rotina.
+                    </h3>
+                    <p className="mt-3 max-w-2xl text-sm leading-6 text-[#c7ddea]">
+                      Agenda, CRM, pacientes, prontuário, evolução, estoque e financeiro em uma plataforma preparada para clínicas de estética e saúde.
+                    </p>
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      <Link href="/bravclin" className="inline-flex min-h-10 items-center justify-center rounded-xl bg-white px-4 text-sm font-extrabold text-[#0b4683]">
+                        Conhecer o BravClin →
+                      </Link>
+                      <a href="#contato" className="inline-flex min-h-10 items-center justify-center rounded-xl border border-white/25 bg-white/5 px-4 text-sm font-bold text-white">
+                        Falar sobre minha clínica
+                      </a>
+                    </div>
                   </div>
-                  <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[9px] font-extrabold uppercase ${statusStyle[product.status]}`}>{product.status}</span>
-                </div>
-                <p className="mt-4 text-sm leading-6 text-[#61788d]">{product.description}</p>
-                <div className="mt-auto border-t border-[#e0e9ef] pt-5">
-                  <Link href={`/${product.slug}`} className="text-sm font-extrabold text-[#0b4683]">Ver como {product.name} pode ajudar →</Link>
+                  <div className="border-t border-white/10 bg-white/[.06] p-5 sm:p-6 md:border-l md:border-t-0 lg:p-7">
+                    <div className="text-[10px] font-extrabold uppercase tracking-[.15em] text-[#8fd3f2]">Na prática</div>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2">
+                      {["Agenda + CRM", "Prontuário + evolução", "Estoque + rastreabilidade", "Financeiro + indicadores", "WhatsApp + automações", "Multi-clínica / white label"].map((item) => (
+                        <div key={item} className="rounded-xl border border-white/10 bg-[#082844]/45 px-3 py-2 text-xs font-bold leading-5 text-[#e5f3fa]">
+                          <span className="mr-1.5 text-[#79c8ed]" aria-hidden="true">✓</span>{item}
+                        </div>
+                      ))}
+                    </div>
+                    <p className="mt-3 text-[11px] leading-5 text-[#a9cadc]">Em desenvolvimento, com foco em privacidade, segregação de dados e experiência própria por clínica.</p>
+                  </div>
                 </div>
               </article>
-            ))}
-          </div>
+
+              <article id="bravos" data-product-card="bravos" className="flex overflow-hidden rounded-[24px] border border-[#bfd6e5] bg-[#f4f9fc] shadow-lg shadow-[#0b2947]/6">
+                <div className="flex w-full flex-col p-5 sm:p-6">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-[10px] font-extrabold tracking-[.13em] text-[#2563eb]"><span data-product-name>BravOs</span><span className="uppercase"> • Restaurantes</span></span>
+                    <span className={`rounded-full border px-2.5 py-1 text-[9px] font-extrabold uppercase ${statusStyle[bravos.status]}`}>{bravos.status}</span>
+                  </div>
+                  <h3 className="mt-3 text-[24px] font-black leading-[1.06] tracking-[-.035em] text-[#0b2947]">
+                    Operação em tempo real, gestão no mesmo ritmo.
+                  </h3>
+                  <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#61788d]">{bravos.description}</p>
+                  <div className="mt-4 overflow-hidden rounded-xl border border-[#d6e4ed] bg-[#0b2947] p-2">
+                    <Image src="/bravos-hero-approved.webp" alt="Interface aprovada do BravOs" width={1052} height={715} className="h-[122px] w-full rounded-lg object-contain sm:h-[138px]" priority={false} />
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
+                    <Link href="/bravos" className="text-sm font-extrabold text-[#0b4683]">Conhecer o BravOs →</Link>
+                    <a href="#conheca-bravos" className="text-sm font-bold text-[#55738b]">Ver apresentação</a>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {otherProducts.map((product) => (
+                <article key={product.slug} data-product-card={product.slug} className="flex min-h-[250px] flex-col rounded-[22px] border border-[#d7e4ec] bg-[#fbfdfe] p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="text-[10px] font-extrabold uppercase tracking-[.13em] text-[#6f879a]">{product.category}</div>
+                      <h3 data-product-name className="mt-2 text-[22px] font-black tracking-[-.03em] text-[#0b2947]">{product.name}</h3>
+                    </div>
+                    <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[9px] font-extrabold uppercase ${statusStyle[product.status]}`}>{product.status}</span>
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-[#61788d]">{product.description}</p>
+                  <div className="mt-auto border-t border-[#e0e9ef] pt-4">
+                    <Link href={`/${product.slug}`} className="text-sm font-extrabold text-[#0b4683]">Conhecer {product.name} →</Link>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
