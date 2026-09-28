@@ -1,0 +1,122 @@
+{
+  "testId": "BRAVVIDEO-FOTORREALISTA-HUMANO-001",
+  "requestedFinalVideo": "BravVideo - APRESENTADOR FOTORREALISTA TESTE 001.mp4",
+  "finalVideoProduced": false,
+  "structuralProofVideoProduced": true,
+  "structuralProofVideo": "BravVideo - APRESENTADOR FOTORREALISTA TESTE 001 - BLOQUEADO.mp4",
+  "status": "BLOCKED_BY_ENGINE",
+  "blockedCapabilities": [
+    "image",
+    "human",
+    "motion",
+    "lip-sync"
+  ],
+  "blockedEngines": [
+    "BravVision",
+    "BravHuman",
+    "BravMotion",
+    "BravLip"
+  ],
+  "enginesActuallyUsed": [
+    {
+      "name": "BravPrompt",
+      "status": "IMPLEMENTED",
+      "purpose": "initial generative planning"
+    },
+    {
+      "name": "BravScript",
+      "status": "IMPLEMENTED",
+      "purpose": "initial scene/script planning"
+    },
+    {
+      "name": "BravVoice",
+      "status": "EXPERIMENTAL",
+      "purpose": "pt-BR narration"
+    },
+    {
+      "name": "BravInference",
+      "status": "IMPLEMENTED foundation gateway",
+      "purpose": "truthful blocked-engine registration"
+    },
+    {
+      "name": "BravAudio/BravCompose/BravRender",
+      "status": "IMPLEMENTED foundation",
+      "purpose": "local mix/composition/render through FFmpeg"
+    },
+    {
+      "name": "BravQC",
+      "status": "IMPLEMENTED foundation",
+      "purpose": "technical inspection"
+    }
+  ],
+  "upstreamModels": [
+    {
+      "component": "BravVoice",
+      "model": "Chatterbox self-hosted upstream",
+      "role": "TTS only",
+      "commercialStatus": "experimental in BravVideo; see repository THIRD_PARTY_NOTICES"
+    }
+  ],
+  "paidProviderCalls": 0,
+  "externalPaidProvidersUsed": [],
+  "technicalQc": {
+    "durationSeconds": 75.021354,
+    "resolution": "1920x1080",
+    "fps": 30,
+    "videoCodec": "H.264",
+    "pixelFormat": "yuv420p",
+    "audioCodec": "AAC",
+    "meanVolumeDb": -24.4,
+    "maxVolumeDb": -5.4,
+    "clippingDetected": false,
+    "contactSheet": "qc/contact-sheet.jpg",
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 1920,
+          "height": 1080,
+          "pix_fmt": "yuv420p",
+          "r_frame_rate": "30/1"
+        },
+        {
+          "index": 1,
+          "codec_name": "aac",
+          "codec_type": "audio",
+          "r_frame_rate": "0/0"
+        }
+      ],
+      "format": {
+        "duration": "75.021354",
+        "size": "5264752"
+      }
+    }
+  },
+  "voiceQc": {
+    "sceneCount": 8,
+    "totalNarrationSeconds": 60.72,
+    "voiceProfile": "robson-oficial",
+    "status": "EXPERIMENTAL",
+    "humanHomologation": "NOT_APPROVED",
+    "paidExternalCalls": 0,
+    "credits": 0
+  },
+  "visualQc": {
+    "humanIdentity": "NOT_TESTED_BLOCKED",
+    "hands": "NOT_TESTED_BLOCKED",
+    "anatomy": "NOT_TESTED_BLOCKED",
+    "eyesBlinking": "NOT_TESTED_BLOCKED",
+    "skin": "NOT_TESTED_BLOCKED",
+    "lipSync": "NOT_TESTED_BLOCKED",
+    "humanMotion": "NOT_TESTED_BLOCKED",
+    "realBravVideoUi": "PASS",
+    "uiLegibility": "PASS",
+    "fakeUiUsed": false
+  },
+  "plannerLimitation": "Current BravPrompt classified the institutional prompt without automatically adding human/motion/lip-sync; the production manifest explicitly added those required capabilities.",
+  "decision": "Do not claim the requested photorealistic human video as produced until BravVision, BravHuman, BravMotion and BravLip have executable engines."
+}
