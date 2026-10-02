@@ -18,6 +18,7 @@ def request(method, path, token, payload=None):
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/json",
+        "User-Agent": "BravSystems-DNS-Automation/1.0 (+https://github.com/Binho35/bravsystems)",
     }
     if payload is not None:
         data = json.dumps(payload).encode("utf-8")
