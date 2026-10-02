@@ -2,6 +2,83 @@
   "domain": "bravsystems.com.br",
   "managed_records": [
     {
+      "name": "bravos",
+      "type": "CNAME",
+      "ttl": 14400,
+      "records": [
+        {
+          "content": "47555461688349a8.vercel-dns-017.com"
+        }
+      ],
+      "purpose": "BravOs production"
+    },
+    {
+      "name": "bravhas",
+      "type": "CNAME",
+      "ttl": 14400,
+      "records": [
+        {
+          "content": "a8c8e0a4f5991b61.vercel-dns-017.com"
+        }
+      ],
+      "purpose": "BravHas production"
+    },
+    {
+      "name": "finance",
+      "type": "CNAME",
+      "ttl": 14400,
+      "records": [
+        {
+          "content": "b5b25e5c7f6fdddd.vercel-dns-017.com"
+        }
+      ],
+      "purpose": "BravFinance production"
+    },
+    {
+      "name": "bravclin",
+      "type": "CNAME",
+      "ttl": 14400,
+      "records": [
+        {
+          "content": "10ea1b07b070f76b.vercel-dns-017.com"
+        }
+      ],
+      "purpose": "BravClin production"
+    },
+    {
+      "name": "bravhos",
+      "type": "CNAME",
+      "ttl": 14400,
+      "records": [
+        {
+          "content": "0294d4429558e850.vercel-dns-017.com"
+        }
+      ],
+      "purpose": "BravHos production"
+    },
+    {
+      "name": "bravvideo",
+      "type": "CNAME",
+      "ttl": 14400,
+      "records": [
+        {
+          "content": "b35d784a0fa56ba1.vercel-dns-017.com"
+        }
+      ],
+      "purpose": "BravVideo production"
+    },
+    {
+      "name": "bravsocial",
+      "type": "CNAME",
+      "ttl": 14400,
+      "records": [
+        {
+          "content": "952032b70fc9c802.vercel-dns-017.com"
+        }
+      ],
+      "purpose": "BravSocial production"
+    },
+    {
       "name": "bravmsg",
       "type": "CNAME",
       "ttl": 14400,
@@ -11,6 +88,17 @@
         }
       ],
       "purpose": "BravMsg production"
+    },
+    {
+      "name": "bravacademy",
+      "type": "CNAME",
+      "ttl": 14400,
+      "records": [
+        {
+          "content": "58de5c420bae2621.vercel-dns-017.com"
+        }
+      ],
+      "purpose": "BravAcademy production"
     }
   ]
 }
