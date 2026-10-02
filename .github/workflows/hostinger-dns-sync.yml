@@ -1,0 +1,53 @@
+name: Hostinger DNS Sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "infra/dns/bravsystems.managed.json"
+      - "scripts/hostinger_dns_sync.py"
+      - ".github/workflows/hostinger-dns-sync.yml"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Validate and show changes without writing DNS"
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bravsystems-hostinger-dns
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify secret exists
+        env:
+          HOSTINGER_API_TOKEN: ${{ secrets.HOSTINGER_API_TOKEN }}
+        run: |
+          test -n "$HOSTINGER_API_TOKEN" || {
+            echo "::error::HOSTINGER_API_TOKEN is not configured in repository Actions secrets."
+            exit 1
+          }
+
+      - name: Syntax check
+        run: python3 -m py_compile scripts/hostinger_dns_sync.py
+
+      - name: Synchronize BravSystems DNS
+        env:
+          HOSTINGER_API_TOKEN: ${{ secrets.HOSTINGER_API_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry_run }}" = "true" ]; then
+            python3 scripts/hostinger_dns_sync.py --dry-run
+          else
+            python3 scripts/hostinger_dns_sync.py
+          fi
