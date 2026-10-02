@@ -1,0 +1,16 @@
+{
+  "domain": "bravsystems.com.br",
+  "managed_records": [
+    {
+      "name": "bravmsg",
+      "type": "CNAME",
+      "ttl": 14400,
+      "records": [
+        {
+          "content": "7377b933eaceecd4.vercel-dns-017.com"
+        }
+      ],
+      "purpose": "BravMsg production"
+    }
+  ]
+}
